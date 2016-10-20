@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	
+<!DOCTYPE tiles-definitions[
+	<!ELEMENT tiles-definitions (definition+)>
+	<!ELEMENT definition (put-attribute*, put-list-attribute*)>
+	<!ATTLIST definition 
+		id 					ID  		#IMPLIED
+		preparer 			CDATA 		#IMPLIED
+		extends    			CDATA 		#IMPLIED
+		name       			CDATA 		#IMPLIED
+		role       			CDATA 		#IMPLIED
+		template       		CDATA 		#IMPLIED
+		templateExpression  CDATA 		#IMPLIED
+		templateType       	CDATA 		#IMPLIED
+	>
+
+	<!ELEMENT put-attribute ( (definition*) )>
+	<!ATTLIST put-attribute     
+		id			ID      		#IMPLIED
+		name        CDATA      		#REQUIRED
+		type        CDATA      		#IMPLIED
+		value       CDATA      		#IMPLIED
+		expression  CDATA      		#IMPLIED
+		role        CDATA      		#IMPLIED				
+		cascade     (true|false)	#IMPLIED
+	>
+	
+	<!ELEMENT put-list-attribute ( (add-attribute* | add-list-attribute*)+) >
+	<!ATTLIST put-list-attribute
+		id               ID              #IMPLIED
+		name             CDATA           #REQUIRED
+		role             CDATA           #IMPLIED
+		inherit          (true|false)    #IMPLIED
+		cascade          (true|false)    #IMPLIED
+	>
+
+	<!ELEMENT add-attribute ( (definition*) )>
+	<!ATTLIST add-attribute 
+		id               ID      #IMPLIED
+		type             CDATA   #IMPLIED
+		value            CDATA   #IMPLIED
+		expression       CDATA   #IMPLIED
+		role             CDATA   #IMPLIED
+	>
+	
+	<!ELEMENT add-list-attribute ( (add-attribute* | add-list-attribute*)+) >
+	<!ATTLIST add-list-attribute 
+		id 		ID 		#IMPLIED
+		role 	CDATA 	#IMPLIED
+	>
+]>
+
+<tiles-definitions>
+
+	<definition name="base.definition" template="/WEB-INF/tiles/layout.jsp">
+		<put-attribute name="header" value="/WEB-INF/tiles/header.jsp" />
+		<!--  <put-attribute name="menu" value="/WEB-INF/tiles/menu.jsp" /> -->
+		<put-attribute name="footer" value="/WEB-INF/tiles/footer.jsp" />
+	</definition>
+	
+	<definition name="login" template="/login.jsp"/>
+	<definition name="login_success" template="/index.jsp"/>
+	
+	<!-- 테스트 -->
+	<definition name="contents" extends="base.definition">
+		<put-attribute name="content" value="/jsp/contents.jsp" />
+	</definition>
+	
+	<!-- 대시보드 -->
+	<definition name="dashboard" extends="base.definition">
+		<put-attribute name="content" value="/jsp/dashboard/dashboard.jsp" />
+	</definition>
+	
+	<!-- 개인 정보 점검 -->
+	<definition name="pimsetting" extends="base.definition">
+		<put-attribute name="content" value="/jsp/pim/pimsetting.jsp" />
+	</definition>
+	<definition name="pimsettingForm" template="/jsp/pim/pimsettingForm.jsp">
+	</definition>	
+	<definition name="pimsettingProcess" extends="base.definition">
+		<put-attribute name="content" value="/jsp/pim/pimsetting.jsp" />
+	</definition>
+	<definition name="pimhistory" extends="base.definition">
+		<put-attribute name="content" value="/jsp/pim/pimhistory.jsp" />
+	</definition>
+	<definition name="pimhistoryForm" template="/jsp/pim/pimhistoryForm.jsp">
+	</definition>	
+	<definition name="pimresult" extends="base.definition">
+		<put-attribute name="content" value="/jsp/pim/pimresult.jsp" />
+	</definition>
+	<definition name="pimresultForm" template="/jsp/pim/pimresultForm.jsp">
+	</definition>
+	<definition name="securitysetting" template="/jsp/pim/securitysetting.jsp">
+	</definition>
+	<definition name="securitysettingForm" template="/jsp/pim/securitysettingForm.jsp">
+	</definition>	
+	<definition name="pimpolicy" extends="base.definition">
+		<put-attribute name="content" value="/jsp/pim/pimpolicy.jsp" />
+	</definition>	
+	<definition name="pimpolicyForm" template="/jsp/pim/pimpolicyForm.jsp">
+	</definition>
+	<!-- 통계 관리 -->
+	<definition name="dailystatistic" extends="base.definition">
+		<put-attribute name="content" value="/jsp/stat/dailystatistic.jsp" />
+	</definition>
+	<definition name="monthlystatistic" extends="base.definition">
+		<put-attribute name="content" value="/jsp/stat/monthlystatistic.jsp" />
+	</definition>
+	<definition name="yearlystatistic" extends="base.definition">
+		<put-attribute name="content" value="/jsp/stat/yearlystatistic.jsp" />
+	</definition>
+	
+	<!-- 시스템 관리 -->
+	<definition name="systemstatus" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/systemstatus.jsp" />
+	</definition>
+	<definition name="systemproperties" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/systemproperties.jsp" />
+	</definition>
+	
+	<definition name="server" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/server.jsp" />
+	</definition>
+	<definition name="serverForm" template="/jsp/settings/serverForm.jsp" />
+	<definition name="properties" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/properties.jsp" />
+	</definition>
+	<definition name="propertiesForm" template="/jsp/settings/propertiesForm.jsp">
+	</definition>
+	<definition name="user" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/user.jsp" />
+	</definition>
+	<!-- 로그인 이력 -->
+	<definition name="loginhistory" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/loginHistory.jsp" />
+	</definition>
+	<!-- 이력 관리 -->
+	<definition name="sethistory" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/setHistory.jsp" />
+	</definition>
+	<!-- 이력 관리 상세 보기 -->
+	<definition name="setHistoryForm" template="/jsp/settings/setHistoryForm.jsp" />
+	<definition name="log" extends="base.definition">
+		<put-attribute name="content" value="/jsp/settings/log.jsp" />
+	</definition>
+	<definition name="logViewForm" template="/jsp/settings/logViewForm.jsp">
+	</definition>
+	<definition name="userForm" template="/jsp/settings/userForm.jsp">
+	</definition>
+	
+	<definition name="userAuthForm" template="/jsp/settings/userAuthForm.jsp">
+	</definition>
+	<definition name="userPasswordForm" template="/jsp/settings/userPasswordForm.jsp">
+	</definition>
+	<definition name="wcThread" template="/jsp/settings/thread.jsp"/>
+	<!-- 500 에러-->
+	<definition name="error" template="/jsp/err500.jsp"/>
+</tiles-definitions>

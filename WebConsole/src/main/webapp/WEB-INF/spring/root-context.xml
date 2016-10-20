@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						   	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+<!-- 	poolMaximumActiveConnections : 활성화된 최대 커넥션 수 -->
+<!-- 	poolMaximumIdleConnections : 유휴상태에서 최대 커넥션 수 -->
+<!-- 	poolMaximumCheckoutTime : 최대 커넥션 획득 시간(ms) -->
+<!-- 	poolPingEnabled : 커넥션이 살아있는지 ping 테스트 여부 -->
+<!-- 	poolPingQuery : 커넥션 ping 테스트 쿼리 (DB 종류에 따라 적절하게 수정) -->
+<!-- 	poolPingConnectionsNotUsedFor : 유휴상태의 커넥션이 닫히는지 판단할 시간(ms) -->
+<!-- 	poolTimeToWait : 사용된 커넥션을 기다리는 시간 -->
+	<!-- DB 설정  -->
+	<bean id="environmentVariablesConfiguration"
+		class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
+		<property name="algorithm" value="PBEWithMD5AndDES" />
+		<property name="passwordEnvName" value="APP_ENCRYPTION_PASSWORD" />
+	</bean>
+	
+	<bean id="configurationEncryptor"
+		class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+		<property name="config" ref="environmentVariablesConfiguration" />
+		<property name="password" value="jdbcpw" />
+	</bean>
+	
+	<bean id="propertyConfigurer"
+		class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer">
+		<constructor-arg ref="configurationEncryptor" />
+		<property name="locations">
+		<list>
+		<value>/WEB-INF/spring/jdbc.properties</value> <!-- properties 파일 위치 -->
+		</list>
+		</property>
+	</bean>
+	
+	<bean id="dataSource"
+		class="org.apache.ibatis.datasource.pooled.PooledDataSource">
+	    <property name="driver" value="net.sf.log4jdbc.DriverSpy" />
+	    <property name="url" value="jdbc:log4jdbc:${jdbc.url}?charSet=UNICODE" />
+<!-- 		<property name="driver" value="org.postgresql.Driver"></property>
+		<property name="url" value="${jdbc.url}?charSet=UNICODE"></property> -->
+		<property name="username" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+		<property name="defaultAutoCommit" value="true"></property>
+		
+		<property name="poolPingQuery" value="select 1"></property>
+		<property name="poolPingEnabled" value="true"></property>
+		<property name="poolMaximumActiveConnections" value="20"></property>
+		<property name="poolMaximumIdleConnections" value="20"></property>
+		<property name="poolMaximumCheckoutTime" value="20000"></property>
+		<property name="poolPingConnectionsNotUsedFor" value="10000"></property>
+		<property name="poolTimeToWait" value="15000"></property>
+	</bean>
+	<!-- Spring Session Factory를 mybatis와 연계하여 사용하는 메인 설정 부분 mybatis 설정 경로에 설정이 있어야함. -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:/mybatis/mybatis-config.xml"></property>
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- mybatis 의 Session Template 관련 설정  -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory"></constructor-arg>
+	</bean>
+	<!-- String Transaction 관련 설정 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!-- 
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="save*" rollback-for="Exception"/>
+			<tx:method name="update*" rollback-for="Exception"/>
+			<tx:method name="remove*" rollback-for="Exception"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="serviceOperation" expression="execution(public * com.k4m.zephyros.webconsole..*ServiceImpl.*(..))" />
+		<aop:advisor id="transactionAdvisor" pointcut-ref="serviceOperation" advice-ref="txAdvice"/>
+	</aop:config>
+	 -->
+</beans>

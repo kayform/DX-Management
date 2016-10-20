@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+           http://www.springframework.org/schema/security
+           http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+           
+    
+    <http auto-config='true'>
+    <!-- 접속 URL 권한 설정 버전별로 차이가 있음  -->
+    	<intercept-url pattern="/js/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    	<intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    	<intercept-url pattern="/bootstrap/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    	<intercept-url pattern="/css/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    	<intercept-url pattern="/img/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    	<intercept-url pattern="/theme/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+    	<intercept-url pattern="/jsp/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/login_duplicate" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/login" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<intercept-url pattern="/admin/**" access="ROLE_ADMIN,ROLE_SUPER" />
+		<intercept-url pattern="/**" access="ROLE_USER" />
+		<!-- 		권한 없음 페이지 연결 -->
+<!--   		<access-denied-handler error-page="/msginfo?msg=권한없음"/> -->
+  		   
+		<!-- login 관련 정보   -->
+   		<!-- login-page : 로그인 페이지 지정  -->
+   		<!-- username-parameter : 로그인 페이지 form 에 있는 username을 저장한 변수 이름 지정  -->
+   		<!-- password-parameter : 로그인 페이지 form 에 있는 password를 저장한 변수 이름 지정  -->
+   		<!-- loginf-processing-url 로그인 페이지 form actio에 입력 할 주소 지정 -->
+   		<!-- default-target-url : 로그인 성송시 이동 주소 -->
+   		<!-- authentication-failure-url : 로그인 실패인 경우 호울할 주소 지정 -->
+		<form-login login-page="/login" 
+					username-parameter="txtId" 
+					password-parameter="txtPasswd"		
+					default-target-url="/login_success" 
+					authentication-failure-url="/login?fail=true"	
+					always-use-default-target="true"
+					login-processing-url="/loginProcess"></form-login>
+					
+<!--  		<logout logout-success-url="/" logout-url="/logoutProcess"  success-handler-ref="customLogoutHandler"></logout> -->
+ 		<logout logout-url="/logoutProcess"  success-handler-ref="customLogoutHandler"></logout>
+		
+		<session-management>
+			<concurrency-control max-sessions="10" expired-url="/login_duplicate"/>
+		</session-management>
+		
+	</http>
+    
+    
+   	
+   	<!--  인증 프로바이더 설정  시작 -->
+   	<beans:bean id='customAuthenticationProvider' class='com.k4m.eXperdb.webconsole.security.CustomAuthenticationProvider'>
+ 		<beans:property name="sqlSession" ref="sqlSession"></beans:property>
+   	</beans:bean>
+   	<beans:bean id="customLogoutHandler" class="com.k4m.eXperdb.webconsole.security.CustomAuthenticationProviderLogout" >
+   		<beans:property name="sqlSession" ref="sqlSession"></beans:property>
+   	</beans:bean>
+   	<!-- beans:bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>  -->
+   	<authentication-manager>
+		<authentication-provider ref="customAuthenticationProvider"></authentication-provider>
+	</authentication-manager>
+	 
+	<!--  인증 프로바이더 설정  종료 -->
+<!-- 	 <beans:bean id="logoutFilter" class="org.springframework.security.ui.logout.LogoutFilter"> -->
+<!--         <custom-filter position="LOGOUT_FILTER"/> -->
+<!--         <beans:constructor-arg index="0" value="/logout.jsp"/> -->
+<!--         <beans:constructor-arg index="1"> -->
+<!--             <beans:list> -->
+<!--                 <beans:ref bean="securityContextLogoutHandler"/> -->
+<!--                 <beans:ref bean="myLogoutHandler"/> -->
+<!--             </beans:list> -->
+<!--         </beans:constructor-arg> -->
+<!--     </beans:bean> -->
+
+<!--     <beans:bean id="securityContextLogoutHandler" class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/> -->
+
+<!--     <beans:bean id="myLogoutHandler" class="com.whatever.CustomLogoutHandler"> -->
+<!--         <beans:property name="userCache" ref="userCache"/> -->
+<!--     </beans:bean> -->
+	
+<!-- 	public class CustomLogoutHandler implements LogoutHandler { -->
+<!--     private UserCache userCache; -->
+
+<!--     public void logout(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) { -->
+<!--         // .... -->
+<!--     } -->
+
+<!--     @Required -->
+<!--     public void setUserCache(final UserCache userCache) { -->
+<!--         this.userCache = userCache; -->
+<!--     } -->
+<!-- } -->
+	
+</beans:beans>
+           

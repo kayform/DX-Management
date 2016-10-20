@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Appenders -->
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+<!-- 		<param name="Target" value="System.out" /> -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="DAILY" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${dspecto.Home}/logs/webconsole.log"/>
+        <param name="Append" value="true"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%5p][%d{yyyy-MM-dd HH:mm:ss,SSS}][%C{1}.%M:%4L] %m%n"/>
+        </layout>
+    </appender> 
+	
+	<appender name="DAILY_ACCESS" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${dspecto.Home}/logs/access.log"/>
+        <param name="Append" value="true"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%5p][%d{yyyy-MM-dd HH:mm:ss,SSS}][%C{1}.%M:%4L] %m%n"/>
+        </layout>
+    </appender> 
+    
+	
+	<!-- Application Loggers -->
+	<logger name="k4m.zephyros.webconsole">
+		<level value="INFO" />
+	</logger>
+
+	<!-- 
+    <logger name="jdbc.connection" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="console"/>
+    </logger>
+    
+ 
+    <logger name="jdbc.audit" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="console"/>
+    </logger>
+ 
+    <logger name="jdbc.sqlonly" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="console"/>
+    </logger>
+  	-->
+  	
+    <logger name="jdbc.sqltiming" additivity="false">
+        <level value="ERROR"/>
+        <appender-ref ref="console"/>
+    </logger>
+ 
+    <logger name="jdbc.resultset" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="console"/>
+    </logger>
+    <!--  
+    <logger name="jdbc.resultsettable" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="console"/>
+    </logger>
+     -->
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework">
+		<level value="WARN" />
+	</logger>
+	 
+	<logger name="org.apache.titles">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.mybatis">
+		<level value="WARN" />
+	</logger>
+	
+	<!-- 
+	<logger name="mont_0005-mapper">
+		<level value="TRACE" />
+		<appender-ref ref="console"/>
+	</logger>
+	
+	<logger name="mtmg_0001-mapper">
+		<level value="TRACE" />
+		<appender-ref ref="console"/>
+	</logger>
+	 -->
+	 
+	<!-- Root Logger -->
+	<root>
+		<priority value="INFO" />
+		<!-- appender-ref ref="console" /> -->
+		<appender-ref ref="DAILY" />
+	</root>
+	
+</log4j:configuration>

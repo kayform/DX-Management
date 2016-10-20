@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user-mapper">
+ 
+	<select id="selectUserList" resultType="hashmap">
+		  <![CDATA[
+			select T1.user_id, T1.user_nm, T1.user_pw,
+				(SELECT SYS_MNT_CD_NM
+				FROM webadmin.tb_mt_CO_CODEGRPDTL S2
+				WHERE S2.SYS_GRPCD='C0001'
+				AND S2.SYS_MNT_CD = T1.auth_dv )  AS auth_dv,
+				T1.jgd, T1.dept, T1.hpnm_no, T1.blg,
+				(SELECT SYS_MNT_CD_NM
+				FROM webadmin.tb_mt_CO_CODEGRPDTL S2
+				WHERE S2.SYS_GRPCD='C0002'
+				AND S2.SYS_MNT_CD = T1.use_yn )  AS use_yn,
+				T1.cg_biz_def  from webadmin.tb_mt_co_user  T1
+          where auth_dv like #{auth_dv} and use_yn like  #{use_yn}  and user_nm like  #{user_nm}
+          order by lt_wk_dtti desc
+          ]]>
+	</select>
+		
+	<select id ="selectUser" resultType="hashmap" parameterType="hashmap">
+		 <![CDATA[
+    	     SELECT T1.USER_NM AS USER_NM,
+    	             T1.USER_ID AS USER_ID,
+    	             T1.USER_PW AS USER_PW,
+    	             T1.AUTH_DV AS AUTH_DV,
+    	             T1.JGD AS JGD,
+    	             T1.BLG AS BLG,
+    	             T1.DEPT AS DEPT,
+    	             T1.HPNM_NO AS HPNM_NO,
+    	             T1.USE_YN AS USE_YN,
+    	             T1.CG_BIZ_DEF AS CG_BIZ_DEF,
+    	             T1.LT_WK_PRSN AS LT_WK_PRSN,    	             
+    	             TO_CHAR(TO_DATE(T1.user_expd, 'YYYYMMDD'),'YYYY-MM-DD') AS user_expd,
+    	             T1.PG_MON_CLIENT_PATH AS PG_MON_CLIENT_PATH,
+    	             T1.ENC_MNG_PATH AS ENC_MNG_PATH
+    	     FROM webadmin.tb_mt_CO_USER T1
+    	     WHERE USER_ID = #{user_id}
+		]]>
+	</select>
+	
+	<select id ="selectUserView" resultType="hashmap" parameterType="hashmap">
+		 <![CDATA[
+			SELECT  T1.USER_NM AS USER_NM,
+					T1.USER_ID AS USER_ID,
+					T1.USER_PW AS USER_PW,
+					(SELECT SYS_MNT_CD_NM
+						FROM webadmin.tb_mt_CO_CODEGRPDTL S2
+					 WHERE S2.SYS_GRPCD='C0001'
+						AND S2.SYS_MNT_CD = T1.auth_dv )  AS auth_dv,
+					T1.JGD AS JGD,
+					T1.BLG AS BLG,
+					T1.DEPT AS DEPT,
+					T1.HPNM_NO AS HPNM_NO,
+					(SELECT SYS_MNT_CD_NM
+						FROM webadmin.tb_mt_CO_CODEGRPDTL S2
+					 WHERE S2.SYS_GRPCD='C0007'
+						AND S2.SYS_MNT_CD = T1.use_yn )  AS use_yn,
+					T1.CG_BIZ_DEF AS CG_BIZ_DEF,
+					T1.LT_WK_PRSN AS LT_WK_PRSN,    	             
+					TO_CHAR(TO_DATE(T1.user_expd, 'YYYYMMDD'),'YYYY-MM-DD') AS user_expd,
+    	            T1.PG_MON_CLIENT_PATH AS PG_MON_CLIENT_PATH,
+    	            T1.ENC_MNG_PATH AS ENC_MNG_PATH					
+			FROM webadmin.tb_mt_CO_USER T1
+			WHERE USER_ID = #{user_id}
+		]]>
+	</select>
+	
+	<insert id="insertUser" parameterType="hashmap">
+		  <![CDATA[
+				INSERT INTO webadmin.tb_mt_co_user(
+				            user_id, user_pw, user_nm, jgd, auth_dv, blg, dept, hpnm_no, 
+				            use_yn, cg_biz_def, lt_wk_dtti, lt_wk_prsn,
+				            user_expd, pg_mon_client_path, enc_mng_path)
+				    VALUES (#{user_id}, #{user_pw}, #{user_nm}, #{jgd}, #{auth_dv}, #{blg}, #{dept}, #{hpnm_no}, 
+				            #{use_yn}, #{cg_biz_def}, TO_CHAR(now(),'YYYYMMDDHH24MISS'), #{lt_wk_prsn},  
+				           #{user_expd}, #{pg_mon_client_path}, #{enc_mng_path});
+		  ]]>
+	</insert>
+	
+	<update id="updateUser" parameterType="hashmap">
+		  <![CDATA[
+					UPDATE webadmin.tb_mt_co_user
+					SET 
+					  user_nm =#{user_nm}
+					, jgd =#{jgd}
+					, blg =#{blg}
+					, dept = #{dept} 
+					, hpnm_no =#{hpnm_no}
+					, use_yn = #{use_yn} 
+					, cg_biz_def = #{cg_biz_def} 
+					, lt_wk_dtti = TO_CHAR(now(),'YYYYMMDDHH24MISS')
+					, user_expd = #{user_expd} 
+					, pg_mon_client_path = #{pg_mon_client_path} 
+					, enc_mng_path  = #{enc_mng_path} 
+					, lt_wk_prsn = #{lt_wk_prsn}
+					 WHERE  user_id =#{user_id} ;
+ 		  ]]>
+	</update>
+	
+	<update id="updateUserPassword" parameterType="hashmap">
+		  <![CDATA[
+					UPDATE webadmin.tb_mt_co_user
+					SET 
+					 user_pw = #{user_pw}
+					 WHERE  user_id =#{user_id} ;
+ 		  ]]>
+	</update>
+		
+	<delete id="deleteUser" parameterType="hashmap">		  
+					 DELETE FROM webadmin.tb_mt_co_user
+					 WHERE user_id = #{user_id}		  
+	</delete>
+	
+	<select id ="selectUserAuth" resultType="hashmap" parameterType="hashmap">
+		<![CDATA[
+			select *,(select count(*) from webadmin.tb_mt_co_menu_info B where A.parent_id = 0 and B.parent_id = A.item_order) as sub_count 
+			, (select count(*) from webadmin.tb_mt_co_auth_info C where C.user_id=#{user_id} and A.id = C.menu_id) as is_cheack
+			from webadmin.tb_mt_co_menu_info A order by item_order, sub_order, depth;
+		]]>
+	</select>
+	
+	<insert id="insertUserAuth" parameterType="hashmap">		  
+		insert into webadmin.tb_mt_co_auth_info(user_id, menu_id) values (#{user_id}, #{menu_id});  
+	</insert>
+	
+	<insert id="insertUserAuthParent" parameterType="hashmap">		  
+		insert into webadmin.tb_mt_co_auth_info(user_id, menu_id) values (#{user_id}, (select id from  webadmin.tb_mt_co_menu_info where item_order=(select parent_id from webadmin.tb_mt_co_menu_info where id=#{menu_id}) and parent_id = 0));  
+	</insert>
+	
+	<delete id="deleteUserAuth" parameterType="hashmap">		  
+		delete from webadmin.tb_mt_co_auth_info where user_id=#{user_id} and menu_id=#{menu_id}
+	</delete>
+	
+	<delete id="deleteUserAuthAll" parameterType="hashmap">		  
+		delete from webadmin.tb_mt_co_auth_info where user_id=#{user_id}
+	</delete>
+		
+	<!-- 	로그인 정보 조회 ("/loginProcess") -->
+	<select id="getLoginInfo" parameterType="hashmap" resultType="hashmap">
+		<![CDATA[
+		   SELECT USER_ID 
+				, USER_NM 
+				, AUTH_DV 
+				, DEPT
+				, CASE WHEN (TO_TIMESTAMP(USER_EXPD||'235959','YYYYMMDDHH24MISS') < NOW())  THEN 'N' ELSE 'Y' END AS VALIDEXP
+				, USER_PW
+			FROM webadmin.tb_mt_CO_USER 
+			WHERE USE_YN = 'Y' 
+				AND USER_ID = #{userId}
+				
+		]]>
+	</select>
+</mapper>
