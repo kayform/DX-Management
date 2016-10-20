@@ -95,6 +95,7 @@
         		//showMetroDialog('#dialog', 'default', ($('<div>').addClass('padding20').html('hi! i am jquery content for dialog ')));
         		showDialog('dialog-alert', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}");
         		//showMetroDialog('#dialog-alert', 'default', ($('<div>').addClass('padding20').html("${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}")));
+        		//pushMessage('info', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}");
         	}
         	
         	// 쿠키 검사

@@ -8,8 +8,6 @@
     <meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, metro, front-end, frontend, web development">
     <meta name="author" content="Sergey Pimenov and Metro UI CSS contributors">
 
-    <link rel='shortcut icon' type='image/x-icon' href='../favicon.ico' />
-
     <title>Template :: Metro UI CSS - The front-end framework for developing projects on the web in Windows Metro Style</title>
 </head>
 <body class="bg-steel">
