@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<mappers>
+		<!-- Mapper 파일 관련 복수도 설정 가능함 -->
+		<mapper resource="mybatis/user-mapper.xml"/>
+		<!-- <mapper resource="/mybatis/base-mapper.xml"/> -->
+		
+		<!-- 공통 -->
+		<mapper resource="mybatis/common-mapper.xml"/>
+	</mappers>
+</configuration>

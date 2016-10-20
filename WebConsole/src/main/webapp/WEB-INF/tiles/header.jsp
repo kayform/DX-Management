@@ -8,7 +8,7 @@
     
     <title>eXperdb Webconsole</title>
     
-    <link rel='shortcut icon' type='image/x-icon' href='../favicon.ico' />
+    <link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
 
     <link href="theme/css/metro.css" rel="stylesheet">
     <link href="theme/css/metro-icons.css" rel="stylesheet">
@@ -21,16 +21,12 @@
     <script src="theme/js/jquery.dataTables.min.js"></script>
     <!-- metro V3 -->
     <script src="theme/js/metro.js"></script>
-    <!-- Bootstrap Script -->
-	<script src="bootstrap/js/bootstrap.min.js"></script>
     <!-- JQuery cookie -->
 	<script src="theme/script/jquery.cookie.js"></script>
 	<!-- Resize Script -->
 	<script src="theme/script/jquery.ba-resize.js"></script>
 	<!-- zephyros.js  -->
 	<script src="js/zephyros.js" type="text/javascript"></script>
-	<!-- BootBox  -->
-	<script src="bootstrap/extend/bootbox.min.js" type="text/javascript"></script>
     <script src="theme/js/docs.js"></script>
     <script src="theme/js/prettify/run_prettify.js"></script>
     <script src="theme/js/ga.js"></script>
@@ -72,15 +68,6 @@
     </style>
 
     <script>
-        function pushMessage(t){
-            var mes = 'Info|Implement independently';
-            $.Notify({
-                caption: mes.split("|")[0],
-                content: mes.split("|")[1],
-                type: t
-            });
-        }
-
         $(function(){
             $('.sidebar').on('click', 'li', function(){
                 if (!$(this).hasClass('active')) {
@@ -90,3 +77,11 @@
             })
         })
     </script>
+    <div data-role="dialog" id="dialog-alert" class="padding20" data-close-button="true" data-type="alert">
+    	<h1>test</h1>
+        <p>
+        	This dialog opened with utility function
+        </p>
+    </div>
+    <div id="profile">
+    </div>

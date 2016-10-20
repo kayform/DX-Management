@@ -1,5 +1,14 @@
 var zephyros = {};
 
+function pushMessage(t, msg){
+    var mes = 'Message|' + msg;
+    $.Notify({
+        caption: mes.split("|")[0],
+        content: mes.split("|")[1],
+        type: t
+    });
+}
+
 function showDialog(id, content){
 	var dialog = $("#"+id).data('dialog');
     if (!dialog.element.data('opened')) {

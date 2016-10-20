@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="common-mapper">
+
+	<!-- 로그인 이력 삽입 "/loginprocess" -->
+	<insert id="insertLoginHistory" parameterType="hashmap">
+		<![CDATA[
+			INSERT INTO WEBADMIN.TB_MT_CO_LOGININFO
+				( REG_YM_DD
+				, REG_TIME
+				, USER_ID
+				, USER_NM
+				, IP
+				, LOGIN_GB) 
+				VALUES 
+				( TO_CHAR(NOW(),'YYYYMMDD')
+				, TO_CHAR(NOW(),'HH24MISS') 
+				, #{userId}
+				, #{userName}
+				, #{ip}
+				, #{loginType})
+
+		]]>
+	</insert>
+	
+	<!-- 활성화 된 메뉴 리스트 조회 -->
+	<select id="selectAllMenuList" resultType="hashmap">
+	  <![CDATA[
+				SELECT ID, ITEM_ORDER, SUB_ORDER, DEPTH, PARENT_ID, URL, MENU_TYPE, MENU_COLOR, NAME
+				FROM WEBADMIN.TB_MT_CO_MENU_INFO
+				WHERE
+				    MENU_TYPE ='S'
+				AND DEPTH < 4				
+				ORDER BY ITEM_ORDER, SUB_ORDER, DEPTH
+         ]]>
+	</select>
+	
+	<!-- 활성화 된 메뉴 리스트 조회 -->
+	<select id="selectMenuList" resultType="hashmap">
+	  <![CDATA[
+				SELECT ID, ITEM_ORDER, SUB_ORDER, DEPTH, PARENT_ID, URL, MENU_TYPE, MENU_COLOR, NAME
+				FROM WEBADMIN.TB_MT_CO_MENU_INFO
+				WHERE
+					USE_YN ='Y'
+				AND MENU_TYPE ='S'
+				AND DEPTH < 4				
+				ORDER BY ITEM_ORDER, SUB_ORDER, DEPTH
+         ]]>
+	</select>
+	
+	<!-- 권한별 메뉴 리스트 조회  -->
+	<select id="selectMenuListByAuth" resultType="hashmap" parameterType="hashmap">
+	  <![CDATA[
+				SELECT A.ID, A.ITEM_ORDER, A.SUB_ORDER, A.DEPTH, A.PARENT_ID, A.URL, A.MENU_TYPE, A.MENU_COLOR, A.NAME
+				FROM (
+						SELECT ID, ITEM_ORDER, SUB_ORDER, DEPTH, PARENT_ID, URL, MENU_TYPE, MENU_COLOR, NAME
+						FROM WEBADMIN.TB_MT_CO_MENU_INFO
+						WHERE
+							USE_YN ='Y'
+						AND MENU_TYPE ='S'
+						AND DEPTH < 4				
+					 ) A, WEBADMIN.TB_MT_CO_AUTH_INFO B
+				WHERE B.USER_ID = #{user_id} and B.MENU_ID = A.ID
+				ORDER BY ITEM_ORDER, SUB_ORDER, DEPTH
+         ]]>
+	</select>
+	
+	<!-- 시스템 구분 코드 조회 -->
+	<select id="selectSystemCode" resultType="hashmap">
+	  <![CDATA[
+		SELECT T2.SYS_MNT_CD AS SYS_MNT_CD,
+                   T2.SYS_MNT_CD_NM AS SYS_MNT_CD_NM
+      			FROM WEBADMIN.TB_MT_CO_CODEGRP T1, WEBADMIN.TB_MT_CO_CODEGRPDTL T2
+           WHERE T1.SYS_GRPCD =T2.SYS_GRPCD
+             AND T1.SYS_GRPCD = #{systemCode}
+             AND T1.USE_YN ='Y'
+             AND T2.USE_YN ='Y'
+             AND T2.CN != 'PO'
+           ORDER BY T2.PRT_PROCE ASC
+	  ]]>
+	</select>
+</mapper>

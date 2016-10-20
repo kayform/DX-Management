@@ -9,7 +9,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	
-	<LINK REL="SHORTCUT ICON" href="/css/D-Specto.ico">
+	<link rel='shortcut icon' type='image/x-icon' href='img/favicon.ico' />
 	
 	<!-- Bootstrap -->
 	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
