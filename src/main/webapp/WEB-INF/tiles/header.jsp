@@ -31,7 +31,6 @@
     <script src="theme/js/prettify/run_prettify.js"></script>
     <script src="theme/js/ga.js"></script>
 
-
 	<!-- Themer -->
 	<script>
 	var themerPrimaryColor = '#00aba9';

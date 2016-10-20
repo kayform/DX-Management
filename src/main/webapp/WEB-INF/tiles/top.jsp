@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <header id="menu">
+	<%-- <jsp:include page="/jsp/settings/userForm.jsp"/>  --%>
     <div class="app-bar fixed-top darcula" data-role="appbar">
         <a class="app-bar-element branding">eXperdb Manager</a>
         <span class="app-bar-divider"></span>
@@ -26,58 +27,16 @@
         <div class="app-bar-element place-right">
             <span class="dropdown-toggle"><span class="mif-cog"></span> ${sessionScope.userId}</span>
             <div class="app-bar-drop-container place-right" data-role="dropdown" data-no-close="true" style="width: 220px">
-            	<div class="padding20">
-                                <form>
-                                    <h4 class="text-light">Login to service...</h4>
-                                    <div class="input-control text">
-                                        <span class="mif-user prepend-icon"></span>
-                                        <input type="text">
-                                    </div>
-                                    <div class="input-control text">
-                                        <span class="mif-lock prepend-icon"></span>
-                                        <input type="password">
-                                    </div>
-                                    <label class="input-control checkbox small-check">
-                                        <input type="checkbox">
-                                        <span class="check"></span>
-                                        <span class="caption">Remember me</span>
-                                    </label>
-                                    <div class="form-actions">
-                                        <button class="button">Login</button>
-                                        <button class="button link">Cancel</button>
-                                    </div>
-                                </form>            	
-                    <li><a href="javascript:profile('U','administrator')">Profile</a></li>
+            	<div class="padding20">         	
+                    <li><a href="javascript:profile('U', '${sessionScope.userId}')">Profile</a></li>
                     <li><a href="/logoutProcess" class="fg-white3 fg-hover-yellow">Logout</a></li>
                 </div>
             </div>
         </div>
-    </div>
-   
-  <div class="pen-settings-modal  pen-settings-modal-half" id="pen-settings-modal">
-
-  <div class="pen-settings-halfs-wrap">
-
-
-      <div class="settings-modal-left tabs">
-
-        <h2>Pen Settings</h2>
-
-        <nav id="settings-tabs" class="explore-tabs no-mobile-nav">
-          <a id="settings-html-tab" href="#settings-html" class="settings-tab-html" data-type="html">HTML</a>
-          <a id="settings-css-tab" href="#settings-css" class="settings-tab-css" data-type="css">CSS</a>
-          <a id="settings-js-tab" href="#settings-js" class="settings-tab-js" data-type="js">JavaScript</a>
-          <a id="settings-behavior-tab" href="#settings-behavior" class="settings-tab-behavior" data-type="behavior">Behavior</a>
-        </nav>
-
-        <div class="settings" id="settings-html">
-          <form class="settings-row settings-row-1 top-label-form normal-labels preprocessor-choice group">
-    </form>
-    </div>
-    </div>
-    </div>    
-  </div>        
+    </div>   
 </header>
+<div data-role="dialog" id="modify-userinfo" class="padding20" data-close-button="false" data-type="info">
+</div>
 <script>
 $(document).ready(function() 
 {
@@ -102,16 +61,27 @@ function profile(mode, userId) {
 	var width = 0;
 	
 	if (mode == 'U') {
-		url = '/userForm?mode=U&userId=' + userId;
+		url = '/userForm?mode='+mode+'&userId=' + userId;
 		titleTxt = '사용자 수정';
 		successTxt = '사용자가 수정되었습니다.';
 		width = 900;
 	} 
-	var html = 'test';
-	var win1 = $('#profile').window({
-		title : titleTxt,
-		contents : html
+	
+	$.ajax({
+		url : url,
+		type : 'post',
+		data : null,
+		success : function(data, status, xhr) {
+			showDialog('modify-userinfo', data);
+		}, error: function (e) { 
+			ajaxErrorHandler(e);
+		},
+		complete : function(xhr, status) {
+			// double click 방지 해제
+			// $(':button', form).attr('disabled', false).removeClass('disabled');
+		}
 	});
+	
 }
 
 function userModal(mode, userId) {

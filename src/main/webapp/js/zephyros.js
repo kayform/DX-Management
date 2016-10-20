@@ -18,7 +18,8 @@ function showDialog(id, content){
         }
 
         if (content != undefined) {
-        	dialog.setContent("<h3>" + "메시지" + "</h3>" + "<p>" + content + "</p>");
+        	// dialog.setContent("<h3>" + "메시지" + "</h3>" + "<p>" + content + "</p>");
+        	dialog.setContent(content);
         }
         dialog.open();
     } else {

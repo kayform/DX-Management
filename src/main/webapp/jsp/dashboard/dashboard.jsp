@@ -1,16 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Metro, a sleek, intuitive, and powerful framework for faster and easier web development for Windows Metro Style.">
-    <meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, metro, front-end, frontend, web development">
-    <meta name="author" content="Sergey Pimenov and Metro UI CSS contributors">
-
-    <title>Template :: Metro UI CSS - The front-end framework for developing projects on the web in Windows Metro Style</title>
-</head>
-<body class="bg-steel">
     <div class="page-content">
         <div class="flex-grid no-responsive-future" style="height: 100%;">
             <div class="row" style="height: 100%">
@@ -116,5 +103,3 @@
             </div>
         </div>
     </div>
-</body>
-</html>
