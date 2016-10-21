@@ -27,42 +27,27 @@ function showDialog(id, content){
     }
 }
 
-zephyros.makeModal = function() {
-
+makeModal = function(content) {
 	var options = arguments[0];
+	options.id = "dialog";
+	if(!options.title) {
+		options.title = "메시지";
+	}
+	if(!options.closeText) {
+		options.closeText = "닫기";
+	}
 	
-	var id = options.id;
-	var title = options.title;
-	var contents = options.contents;
-	var closeText = options.closeText;
-	var buttons = options.buttons;
+	$("#" + options.id).remove();
 	
 	var html = "";
-	//html += "<div class=\"modal color-6 modal-alert\" id=\""+id+"\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\" style=\"display: none;\">";
-	html += "  <div class=\"modal-dialog\">";
-	html += "    <div class=\"modal-content widget widget-3\">";
-	html += "      <div class=\"modal-header widget-head\">";
-	html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\""+closeText+"\"><span aria-hidden=\"true\">&times;</span></button>";
-	html += "        <h4 class=\"modal-title\" id=\""+id+"Label\">"+title+"</h4>";
-	html += "      </div>";
-	html += "      <div class=\"modal-body widget-body\" id=\""+id+"-modal-body\">";
-	html += contents;
-	html += "      </div>";
-	html += "      <div class=\"modal-footer widget-footer\">";
-	if(buttons) {
-		for(var i=0;i<buttons.length;i++) {
-			html += "        <button type=\"button\" id=\""+id+"_btn"+i+"\" modal=\""+id+"\" class=\"btn btn-primary\">"+buttons[i].text+"</button>";
-		}
-	}
-	html += "      </div>";
-	html += "    </div>";
-	html += "  </div>";
-	//html += "</div>";
-	$("#" + id).html(html);
+	html += " <div data-role=\"dialog\" id=\"dialog\" class=\"padding20\" data-close-button=\"true\">";
+	html += " <h1>" + options.title + "</h1>";	
+	html += " <p>" + options.contents + "</p>";	
+	html += " </div>";
 	
-	for(var i=0;i<buttons.length;i++) {
-		$("#"+id+"_btn"+i).on("click", buttons[i].click);
-	}
+	$("#" + options.id).html(html);
+	
+	//showDialog($("#" + options.id), contents);
 };
 
 zephyros.alert = function () {

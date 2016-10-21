@@ -82,5 +82,3 @@
         	This dialog opened with utility function
         </p>
     </div>
-    <div id="profile">
-    </div>
