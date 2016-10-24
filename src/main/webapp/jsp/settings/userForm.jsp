@@ -2,12 +2,23 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
+<style>
+	select,textarea,input[type="text"],input[type="password"],input[type="datetime"],input[type="datetime-local"],input[type="date"],input[type="month"],input[type="time"],input[type="week"],input[type="number"],input[type="email"],input[type="url"],input[type="search"],input[type="tel"],input[type="color"],.uneditable-input{margin-bottom:0px;}
+	
+	#tbody {background-color: rgba(0, 0, 0, 0.5);color:blue;}
+	.table-condensed th {background-color: rgba(0, 0, 0, 0.5); text-align: left;}
+	.table-condensed td {vertical-align: middle;}
+	#pinfoData label {float: left;vertical-align: middle;padding-right:20px;}
+	.input-append .add-on{padding:4px;} 
+	.input-append {
+		margin-bottom: 0px;
+	}
+</style>
 <!-- <div data-role="dialog" id="modify-userinfo" class="padding20" data-close-button="false" data-type="info"> -->
         <form>
             <h3 class="text-light">${userInfo.user_nm}</h4>
-            <hr class="thin bg-grayLighter">
-		<table summary="사용자정보등록/수정" style="width: 100%;" class="table table-bordered table-condensed">
+            <hr class="thin bg-dark">
+		<table summary="사용자정보등록/수정" style="width: 100%;" class="table">
 			<colgroup>
 				<col width="15%">
 				<col width="35%">
@@ -141,9 +152,9 @@
 					<th scope="row">사용자만료일</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<div class="input-append">	
-								<input class="input-control text" type="text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;"/>
-								<span class="add-on glyphicons calendar" ><i></i></span>
+							<div class="input-control text" data-role="datepicker">	
+								<input type="text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;"/>
+								<button class="button"><span class="mif-calendar"></span></button>
 							</div>
 						</c:if>
 						<c:if test="${mode =='V' }">
@@ -185,23 +196,34 @@
 				</tr>			
 			</tbody>
 		</table>
-		<label style="text-align: right; font-weight: bold;">* 필수입력항목</label>            
-            <div class="input-control text">
-                <span class="mif-user prepend-icon"></span>
-            	<input type="text">
-            </div>
-            <div class="input-control text">
-                <span class="mif-lock prepend-icon"></span>
-            	<input type="password">
-            </div>
-            <label class="input-control checkbox small-check">
-                <input type="checkbox">
-                <span class="check"></span>
-            	<span class="caption">Remember me</span>
-            </label>
-            <div class="form-actions">
-                <button class="button">Login</button>
-        		<button class="button link">Cancel</button>
-        	</div>
-        </form>   
+		<label style="text-align: right; font-weight: bold;">* 필수입력항목</label>    
+        </form>
+		<div class="place-right">
+            <button class="button" onclick="saveUserInfo(${userInfo.user_id}, 'U')">저장</button>
+            <button class="button" onclick="alert("test")">취소</button>
+        </div>
+<script>
+	function saveUserInfo(userId, mode) {
+		var url = '/userProcess?mode=';
+		var titleTxt = "";
+		var successTxt = "";
+		
+		if (mode == 'U') {
+			titleTxt = '사용자 수정';
+			successTxt = '사용자가 수정되었습니다.';
+		} 
+		
+		$.ajax({
+			url : '/userProcess?mode='+ mode,
+			type : 'post',
+			data : formData,
+			success : function(data, status, xhr) {
+				modalDialog.hide('dialog-modal');
+				modalDialog.show('dialog-modal',successTxt);
+			}, error: function (e) { 
+				ajaxErrorHandler(e);
+			}
+		});
+	}
+</script>
 <!-- </div>  -->

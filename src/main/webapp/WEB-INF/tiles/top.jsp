@@ -35,7 +35,11 @@
         </div>
     </div>   
 </header>
-<div data-role="dialog" id="modify-userinfo" class="padding20" data-close-button="false" data-type="info">
+<div data-role="dialog" id="dialog" class="padding20" data-close-button="true">
+</div>
+<div data-role="dialog" id="dialog-modal" class="padding20" data-close-button="true" data-overlay="true">
+</div>
+<div id="dialog-common">
 </div>
 <script>
 $(document).ready(function() 
@@ -55,6 +59,7 @@ $(document).ready(function()
 });
 
 function profile(mode, userId) {
+	zephyros.loading.show();
 	var url = '';
 	var titleTxt = '';
 	var successTxt = '';
@@ -72,7 +77,90 @@ function profile(mode, userId) {
 		type : 'post',
 		data : null,
 		success : function(data, status, xhr) {
-			showDialog('modify-userinfo', data);
+			loading.show();
+			//zephyros.loading.hide();
+			modalDialog.show('dialog', data);
+			//showDialog('dialog', data);
+		}, error: function (e) { 
+			ajaxErrorHandler(e);
+		},
+		complete : function(xhr, status) {
+			// double click 방지 해제
+			// $(':button', form).attr('disabled', false).removeClass('disabled');
+		}
+	});
+	
+}
+
+var showDialog2 = function(title, content, width, height) {
+	setTimeout(function() {
+	$.Dialog({
+	shadow: true,
+	overlay: true,
+	draggable: true,
+	title: title,
+	flat: true,
+	content: '',
+	width: width,
+	height: height,
+	onShow: function(_dialog){
+	  var content = _dialog.children('.content');
+	  var html = $(elementName).html();
+	  $.Dialog.title(title);
+	  content.html(html);
+	}});}, 0);
+}
+
+function profile2(mode, userId) {
+	zephyros.loading.show();
+	var url = '';
+	var titleTxt = '';
+	var successTxt = '';
+	var width = 0;
+	
+	if (mode == 'U') {
+		url = '/userForm?mode='+mode+'&userId=' + userId;
+		titleTxt = '사용자 수정';
+		successTxt = '사용자가 수정되었습니다.';
+		width = 900;
+	} 
+	
+	var html = "";
+	$.ajax({
+		url : url,
+		type : 'post',
+		data : null,
+		success : function(data, status, xhr) {
+			zephyros.loading.hide();
+			html = data;
+			
+			$.widget( "metro.dialog")({version: "3.0.14",
+				    options: {
+				        modal: false,
+				        overlay: false,
+				        overlayColor: 'default',
+				        overlayClickClose: false,
+				        type: 'default', // success, alert, warning, info
+				        place: 'center', // center, top-left, top-center, top-right, center-left, center-right, bottom-left, bottom-center, bottom-right
+				        position: 'default',
+				        content: false,
+				        hide: false,
+				        width: 'auto',
+				        height: 'auto',
+				        background: 'default',
+				        color: 'default',
+				        closeButton: false,
+				        windowsStyle: false,
+				        show: false,
+				        href: false,
+				        contentType: 'default', // video
+
+				        _interval: undefined,
+				        _overlay: undefined,
+
+				        onDialogOpen: function(dialog){},
+				        onDialogClose: function(dialog){}
+				    }});
 		}, error: function (e) { 
 			ajaxErrorHandler(e);
 		},

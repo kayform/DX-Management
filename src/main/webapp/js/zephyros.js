@@ -9,8 +9,27 @@ function pushMessage(t, msg){
     });
 }
 
-function showDialog(id, content){
+function showDialog(id, content, color){
 	var dialog = $("#"+id).data('dialog');
+
+	if (!color) {
+		color = "default";
+	}
+	
+	if (dialog.options.background != color) {
+	    if (color.isColor()) {
+	        dialog.element.css({
+	            background: o.background
+	        });
+	    } else {
+	        dialog.element.addClass(color);
+	    }
+	    
+		dialog.options.background = color;
+		//dialog._setOption('background',color);
+	}
+
+	//var dialog = $("#"+id).data('dialog');
     if (!dialog.element.data('opened')) {
         if (dialog == undefined) {
             console.log('Element not contain role dialog! Please add attribute data-role="dialog" to element ' + el);
@@ -27,7 +46,104 @@ function showDialog(id, content){
     }
 }
 
-makeModal = function(content) {
+modalDialog = {
+		show : function() {
+			var id = arguments[0];
+			var content = arguments[1];
+			var color = arguments[2];
+			
+			var dialog = $("#"+id).data('dialog');
+
+			if (!color) {
+				color = "default";
+			}
+			
+			if (dialog.options.background != color) {
+			    if (color.isColor()) {
+			        dialog.element.css({
+			            background: o.background
+			        });
+			    } else {
+			        dialog.element.addClass(color);
+			    }
+			    
+				dialog.options.background = color;
+				//dialog._setOption('background',color);
+			}
+
+			//var dialog = $("#"+id).data('dialog');
+		    if (!dialog.element.data('opened')) {
+		        if (dialog == undefined) {
+		            console.log('Element not contain role dialog! Please add attribute data-role="dialog" to element ' + el);
+		            return false;
+		        }
+
+		        if (content != undefined) {
+		        	// dialog.setContent("<h3>" + "메시지" + "</h3>" + "<p>" + content + "</p>");
+		        	dialog.setContent(content);
+		        }
+		        dialog.open();
+		    } else {
+		        dialog.close();
+		    }
+		},
+		hide : function() {
+			var id = arguments[0];
+			var dialog = $("#"+id).data('dialog');
+			
+			if (dialog.element.data('opened')) {
+				dialog.close();
+			}
+		}		
+}
+
+function showWindow(id, content){
+	var dialog = $("#"+id).data('window');
+    if (!dialog.element.data('opened')) {
+        if (dialog == undefined) {
+            console.log('Element not contain role dialog! Please add attribute data-role="dialog" to element ' + el);
+            return false;
+        }
+
+        if (content != undefined) {
+        	// dialog.setContent("<h3>" + "메시지" + "</h3>" + "<p>" + content + "</p>");
+        	dialog.setContent(content);
+        }
+        dialog.open();
+    } else {
+        dialog.close();
+    }
+}
+
+function showDialogForm(content, type){
+	makeModal(content, type);
+	//showDialog('dialog', content);	
+}
+
+loading = {
+		show : function() {
+/*			var element = $("#dialog-common");
+	        preloader = $("<div/>").addClass("video-preloader")
+            .attr("data-role", "preloader")
+            .attr("data-type", "cycle")
+            .attr("data-style", "color")
+            .appendTo(element);
+	        */
+			//var html = "";
+			//html += " <div data-role=\"preloader\" data-type=\"ring\" data-style=\"color\" style=\"margin: auto\"><\/div>";
+
+			//showDialog('dialog-common');
+		},
+		hide : function() {
+			$("body").data("loading-display", false);
+			$(".loading").remove();
+			$(".loading-overlay").remove();
+		}		
+}
+
+
+
+function makeModal(contents, type) {
 	var options = arguments[0];
 	options.id = "dialog";
 	if(!options.title) {
@@ -39,12 +155,17 @@ makeModal = function(content) {
 	
 	$("#" + options.id).remove();
 	
+	if(!type) {
+		type = "info";
+	}
+	
 	var html = "";
-	html += " <div data-role=\"dialog\" id=\"dialog\" class=\"padding20\" data-close-button=\"true\">";
+	html += " <div data-role=\"dialog\" id=\"dialog\" class=\"padding20\" data-close-button=\"true\"";
+	html += "data-type=\"" + type + "\">";
 	html += " <h1>" + options.title + "</h1>";	
 	html += " <p>" + options.contents + "</p>";	
 	html += " </div>";
-	
+	showMetroSimpleDialog("test");
 	$("#" + options.id).html(html);
 	
 	//showDialog($("#" + options.id), contents);
