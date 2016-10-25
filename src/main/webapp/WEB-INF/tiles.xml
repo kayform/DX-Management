@@ -71,6 +71,11 @@
 		<put-attribute name="content" value="/jsp/dashboard/dashboard.jsp" />
 	</definition>
 	
+	<!-- 포스트그레스큐엘 -->
+	<definition name="acl" extends="base.definition">
+		<put-attribute name="content" value="/jsp/dbmsman/acl.jsp" />
+	</definition>	
+	
 	<!-- 개인 정보 점검 -->
 	<definition name="pimsetting" extends="base.definition">
 		<put-attribute name="content" value="/jsp/pim/pimsetting.jsp" />
