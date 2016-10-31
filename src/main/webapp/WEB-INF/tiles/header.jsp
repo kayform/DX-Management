@@ -15,7 +15,8 @@
     <link href="theme/css/metro-responsive.css" rel="stylesheet">
     <link href="theme/css/metro-schemes.css" rel="stylesheet">
     <link href="theme/css/docs.css" rel="stylesheet">
-
+ 	<link href="css/dialog.css" rel="stylesheet">
+ 
 	<!-- JQuery v2.1.3 -->
     <script src="theme/js/jquery-2.1.3.min.js"></script>
     <script src="theme/js/jquery.dataTables.min.js"></script>

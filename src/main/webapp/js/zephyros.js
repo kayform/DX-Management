@@ -1,5 +1,43 @@
 var zephyros = {};
 
+zephyros.makeModal = function() {
+
+	var options = arguments[0];
+	
+	var id = options.id;
+	var title = options.title;
+	var contents = options.contents;
+	var closeText = options.closeText;
+	var buttons = options.buttons;
+	
+	var html = "";
+	//html += "<div class=\"modal color-6 modal-alert\" id=\""+id+"\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\" style=\"display: none;\">";
+	html += "  <div class=\"modal-dialog\">";
+	html += "    <div class=\"modal-content widget widget-3\">";
+	html += "      <div class=\"modal-header widget-head\">";
+	html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\""+closeText+"\"><span aria-hidden=\"true\">&times;</span></button>";
+	html += "        <h2 class=\"modal-title\" id=\""+id+"Label\">"+title+"</h2>";
+	html += "      </div>";
+	html += "      <div class=\"modal-body widget-body\" id=\""+id+"-modal-body\">";
+	html += contents;
+	html += "      </div>";
+	html += "      <div class=\"modal-footer widget-footer\">";
+	if(buttons) {
+		for(var i=0;i<buttons.length;i++) {
+			html += "        <button type=\"button\" id=\""+id+"_btn"+i+"\" modal=\""+id+"\" class=\"btn btn-primary\">"+buttons[i].text+"</button>";
+		}
+	}
+	html += "      </div>";
+	html += "    </div>";
+	html += "  </div>";
+	//html += "</div>";
+	$("#" + id).html(html);
+	
+	for(var i=0;i<buttons.length;i++) {
+		$("#"+id+"_btn"+i).on("click", buttons[i].click);
+	}
+};
+
 function pushMessage(t, msg){
     var mes = 'Message|' + msg;
     $.Notify({
@@ -9,24 +47,17 @@ function pushMessage(t, msg){
     });
 }
 
-function showDialog(id, content, color){
+function showDialog(id, content, type){
 	var dialog = $("#"+id).data('dialog');
 
-	if (!color) {
-		color = "default";
+	if (!type) {
+		type = "default";
 	}
 	
-	if (dialog.options.background != color) {
-	    if (color.isColor()) {
-	        dialog.element.css({
-	            background: o.background
-	        });
-	    } else {
-	        dialog.element.addClass(color);
-	    }
-	    
-		dialog.options.background = color;
-		//dialog._setOption('background',color);
+	if (dialog.options.type != type) {
+	    dialog.element.removeClass(type);
+	    dialog.element.addClass(type);
+		dialog.options.type = type;
 	}
 
 	//var dialog = $("#"+id).data('dialog');
@@ -37,8 +68,7 @@ function showDialog(id, content, color){
         }
 
         if (content != undefined) {
-        	// dialog.setContent("<h3>" + "메시지" + "</h3>" + "<p>" + content + "</p>");
-        	dialog.setContent(content);
+        	dialog.setContent("<h3>" + "메시지" + "</h3><hr class=\"thin bg-whilte\">" + "<p>" + content + "</p>");
         }
         dialog.open();
     } else {
@@ -48,14 +78,26 @@ function showDialog(id, content, color){
 
 modalDialog = {
 		show : function() {
-			var id = arguments[0];
-			var content = arguments[1];
-			var color = arguments[2];
+			var options = arguments[0];
+        	var id = options.id;
+        	//var buttons = "test";
+        	var title = options.title;
+        	var content = options.contents;
+        	var color = options.color;
+        	
+			//var id = arguments[0];
+			//var content = arguments[1];
+			//var color = arguments[2];
 			
 			var dialog = $("#"+id).data('dialog');
 
 			if (!color) {
 				color = "default";
+			}
+			
+			if (dialog.options.type != 'default') {
+			    dialog.element.removeClass(dialog.options.type);
+				dialog.options.type = 'default';
 			}
 			
 			if (dialog.options.background != color) {
@@ -80,7 +122,29 @@ modalDialog = {
 
 		        if (content != undefined) {
 		        	// dialog.setContent("<h3>" + "메시지" + "</h3>" + "<p>" + content + "</p>");
-		        	dialog.setContent(content);
+		        	var id = "test";
+		        	var closeText = "test";
+		        	var buttons = "test";
+		        	var title = "test";
+		        	var i = "1";
+		        	var html = "";
+		        	//html += "<div class=\"modal color-6 modal-alert\" id=\""+id+"\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\" style=\"display: none;\">";
+		        	html += "  <div class=\"modal-dialog\">";
+		        	html += "    <div class=\"modal-content widget widget-3\">";
+		        	html += "      <div class=\"modal-header widget-head\">";
+		        	//html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\""+closeText+"\"><span aria-hidden=\"true\">&times;</span></button>";
+		        	html += "        <h4 class=\"modal-title\" id=\""+id+"Label\">"+title+"</h4>";
+		        	html += "      </div>";
+		        	html += "      <div class=\"modal-body widget-body\" id=\""+id+"-modal-body\">";
+		        	html += content;
+		        	html += "      </div>";
+		        	html += "      <div class=\"modal-footer widget-footer\">";
+		        	html += "        <button type=\"button\" id=\""+id+"_btn"+i+"\" modal=\""+id+"\" class=\"btn btn-primary\">"+buttons+"</button>";
+		        	html += "      </div>";
+		        	html += "    </div>";
+		        	html += "  </div>";
+		        	
+		        	dialog.setContent(html);
 		        }
 		        dialog.open();
 		    } else {

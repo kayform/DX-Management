@@ -37,7 +37,7 @@
 </header>
 <div data-role="dialog" id="dialog" class="padding20" data-close-button="true">
 </div>
-<div data-role="dialog" id="dialog-modal" class="padding20" data-close-button="true" data-overlay="true">
+<div data-role="dialog" id="dialog-modal" data-close-button="true" data-overlay="true">
 </div>
 <div id="dialog-common">
 </div>
@@ -77,10 +77,15 @@ function profile(mode, userId) {
 		type : 'post',
 		data : null,
 		success : function(data, status, xhr) {
-			loading.show();
-			//zephyros.loading.hide();
-			modalDialog.show('dialog', data);
-			//showDialog('dialog', data);
+			zephyros.loading.show();
+			//modalDialog.show('dialog-modal', data, 'bg-red');
+			
+			modalDialog.show({
+				id : "dialog-modal",
+				title : titleTxt,
+				contents : data,
+				color : 'bg-red'
+			});
 		}, error: function (e) { 
 			ajaxErrorHandler(e);
 		},

@@ -93,7 +93,7 @@
         	if(status == 'true') {
         		//zephyros.alert({contents:"${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}"});
         		//showMetroDialog('#dialog', 'default', ($('<div>').addClass('padding20').html('hi! i am jquery content for dialog ')));        		
-        		showDialog('dialog-alert', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}");
+        		showDialog('dialog-alert', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}", 'alert');
         		//showMetroDialog('#dialog-alert', 'default', ($('<div>').addClass('padding20').html("${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}")));
         		//pushMessage('info', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}");
         	}
@@ -165,7 +165,7 @@
             </div>
         </form>
     </div>
-    <div data-role="dialog" id="dialog-alert" class="padding20" data-close-button="true" data-type="alert">
+    <div data-role="dialog" id="dialog-alert" class="padding20" data-close-button="true" data-type="alert" data-overlay="true">
     	<h1>test</h1>
         <p>
         	This dialog opened with utility function
