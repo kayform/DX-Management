@@ -1,5 +1,6 @@
 package com.k4m.eXperdb.webconsole.dbmsman;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -49,6 +51,8 @@ import com.k4m.eXperdb.webconsole.util.DateUtils;
 
 
 
+
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -61,6 +65,17 @@ public class PgmanController {
 
 	@Autowired
 	private PgmanService pgmanService;
+	
+	
+    @RequestMapping(value="/header.html")
+    public ModelAndView getHeader(HttpServletResponse response) throws IOException{
+        return new ModelAndView("header");
+    }
+
+    @RequestMapping(value="/footer.html")
+    public ModelAndView getFooter(HttpServletResponse response) throws IOException{
+        return new ModelAndView("footer");
+    }
 	
 //	HashMap<Integer, Object> hba = new HashMap<Integer, Object>();
 	HashMap<Integer, pgHbaConfigLine> hba = new LinkedHashMap<Integer, pgHbaConfigLine>();
@@ -117,18 +132,12 @@ public class PgmanController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/aclForm")
-	public ModelAndView userForm(Model model, HttpSession session, HttpServletRequest request, 
-			@RequestParam(value = "userId", defaultValue = "") String userId,
+	public ModelAndView aclForm(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "mode", defaultValue = "") String mode) throws Exception {		
 		ModelAndView mav = new ModelAndView();
 		Map<String, Object> userInfo = new HashMap<String, Object>();
-		if (!(userId == null || userId.equals(""))) {			
-			HashMap<String, String> param = new HashMap<String, String>();
-			param.put("user_id", userId);
-			param.put("mode", mode);
-//			userInfo = settingsService.selectUser(param);
-//			mav.addObject("userInfo", userInfo);
-		} 
+		HashMap<String, String> param = new HashMap<String, String>();
+		param.put("mode", mode);
 		mav.addObject("mode", mode);
 		mav.setViewName("aclForm");
 		return mav;
@@ -202,13 +211,14 @@ public class PgmanController {
 			Map<String, String> aclLine = new LinkedHashMap<String, String>();
 			if(config.isValid() || (!config.isValid() && !config.isComment()) && !(config.getText()).isEmpty()){
 				config.setItemNumber(rowCount++);
-				aclLine.put("Enable", config.isComment() ? "" : "V");
+				aclLine.put("Enable", config.isComment() ? "" : "1");
 				aclLine.put("Type", config.getConnectType());
 				aclLine.put("Database", config.getDatabase());
 				aclLine.put("User", config.getUser());
 				aclLine.put("Ip", config.getIpaddress());
 				aclLine.put("Method", config.getMethod());
 				aclLine.put("Option", config.getOption());
+				aclLine.put("Changed", "");
 				array.add(aclLine);
 			}
 			hba.put(i, config);

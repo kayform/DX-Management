@@ -75,6 +75,9 @@
 	<definition name="acl" extends="base.definition">
 		<put-attribute name="content" value="/jsp/dbmsman/acl.jsp" />
 	</definition>	
+	<definition name="aclForm" template="/jsp/dbmsman/aclForm.jsp">
+	</definition>
+	
 	
 	<!-- 개인 정보 점검 -->
 	<definition name="pimsetting" extends="base.definition">

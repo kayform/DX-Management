@@ -63,17 +63,17 @@
 							</div>
 						</div>
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
-							<button id="enrollBtn" class="button primary" onclick="javascript:aclModal('S',selectServerName.value);"><span class="mif-floppy-disk"></span> 저장</button>
+							<button id="saveBtn" class="button primary" onclick="javascript:aclModal('S',selectServerName.value);"><span class="mif-floppy-disk"></span> 저장</button>
 						</div>
 		
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
-							<button id="enrollBtn" class="button success" onclick="javascript:aclModal('I','');"><span class="mif-plus"></span> 추가</button>
+ 							<button id="addBtn" class="button success" onclick="javascript:aclModal('I',selectServerName.value);"><span class="mif-plus"></span> Add</button>
 						</div>
 		
 						<div class="clearfix"></div>
 					</div>				
  				 </div>
- 				 <table id=acllisttab class="dataTable"  cellspacing="0" width="100px" >
+ 				 <table id="acllisttab" class="cell-border dataTable no-footer" cellspacing="0" width="100%">
                    <thead>
                    <tr>
 						<th style="width:0">Seq</th>
@@ -84,18 +84,65 @@
 						<th style="width:17%">IP-Address</th>
 						<th style="width:12%">Method</th>
 						<th style="width:12%">Option</th>
-						<th style="visibility:hidden;display:none;">Changed</th>
-						<th style="width:0">Edit</th>
+ 						<th style="visibility:hidden;display:none;">Changed</th>
+						<th style="width:10pt"></th>
                    </tr>
                    </thead>
+
                </table> 				 
                 </div>
             </div>
-        </div>		
-    </div>    
-    
-    
+        </div>
+        <div data-role="dialog" id="modify-aclinfo" class="padding20" data-close-button="false" data-type="success" data-width="500" data-height="400" data-overlay="true">	
+    </div>
+
 <script type="text/javascript">
+
+    
+function fnClickAddRow() {
+	var table = $('#acllisttab').DataTable();
+//	table.draw();
+
+   table.fnAddData({
+		    "Enable"   :  "1",
+		    "Enable"   :  "2",
+		    "Type"     :  "3",
+		    "Database" :  "1",
+		    "User"     :  "2",
+		    "Ip"       :  "3",
+		    "Method"   :  "1",
+		    "Option"   :  "2",
+		    "Changed"  :  "3"} 
+ ).draw();
+
+
+
+/* 	table.row.add({
+    "Enable"   :  "1",
+    "Enable"   :  "2",
+    "Type"     :  "3",
+    "Database" :  "1",
+    "User"     :  "2",
+    "Ip"       :  "3",
+    "Method"   :  "1",
+    "Option"   :  "2",
+    "Changed"  :  "3"
+	}); */
+}
+    
+/* function fnClickAddRow() {
+    $('#acllisttab').ataTable().fnAddData(
+    	"1",   
+    	".2",  
+    	".3",  
+    	".1",  
+    	".2",  
+    	".3",  
+    	".1",  
+    	".2",  
+    	".3",  
+    	".4" );
+} */
 
 function aclModal(mode, serverId) {
 	zephyros.loading.show();
@@ -129,20 +176,18 @@ function aclModal(mode, serverId) {
 	var html = '';
 		if (mode == 'V') {		
  			zephyros.loading.show();// 모달이 아닌 경우
- 			
+			
  	 		var table = $('#acllisttab').DataTable({
- 	 		 	display: false,
- 	 		 	scrollY: 200,
- 	 		 	serverSide : true,
- 	 		 	paging: false,
- 	 		 	scrollCollapse: true,
- 	 		 	bInfo: false,
- 				"autoWidth" : false,
+ 	 			retrieve: false,
+ 	 			scrollY: 200,
+ 	 			bscrollCollapse: false,
+ 	 			paging: false,
+ 	 			serverSide : true,
+ 				"autoWidth" : true,
  				"processing": true,
  				"ordering": false,
  				"serverSide": true,
  				"searching": false,
- 				"lengthMenu" : [10,50,100],
 	 	        'ajax': {
 	 	            'contentType': 'application/json',
 	 	            'dataType': 'json',
@@ -153,50 +198,42 @@ function aclModal(mode, serverId) {
  	 					return json;
   	 				}
  	 		    },
-	 	        "columns" : [
-	 			{data : 'Enable'},
-	 			{data : 'Enable'}, 
-		        {data : 'Type'}, 
-		        {data : 'Database'}, 
-		        {data : 'User'}, 
-		        {data : 'Ip'}, 
-		        {data : 'Method'}, 
-		        {data : 'Option'}
-		        ], 	 
-		        columnDefs: [{
- 	 			}],
-	 	    });
+	 	        "columns" : 
+		 			[
+			 			{"data" : 'Enable', "width": "0pt",
+			 				render: function (data, type, row, meta) {
+			 			        return meta.row + meta.settings._iDisplayStart + 1;
+			 			    }
+			 			},
+			 			{"data" : 'Enable', "width": "1%",
+			 	            render: function ( data, type, row ) {
+			 	                if ( type === 'display' ) {
+			 	                	if(data == "1")
+			 	                    	return '<input type="checkbox" disabled checked class="checkbox_check">';
+			 	                    else
+			 	                    	return '<input type="checkbox" disabled class="checkbox_check">';
+			 	                }
+			 	                return data;
+			 	            },
+			 			}, 
+				        {"data" : 'Type', "width": "5%",
+			 				render: function (data, type, row, meta) {
+		 			    	    return data;
+		 			    	}
+			 			},
+				        {"data" : 'Database', "width": "17%"}, 
+				        {"data" : 'User', "width": "17%"}, 
+				        {"data" : 'Ip', "width": "17%"},
+				        {"data" : 'Method', "width": "12%"}, 
+				        {"data" : 'Option', "width": "12%"},
+				        {"data" : 'Changed', "width": "0%"},
+				        {"data" : 'Changed', "width": "0%"}
+			        ],
 
-/* 	 		$.ajax({
-				url : '/aclSearch?serverId=' + serverId,
-				dataType : 'json',
-				type : 'post',
-				data : $('#formId').serializeArray(),
-				success : function(data, status, xhr) {
-	   				zephyros.loading.hide();
-					console.log(data);
-					var str ="";
-	 				$.each(data,function(i, item){
-	                    //데이터 인풋
-		                  str += "<tr>";
-		                  str +="<td>"+ i +"</td>" ;  
-		                  str +="<td>"+ item.Enable +"</td>" ;  
-		                  str +="<td>"+ item.Type +"</td>" ;  
-		                  str +="<td>"+ item.Database +"</td>" ;  
-		                  str +="<td>"+ item.User +"</td>" ;  
-		                  str +="<td>"+ item.Ip +"</td>" ;  
-		                  str +="<td>"+ item.Method +"</td>" ;  
-	 	                  str +="<td>"+ (item.Option ? item.Option : "") +"</td>" ; 
-	 	                  str +="<td style='display:none'>"+ 0 + "</td>" ; 
-		                  str += "<td><a id=\"editBtn\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"수정\" class=\"btn-action glyphicons pencil btn-primary\" href=\"javascript:aclModal('U','${item.acl_id}');\"><i></i></a><a id=\"deleteBtn\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"삭제\" class=\"btn-action glyphicons remove_2 btn-danger\" href=\"javascript:deleteAcl('${item.acl_id}');\"><i></i></a></td>";
-		                  str +="</tr>";
-					}); 
-					$('#acllist').html(str);
-	
-				}, error: function (e) { 
-					ajaxErrorHandler(e);
-				} 
-			}); */
+	 	    });
+ 			
+ 	 		table.column( 8 ).visible( false );
+
 		 } else if (mode == 'S') {		
 	 		zephyros.loading.show();// 모달이 아닌 경우
 			var head = [],
@@ -241,6 +278,23 @@ function aclModal(mode, serverId) {
 				});
 
 		} else {
+			$.ajax({
+				url : url,
+				type : 'post',
+				data : null,
+				success : function(data, status, xhr) {
+					showDialog('modify-aclinfo', data);
+				}, error: function (e) { 
+					ajaxErrorHandler(e);
+				},
+				complete : function(xhr, status) {
+					// double click 방지 해제
+					// $(':button', form).attr('disabled', false).removeClass('disabled');
+				}
+			});
+			
+			
+/* 			
 		$.ajax({
 			url : url,
 			type : 'post',
@@ -282,7 +336,8 @@ function aclModal(mode, serverId) {
 							$("#aclDialog").modal("hide");
 						}
 					} ]
-				}).modal("show");
+				});				
+				 $("#aclDialog").modal("show");
 			}, error: function (e) { 
 				ajaxErrorHandler(e);
 			},
@@ -290,11 +345,11 @@ function aclModal(mode, serverId) {
 				// double click 방지 해제
 				// $(':button', form).attr('disabled', false).removeClass('disabled');
 			}
-		});
+		}); */
 	}
 }
 
-//사용자 삭제
+/* //사용자 삭제
 function deleteServer(server_id) {
 	var form = $("#form01");
 	zephyros.confirm({
@@ -321,6 +376,6 @@ function deleteServer(server_id) {
 			zephyros.loading.hide();
 		}
 	});
-}
+} */
 
 </script>
