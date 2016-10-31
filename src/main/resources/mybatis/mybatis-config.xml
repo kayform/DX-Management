@@ -8,6 +8,9 @@
 		<mapper resource="mybatis/user-mapper.xml"/>
 		<!-- <mapper resource="/mybatis/base-mapper.xml"/> -->
 		
+		<!-- 접근제어 -->
+		<mapper resource="mybatis/pgman-mapper.xml"/>		
+		
 		<!-- 공통 -->
 		<mapper resource="mybatis/common-mapper.xml"/>
 	</mappers>
