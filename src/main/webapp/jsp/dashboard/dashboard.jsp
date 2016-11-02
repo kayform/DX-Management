@@ -1,3 +1,6 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
     <div class="page-content">
         <div class="flex-grid no-responsive-future" style="height: 100%;">
             <div class="row" style="height: 100%">
@@ -43,7 +46,7 @@
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
                     <h1 class="text-light">Virtual machines <span class="mif-drive-eta place-right"></span></h1>
                     <hr class="thin bg-grayLighter">
-                    <button class="button primary" onclick="pushMessage('info')"><span class="mif-plus"></span> Create...</button>
+                    <button class="button primary" onclick="zephyros.showDialog(dialog_info, '야호')"><span class="mif-plus"></span> Create...</button>
                     <button class="button success" onclick="pushMessage('success')"><span class="mif-play"></span> Start</button>
                     <button class="button warning" onclick="pushMessage('warning')"><span class="mif-loop2"></span> Restart</button>
                     <button class="button alert" onclick="pushMessage('alert')">Stop all machines</button>
