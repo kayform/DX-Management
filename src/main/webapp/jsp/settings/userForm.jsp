@@ -16,8 +16,6 @@
 </style>
 <!-- <div data-role="dialog" id="modify-userinfo" class="padding20" data-close-button="false" data-type="info"> -->
         <form id="form02" name="form02"  method="post">
-            <h3 class="text-light">${userInfo.user_nm}</h4>
-            <hr class="thin bg-dark">
 		<table summary="사용자정보등록/수정" style="width: 100%;" class="table">
 			<colgroup>
 				<col width="15%">
@@ -152,7 +150,8 @@
 					<th scope="row">사용자만료일</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<div class="input-control text" data-role="datepicker">	
+							<!-- <div class="input-control text" data-role="datepicker"> -->
+							<div class="input-control text">	
 								<input type="text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;"/>
 								<button class="button"><span class="mif-calendar"></span></button>
 							</div>
@@ -198,11 +197,8 @@
 		</table>
 		<label style="text-align: right; font-weight: bold;">* 필수입력항목</label>    
         </form>
-		<div class="place-right">
-            <button class="button" id='saveButton'>저장</button>
-            <button class="button" id='closeButton'>닫기</button>
-        </div>
 <script>
+
 /* $(document).ready(function() {
 	var date = new Date();
 	var now = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
@@ -362,36 +358,5 @@ function selected(target, value) {
 	    }
 	}
 }	
-
-	$("#saveButton, #closeButton").on('click', function(){
-	  var button = $(this);
-	  if (button.attr('id') == 'saveButton') {
-			var url = '/userProcess?mode=';
-			var mode = '${mode}';
-			var titleTxt = "";
-			var successTxt = "";
-			
-			if (mode == 'U') {
-				titleTxt = '사용자 수정';
-				successTxt = '사용자가 수정되었습니다. ';
-			} 
-			var formData = $("#form02").serialize();
-			
-			$.ajax({
-				url : '/userProcess?mode='+ mode,
-				type : 'post',
-				data : formData,
-				success : function(data, status, xhr) {
-					modalDialog.hide('dialog-modal');
-					showDialog('dialog-modal',successTxt, 'info');
-				}, error: function (e) { 
-					ajaxErrorHandler(e);
-				}
-			});
-	  } else {
-		  modalDialog.hide('dialog-modal');
-	  }
-	});
-
 </script>
 <!-- </div>  -->

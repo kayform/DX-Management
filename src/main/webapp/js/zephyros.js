@@ -1,5 +1,51 @@
 var zephyros = {};
 
+zephyros.showDatePicker = function(id){
+    $( "#" + id ).datepicker({
+        showOn: "button",
+        buttonImage: "images/calendar.gif",
+        buttonImageOnly: true,
+        buttonText: "Select date"
+      });
+}
+
+zephyros.showDialog = function(dialog, content){	
+	$("#" + dialog[0].id).empty(); 
+	$("#" + dialog[0].id).append(content);
+	dialog.dialog('open');
+}
+
+zephyros.callAjax = function(){
+	var options = arguments[0];
+	var url = options.url;
+	var type = options.type;
+	var data = options.data;
+	var success = options.success;
+	var error = options.error;
+	var complete = options.complete;
+	
+	if (!error) {
+		erorr = function (e) { 
+			ajaxErrorHandler(e);
+		};
+	}
+	
+	if (!complete) {
+		complete = function (e) { 
+			//$(':button', form).attr('disabled', false).removeClass('disabled');
+		};
+	}
+	
+	$.ajax({
+		url : url,
+		type : 'post',
+		data : null,
+		success : success,
+		error : error, 
+		complete : complete
+	});
+}
+
 zephyros.makeModal = function() {
 
 	var options = arguments[0];
@@ -46,7 +92,7 @@ function pushMessage(t, msg){
         type: t
     });
 }
-
+/*
 function showDialog(id, content, type){
 	var dialog = $("#"+id).data('dialog');
 
@@ -75,7 +121,7 @@ function showDialog(id, content, type){
         dialog.close();
     }
 }
-
+*/
 modalDialog = {
 		show : function() {
 			var options = arguments[0];

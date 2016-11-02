@@ -19,7 +19,13 @@
 
     <link href="theme/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="theme/css/select.dataTables.min.css" rel="stylesheet">
+	
+	<!-- JQuery UI -->
+	<link href="theme/script/jquery-ui/jquery-ui.css" rel="stylesheet">
+	<link href="theme/script/jquery-ui/jquery-ui.structure.css" rel="stylesheet">
+	<link href="theme/script/jquery-ui/jquery-ui.theme.css" rel="stylesheet">
 
+	
 	<!-- JQuery v2.1.3 -->
     <script src="theme/js/jquery-2.1.3.min.js"></script>
     <script src="theme/js/jquery.dataTables.min.js"></script>
@@ -34,7 +40,9 @@
     <script src="theme/js/docs.js"></script>
     <script src="theme/js/prettify/run_prettify.js"></script>
     <script src="theme/js/ga.js"></script>
-
+	<!--  JQuery UI -->
+	<script src="theme/script/jquery-ui/jquery-ui.js"></script>	
+	
 	<!-- Themer -->
 	<script>
 	var themerPrimaryColor = '#00aba9';
@@ -80,10 +88,5 @@
                 }
             })
         })
+         
     </script>
-    <div data-role="dialog" id="dialog-alert" class="padding20" data-close-button="true" data-type="alert">
-    	<h1>test</h1>
-        <p>
-        	This dialog opened with utility function
-        </p>
-    </div>

@@ -35,12 +35,14 @@
         </div>
     </div>   
 </header>
-<div data-role="dialog" id="dialog" class="padding20" data-close-button="true">
-</div>
-<div data-role="dialog" id="dialog-modal" data-close-button="true" data-overlay="true">
-</div>
-<div id="dialog-common">
-</div>
+<div id="dialog_info">
+  		<form>
+  		</form>		
+</div> 
+<div id="dialog_profile">
+  <form>
+  </form>
+</div> 
 <script>
 $(document).ready(function() 
 {
@@ -58,12 +60,68 @@ $(document).ready(function()
 	}
 });
 
+dialog_info = $("#dialog_info").dialog({
+	  autoOpen: false,
+	  modal: true,
+	  title: "메시지",
+	  close: function() {
+	    //form[0].reset();
+	    //allFields.removeClass("ui-state-error");
+		$("#dialog_info").empty();
+	  }
+	});
+	
+dialog_profile = $("#dialog_profile").dialog({
+	  autoOpen: false,
+	  height: 650,
+	  width: 1250,
+	  modal: true,
+	  title: "사용자수정",
+	  buttons: {
+	    "저장" : function() {
+			var url = '/userProcess?mode=';
+			var mode = 'U';
+			var titleTxt = "";
+			var successTxt = "";
+			
+			if (mode == 'U') {
+				titleTxt = '사용자 수정';
+				successTxt = '사용자가 수정되었습니다. ';
+			} 
+			var formData = $("#form02").serialize();
+			
+			$.ajax({
+				url : '/userProcess?mode='+ mode,
+				type : 'post',
+				data : formData,
+				success : function(data, status, xhr) {
+					dialog_profile.dialog("close");
+					zephyros.showDialog(dialog_info,  successTxt)
+				}, error: function (e) { 
+					ajaxErrorHandler(e);
+				}
+			});
+	    },
+	    "취소": function() {
+	    	dialog_profile.dialog("close");
+	      $("#dialog_profile").empty();
+	    }
+	  },
+	  close: function() {
+	    //form[0].reset();
+	    //allFields.removeClass("ui-state-error");
+		$("#dialog_profile").empty();
+	  }
+	});
+
 function profile(mode, userId) {
 	zephyros.loading.show();
 	var url = '';
 	var titleTxt = '';
 	var successTxt = '';
 	var width = 0;
+	var success = null;
+	var error = null;
 	
 	if (mode == 'U') {
 		url = '/userForm?mode='+mode+'&userId=' + userId;
@@ -72,20 +130,26 @@ function profile(mode, userId) {
 		width = 900;
 	} 
 	
+	//callAjax(url, 'post', null);
+	
+	zephyros.callAjax({
+		url : url,
+		type : 'post',
+		data : null,
+		success : function(data, status, xhr) {
+			zephyros.loading.show();
+			zephyros.showDialog(dialog_profile, data);
+		}
+	});
+	
+	/*
 	$.ajax({
 		url : url,
 		type : 'post',
 		data : null,
 		success : function(data, status, xhr) {
 			zephyros.loading.show();
-			//modalDialog.show('dialog-modal', data, 'bg-red');
-			
-			modalDialog.show({
-				id : "dialog-modal",
-				title : titleTxt,
-				contents : data,
-				color : 'bg-red'
-			});
+			showDialog(dialog_profile, data);
 		}, error: function (e) { 
 			ajaxErrorHandler(e);
 		},
@@ -94,227 +158,6 @@ function profile(mode, userId) {
 			// $(':button', form).attr('disabled', false).removeClass('disabled');
 		}
 	});
-	
-}
-
-var showDialog2 = function(title, content, width, height) {
-	setTimeout(function() {
-	$.Dialog({
-	shadow: true,
-	overlay: true,
-	draggable: true,
-	title: title,
-	flat: true,
-	content: '',
-	width: width,
-	height: height,
-	onShow: function(_dialog){
-	  var content = _dialog.children('.content');
-	  var html = $(elementName).html();
-	  $.Dialog.title(title);
-	  content.html(html);
-	}});}, 0);
-}
-
-function profile2(mode, userId) {
-	zephyros.loading.show();
-	var url = '';
-	var titleTxt = '';
-	var successTxt = '';
-	var width = 0;
-	
-	if (mode == 'U') {
-		url = '/userForm?mode='+mode+'&userId=' + userId;
-		titleTxt = '사용자 수정';
-		successTxt = '사용자가 수정되었습니다.';
-		width = 900;
-	} 
-	
-	var html = "";
-	$.ajax({
-		url : url,
-		type : 'post',
-		data : null,
-		success : function(data, status, xhr) {
-			zephyros.loading.hide();
-			html = data;
-			
-			$.widget( "metro.dialog")({version: "3.0.14",
-				    options: {
-				        modal: false,
-				        overlay: false,
-				        overlayColor: 'default',
-				        overlayClickClose: false,
-				        type: 'default', // success, alert, warning, info
-				        place: 'center', // center, top-left, top-center, top-right, center-left, center-right, bottom-left, bottom-center, bottom-right
-				        position: 'default',
-				        content: false,
-				        hide: false,
-				        width: 'auto',
-				        height: 'auto',
-				        background: 'default',
-				        color: 'default',
-				        closeButton: false,
-				        windowsStyle: false,
-				        show: false,
-				        href: false,
-				        contentType: 'default', // video
-
-				        _interval: undefined,
-				        _overlay: undefined,
-
-				        onDialogOpen: function(dialog){},
-				        onDialogClose: function(dialog){}
-				    }});
-		}, error: function (e) { 
-			ajaxErrorHandler(e);
-		},
-		complete : function(xhr, status) {
-			// double click 방지 해제
-			// $(':button', form).attr('disabled', false).removeClass('disabled');
-		}
-	});
-	
-}
-
-function userModal(mode, userId) {
-	zephyros.loading.show();
-	var url = '';
-	var titleTxt = '';
-	var successTxt = '';
-	var width = 0;
-	
-	if (mode == 'U') {
-		url = '/userForm?mode=U&userId=' + userId;
-		titleTxt = '사용자 수정';
-		successTxt = '사용자가 수정되었습니다.';
-		width = 900;
-	} 
-
-	var html = '';
-	$.ajax({
-		url : url,
-		type : 'post',
-		data : null,
-		success : function(data, status, xhr) {
-			zephyros.loading.hide();
-			html = data;
-			zephyros.dialog({
-				id : "userDialog",
-				title : titleTxt,
-				contents : html,
-				width : width,
-				buttons : [ {
-					text : "저장",
-					click : function() {
-						var formData = $("#form02").serialize();
-						//if (validationCheack()) {
-							$.ajax({
-								url : '/userProcess?mode='+ mode,
-								type : 'post',
-								data : formData,
-								success : function(data, status, xhr) {
-									$("#userDialog").modal("hide");
-									zephyros.alert({
-										contents : successTxt,
-										close : function() {
-											window.location.href ='/user';
-										}
-									});
-								}, error: function (e) { 
-									ajaxErrorHandler(e);
-								}
-							});
-						//}							
-					}
-				}, {
-					text : "닫기",
-					click : function() {
-						$("#userDialog").modal("hide");
-					}
-				} ]
-			}).modal("show");
-		}, error: function (e) { 
-			ajaxErrorHandler(e);
-		},
-		complete : function(xhr, status) {
-			// double click 방지 해제
-			// $(':button', form).attr('disabled', false).removeClass('disabled');
-		}
-	});
-	
-}
-
-function passwordModal(mode, userId) {
-	zephyros.loading.show();
-	var url = '';
-	var titleTxt = '';
-	var successTxt = '';
-	var width = 0;
-	url = '/userPasswordForm?mode=U&userId=' + userId;
-	titleTxt = '비밀번호 수정';
-	successTxt = '비밀번호가 수정되었습니다.';
-	width = 500;
-
-	var html = '';
-
-	$.ajax({
-		url : url,
-		type : 'post',
-		data : null,
-		success : function(data, status, xhr) {
-			zephyros.loading.hide();
-			html = data;
-			zephyros.dialog({
-				id : "passwordDialog",
-				title : titleTxt,
-				contents : html,
-				width : width,
-				buttons : [ {
-					text : "저장",
-					click : function() {
-						if ($("#passwordForm").valid()) {
-							var passwordFormData = $("#passwordForm").serialize();
-							var formData = $("#form02").serialize();
-							var data = passwordFormData + '&' + formData;
-							$.ajax({
-								url : '/userPasswordProcess?mode=U',
-								type : 'post',
-								data : data,
-								success : function(data, status, xhr) {
-									$("#passwordDialog").modal("hide");
-									zephyros.alert({
-										contents : successTxt,
-										close : function() {
-											$("#userDialog").modal("show");
-										}
-									});
-								}, error: function (e) { 
-									ajaxErrorHandler(e);
-								}
-							});
-						}
-					}
-				}, {
-					text : "닫기",
-					click : function() {
-						$("#passwordDialog").modal("hide");
-						$("#userDialog").modal("show");
-					}
-				} ]
-			}).modal("show");
-		}, error: function (e) { 
-			ajaxErrorHandler(e);
-		},
-		complete : function(xhr, status) {
-			// double click 방지 해제
-			// $(':button', form).attr('disabled', false).removeClass('disabled');
-		}
-	});
-}
-
-function passwordCahnge(userId) {
-	$("#userDialog").modal("hide");
-	passwordModal("U", userId);
+	*/
 }
 </script>
