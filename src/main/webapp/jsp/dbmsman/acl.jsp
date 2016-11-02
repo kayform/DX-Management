@@ -65,9 +65,17 @@
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
 							<button id="saveBtn" class="button primary" onclick="javascript:aclModal('S',selectServerName.value);"><span class="mif-floppy-disk"></span> 저장</button>
 						</div>
+						
+						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
+							<button id="removeBtn" class="button alert"><span class="mif-cross"></span> 삭제</button>
+						</div>
 		
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
- 							<button id="addBtn" class="button success" onclick="javascript:aclModal('I',selectServerName.value);"><span class="mif-plus"></span> Add</button>
+ 							<button id="addBtn" class="button success" onclick="javascript:aclModal('U',selectServerName.value);"><span class="mif-plus"></span> 편집</button>
+						</div>
+
+						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
+ 							<button id="addBtn" class="button success" onclick="javascript:aclModal('I',selectServerName.value);"><span class="mif-plus"></span> 등록</button>
 						</div>
 		
 						<div class="clearfix"></div>
@@ -85,7 +93,6 @@
 						<th style="width:12%">Method</th>
 						<th style="width:12%">Option</th>
  						<th style="visibility:hidden;display:none;">Changed</th>
-						<th style="width:10pt"></th>
                    </tr>
                    </thead>
 
@@ -93,70 +100,27 @@
                 </div>
             </div>
         </div>
-        <div data-role="dialog" id="modify-aclinfo" class="padding20" data-close-button="false" data-type="success" data-width="500" data-height="400" data-overlay="true">	
+        <div class="modal fade color-10 in" id="modify-aclinfo" role="dialog" data-backdrop="static" style="display: none;"></div>
+        <!-- <div data-role="dialog" id="modify-aclinfo" data-close-button="true" data-overlay="true"></div> -->
     </div>
 
 <script type="text/javascript">
-
-    
-function fnClickAddRow() {
-	var table = $('#acllisttab').DataTable();
-//	table.draw();
-
-   table.fnAddData({
-		    "Enable"   :  "1",
-		    "Enable"   :  "2",
-		    "Type"     :  "3",
-		    "Database" :  "1",
-		    "User"     :  "2",
-		    "Ip"       :  "3",
-		    "Method"   :  "1",
-		    "Option"   :  "2",
-		    "Changed"  :  "3"} 
- ).draw();
-
-
-
-/* 	table.row.add({
-    "Enable"   :  "1",
-    "Enable"   :  "2",
-    "Type"     :  "3",
-    "Database" :  "1",
-    "User"     :  "2",
-    "Ip"       :  "3",
-    "Method"   :  "1",
-    "Option"   :  "2",
-    "Changed"  :  "3"
-	}); */
-}
-    
-/* function fnClickAddRow() {
-    $('#acllisttab').ataTable().fnAddData(
-    	"1",   
-    	".2",  
-    	".3",  
-    	".1",  
-    	".2",  
-    	".3",  
-    	".1",  
-    	".2",  
-    	".3",  
-    	".4" );
-} */
-
+        
 function aclModal(mode, serverId) {
-	zephyros.loading.show();
 	var url = '';
 	var titleTxt = '';
 	var successTxt = '';
 	var width = 0;
 	if (mode == 'U') {
-		url = '/aclForm?mode=U&serverId=' + serverId;
+		var aclId;
+		var uTable = $('#acllisttab').DataTable();
+		uTable.row('.selected');
+		url = '/aclForm?mode=U&aclId=' + aclId;
 		titleTxt = '사용자 수정';
 		successTxt = '사용자가 수정되었습니다.';
 		width = 1000;
 	} else if (mode == 'V') {
-			url = '/aclForm?mode=V&serverId=' + serverId;
+		url = '/aclForm?mode=V&serverId=' + serverId;
 		titleTxt = '사용자 조회';
 		successTxt = '사용자가 수정되었습니다.';
 		width = 1000; 
@@ -164,180 +128,79 @@ function aclModal(mode, serverId) {
 	} else if (mode == 'I') {
 		url = '/aclForm?mode=I';
 		titleTxt = '접근권한 추가';
-		successTxt = '접근권한이 추가되었습니다.'
-		width = 400;
+		successTxt = '접근권한이 추가되었습니다.';
+		width = 700;
 	}else {
 		url = '/aclForm?mode=S';
 		titleTxt = '접근권한 등록';
-		successTxt = '접근권한이 저장되었습니다.'
+		successTxt = '접근권한이 저장되었습니다.';
 		width = 400;
 	}
 
 	var html = '';
-		if (mode == 'V') {		
- 			zephyros.loading.show();// 모달이 아닌 경우
-			
- 	 		var table = $('#acllisttab').DataTable({
- 	 			retrieve: false,
- 	 			scrollY: 200,
- 	 			bscrollCollapse: false,
- 	 			paging: false,
- 	 			serverSide : true,
- 				"autoWidth" : true,
- 				"processing": true,
- 				"ordering": false,
- 				"serverSide": true,
- 				"searching": false,
-	 	        'ajax': {
-	 	            'contentType': 'application/json',
-	 	            'dataType': 'json',
-	 	            'url': '/aclSearch?serverId=' + serverId,
-	 	            'type': 'POST',
-  	 				'dataSrc': function(json){
-// 	 					console.log(json);
- 	 					return json;
-  	 				}
- 	 		    },
-	 	        "columns" : 
-		 			[
-			 			{"data" : 'Enable', "width": "0pt",
-			 				render: function (data, type, row, meta) {
-			 			        return meta.row + meta.settings._iDisplayStart + 1;
-			 			    }
-			 			},
-			 			{"data" : 'Enable', "width": "1%",
-			 	            render: function ( data, type, row ) {
-			 	                if ( type === 'display' ) {
-			 	                	if(data == "1")
-			 	                    	return '<input type="checkbox" disabled checked class="checkbox_check">';
-			 	                    else
-			 	                    	return '<input type="checkbox" disabled class="checkbox_check">';
-			 	                }
-			 	                return data;
-			 	            },
-			 			}, 
-				        {"data" : 'Type', "width": "5%",
-			 				render: function (data, type, row, meta) {
-		 			    	    return data;
-		 			    	}
-			 			},
-				        {"data" : 'Database', "width": "17%"}, 
-				        {"data" : 'User', "width": "17%"}, 
-				        {"data" : 'Ip', "width": "17%"},
-				        {"data" : 'Method', "width": "12%"}, 
-				        {"data" : 'Option', "width": "12%"},
-				        {"data" : 'Changed', "width": "0%"},
-				        {"data" : 'Changed', "width": "0%"}
-			        ],
-
-	 	    });
- 			
- 	 		table.column( 8 ).visible( false );
-
-		 } else if (mode == 'S') {		
-	 		zephyros.loading.show();// 모달이 아닌 경우
-			var head = [],
-		    i = 0,
-		    tableObj = {myrows: []};
-			$.each($("#acllisttab thead th"), function() {
-			    head[i++] = $(this).text();
-			});
-
-			$.each($("#acllisttab tbody tr"), function() {
-			    var $row = $(this),
-			        rowObj = {};
-
-			    i = 0;
-			    $.each($("td", $row), function() {
-			        var $col = $(this);
-			        rowObj[head[i]] = $col.text();
-			        i++;
-			    })
-
-			    tableObj.myrows.push(rowObj);
-			});
-
-			var strData = JSON.stringify(tableObj);
-//			alert(strData);
-			
-			$.ajax({
-					url : '/aclProcess?serverId=' + serverId + '&aclArray=' + strData,
-				    type: 'POST',
-//					data: JSON.stringify(tableObj),
-					data: strData,
-					success : function(data, status, xhr) {
-						zephyros.alert({
-							contents : successTxt,
-							close : function() {
-								window.location.href ='/acl';
-							}
-						});
-					}, error: function (e) { 
-						ajaxErrorHandler(e);
-					}
-				});
-
-		} else {
-			$.ajax({
-				url : url,
-				type : 'post',
-				data : null,
-				success : function(data, status, xhr) {
-					showDialog('modify-aclinfo', data);
-				}, error: function (e) { 
-					ajaxErrorHandler(e);
-				},
-				complete : function(xhr, status) {
-					// double click 방지 해제
-					// $(':button', form).attr('disabled', false).removeClass('disabled');
-				}
-			});
-			
-			
-/* 			
+	if (mode == 'V') {		
+		var jsonData;
 		$.ajax({
-			url : url,
-			type : 'post',
-			data : null,
+            'contentType': 'application/json',
+            'dataType': 'json',
+            'url': '/aclSearch?serverId=' + serverId,
+            'type': 'POST',
 			success : function(data, status, xhr) {
-				zephyros.loading.hide();
-				html = data;
-				zephyros.dialog({
-					id : "aclDialog",
-					title : titleTxt,
-					contents : html,
-					width : width,
-					buttons : [ {
-						text : "저장",
-						click : function() {
-							if ($("#form02").valid()) {
-							var str ="";
-				                    //데이터 인풋
-			                  str += "<tr>";
-			                  str +="<td>"+ (acllist.rows.length) +"</td>" ;  
-			                  str +="<td>"+ (enableAcl.checked ? "V" : "") +"</td>" ;  
-			                  str +="<td>"+ connType.options[connType.value].text +"</td>" ;  
-			                  str +="<td>"+ str_database.value +"</td>" ;  
-			                  str +="<td>"+ str_user.value +"</td>" ;  
-			                  str +="<td>"+ ip.value +"</td>" ;  
-			                  str +="<td>"+ selectMethod.options[selectMethod.value].text +"</td>" ;  
-			                  str +="<td>"+ authOption.value +"</td>" ; 
-			                  str +="<td style='display:none'>"+ 1 +"</td>" ; 
-			                  str += "<td><a id=\"editBtn\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"수정\" class=\"btn-action glyphicons pencil btn-primary\" href=\"javascript:aclModal('U','${item.acl_id}');\"><i></i></a><a id=\"deleteBtn\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"삭제\" class=\"btn-action glyphicons remove_2 btn-danger\" href=\"javascript:deleteAcl('${item.acl_id}');\"><i></i></a></td>";
-			                  str +="</tr>";
-
-				 			  $("#aclDialog").modal("hide");
-							  $('#acllist').append(str);
-							}
-						}
-					}, {
-						text : "닫기",
-						click : function() {
-							$("#aclDialog").modal("hide");
-						}
-					} ]
-				});				
-				 $("#aclDialog").modal("show");
+				jsonData = data;
+	 	 		var table = $('#acllisttab').DataTable({
+	 	 			retrieve: true,
+	 	 			scrollY: 200,
+	 	 			bscrollCollapse: false,
+	 	 			paging: false,
+	 				autoWidth : true,
+	 				processing: true,
+	 				ordering: false,
+	 				searching: false,
+		 	        data: jsonData,
+		 	        "columns" : 
+			 			[
+/* Sequence Number	 			{"data" : 'Seq', "width": "0pt",
+				 				render: function (data, type, row, meta) {
+				 			        return meta.row + meta.settings._iDisplayStart + 1;
+				 			    }
+				 			}  */ 
+				 			{"data" : 'Seq', "width": "1%"},
+				 			{"data" : 'Set', "width": "1%",
+				 	            render: function ( data, type, row ) {
+				 	                if ( type === 'display' ) {
+				 	                	if(data == "1")
+				 	                    	return '<input type="checkbox" disabled checked class="checkbox_check">';
+				 	                    else
+				 	                    	return '<input type="checkbox" disabled class="checkbox_check">';
+				 	                }
+				 	                return data;
+				 	            },
+				 			}, 
+					        {"data" : 'Type', "width": "5%"},
+					        {"data" : 'Database', "width": "17%"}, 
+					        {"data" : 'User', "width": "17%"}, 
+					        {"data" : 'Ip', "width": "17%"},
+					        {"data" : 'Method', "width": "12%"}, 
+					        {"data" : 'Option', "width": "12%"},
+					        {"data" : 'Changed', "width": "0%"}
+				        ],
+				   columnDefs: [
+				                   {
+				                       "targets": [ 8 ],
+				                       "visible": false
+				                   }
+				               ],
+				   select: {
+				        style: 'os',
+				        selector: 'td:not(:last-child)' // no row selection on last column
+				    }
+		 	    });
+	 	 		
+	 	 		//table.column( 8 ).visible( false );
+	 	 	    
+		 	 	$('#removeBtn').click( function () {
+		 	         table.row('.selected').remove().draw( false );
+		 	    });
 			}, error: function (e) { 
 				ajaxErrorHandler(e);
 			},
@@ -345,37 +208,83 @@ function aclModal(mode, serverId) {
 				// double click 방지 해제
 				// $(':button', form).attr('disabled', false).removeClass('disabled');
 			}
-		}); */
-	}
-}
+		}); 
+	} else if (mode == 'S') {		
+		var head = [],
+	    i = 0,
+	    tableObj = {myrows: []};
 
-/* //사용자 삭제
-function deleteServer(server_id) {
-	var form = $("#form01");
-	zephyros.confirm({
-		contents : '사용자를 삭제하시겠습니까?',
-		ok : function() {
-			zephyros.loading.show();// 모달이 아닌 경우
-			$.ajax({
-				url : '/userProcess?mode=D&serverId=' + server_id,
-				type : 'post',
+		var oTable = $('#acllisttab').DataTable();
+		for(i = 0; i < oTable.data().length; i++)
+			tableObj.myrows.push(oTable.row(i).data());
+		
+		var strData = JSON.stringify(tableObj);
+		
+		$.ajax({
+				url : '/aclProcess?serverId=' + serverId + '&aclArray=' + strData,
+			    type: 'POST',
+//					data: JSON.stringify(tableObj),
+				data: strData,
 				success : function(data, status, xhr) {
-					zephyros.loading.hide();
 					zephyros.alert({
-						contents : '사용자가 삭제되었습니다',
+						contents : successTxt,
 						close : function() {
-							window.location.href = '/acl';
+							window.location.href ='/acl';
 						}
 					});
 				}, error: function (e) { 
 					ajaxErrorHandler(e);
 				}
-			})
-		},
-		cancel : function() {
-			zephyros.loading.hide();
-		}
-	});
-} */
+			});
+	} else {
+		$.ajax({
+			url : url,
+			type : 'post',
+			data : null,
+			success : function(data, status, xhr) {
+ 				html = data;
+ 				zephyros.dialog({
+					id : "modify-aclinfo",
+					title : titleTxt,
+					contents : html,
+					width : width,
+					buttons : [ {
+						text : "저장",
+						click : function() {
+							var str ="";
+				                    //데이터 인풋
+							var vTable = $('#acllisttab').DataTable();
+							var seq = vTable.data().length;
+							 
+							 $("#modify-aclinfo").modal("hide");
+							 	vTable.row.add({
+									    "Seq"   :  seq.toString(),									    
+									    "Set"   :  (enableAcl.checked ? "1" : ""),									    
+									    "Type"     :  connType.options[connType.value].text,
+									    "Database" :  str_database.value,
+									    "User"     :  str_user.value,
+									    "Ip"       :  ip.value,
+									    "Method"   :  selectMethod.options[selectMethod.value].text,
+									    "Option"   :  authOption.value,
+									    "Changed"  :  "1"
+								}).draw();
+						}
+					}, {
+						text : "닫기",
+						click : function() {
+							$("#modify-aclinfo").modal("hide");
+						}
+					} ]
+				}).modal('show');		 	
+			}, error: function (e) { 
+				ajaxErrorHandler(e);
+			},
+			complete : function(xhr, status) {
+				// double click 방지 해제
+				// $(':button', form).attr('disabled', false).removeClass('disabled');
+			}
+		}); 
+	}
+}
 
 </script>

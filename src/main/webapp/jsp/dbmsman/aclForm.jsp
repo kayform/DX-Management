@@ -2,22 +2,33 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
-
-<!-- <div data-role="dialog" id="modify-aclinfo" class="padding20" data-close-button="false" data-type="info"> -->
-        <form>
-            <h3 class="text-light">${userInfo.user_nm}</h4>
-            <hr class="thin bg-grayLighter">
-		<table summary="접근제어정보등록/수정" style="width: 100%;" class="table table-bordered table-condensed">
+<style>
+	h1,h2,h3,h4,h5,h6{margin:0 0 10px;font-weight:400;color:#00ffff;}h1.glyphicons,h2.glyphicons,h3.glyphicons,h4.glyphicons,h5.glyphicons,h6.glyphicons{color:#00ffff;}
+	select,textarea,input[type="text"],input[type="password"],input[type="datetime"],input[type="datetime-local"],input[type="date"],input[type="month"],input[type="time"],input[type="week"],input[type="number"],input[type="email"],input[type="url"],input[type="search"],input[type="tel"],input[type="color"],.uneditable-input{margin-bottom:0px;}
+	
+	
+	.table-condensed th {background-color: rgba(0, 0, 0, 0.5); text-align: left;}
+	.table-condensed td {vertical-align: middle;}
+	#pinfoData label {float: left;vertical-align: middle;padding-right:20px;}
+	.input-append .add-on{padding:4px;} 
+	.input-append {
+		margin-bottom: 0px;
+	}
+</style>
+<!-- 내용 -->
+<div class="widget" style="margin-bottom: 0px;" >
+	<form id="form02" name="form02"  method="post">
+		<table summary="접근권한등록/수정" style="width: 80%;" class="table table-bordered table-condensed">
 			<colgroup>
 				<col width="15%">
 				<col width="35%">
 				<col width="15%">
 				<col width="35%">
 			</colgroup>
-			<tbody>
+			<tbody>	
 				<tr>
 					<input type=text id="aclIndex" name="aclIndex"  value=""  style="width:95%;display:none;" >					
-					<th scope="row">Enable </th>					
+					<th scope="row">Set </th>					
 					<td>
 						<c:if test="${mode =='I' }">
 							<label class="checkbox"><input type="checkbox" class="checkbox" value="10" id="enableAcl" name="enableAcl"></label>
@@ -131,10 +142,83 @@
 
 			</tbody>
 		</table>
-		<label style="text-align: right; font-weight: bold;">* 필수입력항목</label>            
-            <div class="form-actions">
-                <button class="button">Save</button>
-        		<button class="button">Cancel</button>
-        	</div>
-        </form>   
-<!-- </div>  -->
+		<label style="text-align: right; font-weight: bold;">* 필수입력항목</label>
+	</form>	
+</div>
+
+<script src="theme/script/load.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		var mode = $("#mode").val();
+
+ 		jQuery.validator.addMethod("charCheck", function(value, element) {
+			var serverId = value;
+			var excludeCharacter = "{}[]()<>?_|~`!@#$%^&*-+\"'\\/ "; //입력을 막을 특수문자 기재.					
+
+			for (var i = 0; i < serverId.length; i++) {
+				if (-1 != excludeCharacter.indexOf(serverId[i])) {
+					return false;
+				}
+			}
+			return true;
+		}, "특수문자를 입력할수 없습니다.");
+		
+		if (mode == 'I') {
+		// validate signup form on keyup and submit
+			$("#form02").validate({
+				rules: {
+					str_database: {required : true, charCheck: true},
+					str_user: {required : true, charCheck: true},
+					ip: {required : true},
+				}, messages: {
+					str_database: {required : "Required"},
+					str_user: {required : "Required"},
+					ip: {required : "Required"},
+				}
+			});
+		} else if (mode == 'U') {
+			$("#form02").validate({
+				rules: {
+					serverIP: {required : true, charCheck: true},
+					password1: {required : true},
+					serverPort: {required : true},
+					comment: {required : true},
+				}, messages: {
+					serverIP: {required : "이 필드는 필수입니다."},
+					password1: {required : "이 필드는 필수입니다."},
+					serverPort: {required : "이 필드는 필수입니다."},
+					comment: {required : "이 필드는 필수입니다."},
+				}
+			});
+		}
+	}); 
+	
+	$('#selectDatabase').change(function(){
+		   $("#selectDatabase option:selected").each(function () {
+		        
+		        if($(this).val()== '1'){ //직접입력일 경우
+		             $("#str_database").val('');                        //값 초기화
+		             $("#str_database").attr("disabled",false); //활성화
+		        }else{ //직접입력이 아닐경우
+		             $("#str_database").val($(this).text());      //선택값 입력
+		             $("#str_database").attr("disabled",true); //비활성화
+		        }
+		   });
+	});
+	
+	$('#selectUser').change(function(){
+		   $("#selectUser option:selected").each(function () {
+		        
+		        if($(this).val()== '1'){ //직접입력일 경우
+		             $("#str_user").val('');                //값 초기화
+		             $("#str_user").attr("disabled",false); //활성화
+		        }else{ //직접입력이 아닐경우
+		             $("#str_user").val($(this).text());    //선택값 입력
+		             $("#str_user").attr("disabled",true);  //비활성화
+		        }
+		   });
+	});
+			
+</script>
