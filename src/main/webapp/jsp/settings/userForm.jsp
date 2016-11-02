@@ -14,7 +14,6 @@
 		margin-bottom: 0px;
 	}
 </style>
-<!-- <div data-role="dialog" id="modify-userinfo" class="padding20" data-close-button="false" data-type="info"> -->
         <form id="form02" name="form02"  method="post">
 		<table summary="사용자정보등록/수정" style="width: 100%;" class="table">
 			<colgroup>
@@ -149,16 +148,17 @@
 				<tr>
 					<th scope="row">사용자만료일</th>
 					<td>
+						<input type="text"  id="userExpired" tabindex="-1">
+						<!-- 
 						<c:if test="${mode !='V' }">
-							<!-- <div class="input-control text" data-role="datepicker"> -->
 							<div class="input-control text">	
 								<input type="text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;"/>
-								<button class="button"><span class="mif-calendar"></span></button>
 							</div>
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.user_expd}
 						</c:if>
+						 -->
 					</td>	
 					<th scope="row">사용여부</th>
 					<td>
@@ -199,6 +199,11 @@
         </form>
 <script>
 
+$( function() {
+	zephyros.showDatePicker('userExpired','${userInfo.user_expd}');
+});
+
+
 /* $(document).ready(function() {
 	var date = new Date();
 	var now = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
@@ -214,9 +219,6 @@
     	style = style.replace('z-index: 3', 'z-index: 1051');
     	
     	$('#ui-datepicker-div').attr('style', style);
-    	//'left: 390.35px; top: 429.5px; display: block; position: fixed; z-index: 1051;'
-    	//alert($('#ui-datepicker-div').attr('style'));
-    	
     });
 	
 	var mode = $("#mode").val();
@@ -359,4 +361,3 @@ function selected(target, value) {
 	}
 }	
 </script>
-<!-- </div>  -->
