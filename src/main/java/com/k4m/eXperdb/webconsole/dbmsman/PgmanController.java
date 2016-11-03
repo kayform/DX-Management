@@ -133,11 +133,20 @@ public class PgmanController {
 	 */
 	@RequestMapping(value = "/aclForm")
 	public ModelAndView aclForm(Model model, HttpSession session, HttpServletRequest request, 
-			@RequestParam(value = "mode", defaultValue = "") String mode) throws Exception {		
+			@RequestParam(value = "mode", defaultValue = "") String mode,		
+			@RequestParam(value = "seq", defaultValue = "") String seq) throws Exception {		
 		ModelAndView mav = new ModelAndView();
+		pgHbaConfigLine config = null;
 		Map<String, Object> userInfo = new HashMap<String, Object>();
-		HashMap<String, String> param = new HashMap<String, String>();
-		param.put("mode", mode);
+		
+/*		for(int j = 0; j < hba.size(); j++){
+			config = hba.get(j);
+			if(config.getItemNumber() == Integer.parseInt(seq)){				
+				break;
+			}
+		}*/
+		
+		
 		mav.addObject("mode", mode);
 		mav.setViewName("aclForm");
 		return mav;
@@ -210,8 +219,9 @@ public class PgmanController {
 		    pgHbaConfigLine config = new pgHbaConfigLine(testArray[i]);
 			Map<String, String> aclLine = new LinkedHashMap<String, String>();
 			if(config.isValid() || (!config.isValid() && !config.isComment()) && !(config.getText()).isEmpty()){
-				config.setItemNumber(rowCount++);
-				aclLine.put("Enable", config.isComment() ? "" : "1");
+				config.setItemNumber(rowCount);
+				aclLine.put("Seq", String.valueOf(rowCount++));
+				aclLine.put("Set", config.isComment() ? "" : "1");
 				aclLine.put("Type", config.getConnectType());
 				aclLine.put("Database", config.getDatabase());
 				aclLine.put("User", config.getUser());
@@ -267,14 +277,14 @@ public class PgmanController {
 					}
 					
 					config.setChanged(true);
-					if((aclObject.get("Set")).equals("V"))
+					if((aclObject.get("Set")).equals("1"))
 						config.setComment(false);
 					else
 						config.setComment(true);
 					config.setConnectType((String)aclObject.get("Type"));
 					config.setDatabase((String)aclObject.get("Database"));
 					config.setUser((String)aclObject.get("User"));
-					config.setIpaddress((String)aclObject.get("IP-Address"));
+					config.setIpaddress((String)aclObject.get("Ip"));
 					config.setMethod((String)aclObject.get("Method"));
 					config.setOption((String)aclObject.get("Option"));
 					

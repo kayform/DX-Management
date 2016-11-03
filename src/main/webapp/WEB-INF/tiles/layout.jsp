@@ -12,20 +12,6 @@
 	<tiles:insertAttribute name="top"/>
 	<tiles:insertAttribute name="content"/>
 	<tiles:insertAttribute name="footer"/>
-	<!-- 
-	<div class="container">
-		<div id="top">
-				<tiles:insertAttribute name="top"/>
-		</div>
-		<div id="page-content">
-			<tiles:insertAttribute name="content"/>
-		</div>
-
-		<div id="footer">
-			<tiles:insertAttribute name="footer"/>
-		</div>
-		
-	</div>
-	 --> 
+ 
 </body>
 </html>

@@ -100,8 +100,12 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade color-10 in" id="modify-aclinfo" role="dialog" data-backdrop="static" style="display: none;"></div>
-        <!-- <div data-role="dialog" id="modify-aclinfo" data-close-button="true" data-overlay="true"></div> -->
+<!--         <div class="modal fade color-10 in" id="modify-aclinfo" role="dialog" data-backdrop="static" style="display: none;"></div> -->
+<!--         <div data-role="dialog" id="modify-aclinfo" data-close-button="true" data-overlay="true"></div> -->
+<div id="modify-aclinfo">
+  <form>
+  </form>
+</div> 
     </div>
 
 <script type="text/javascript">
@@ -129,7 +133,7 @@ function aclModal(mode, serverId) {
 		url = '/aclForm?mode=I';
 		titleTxt = '접근권한 추가';
 		successTxt = '접근권한이 추가되었습니다.';
-		width = 700;
+		width = 600;
 	}else {
 		url = '/aclForm?mode=S';
 		titleTxt = '접근권한 등록';
@@ -242,21 +246,23 @@ function aclModal(mode, serverId) {
 			type : 'post',
 			data : null,
 			success : function(data, status, xhr) {
- 				html = data;
- 				zephyros.dialog({
-					id : "modify-aclinfo",
-					title : titleTxt,
-					contents : html,
-					width : width,
-					buttons : [ {
-						text : "저장",
-						click : function() {
-							var str ="";
-				                    //데이터 인풋
-							var vTable = $('#acllisttab').DataTable();
-							var seq = vTable.data().length;
-							 
-							 $("#modify-aclinfo").modal("hide");
+ 				html = data; 				
+ 				dialog_acl = $("#modify-aclinfo").dialog({
+ 					  autoOpen: false,
+ 					  height: 480,
+ 					  width: width,
+ 					  modal: true,
+ 					  title: titleTxt,
+ 						buttons : [ {
+ 							text : "저장",
+ 							click : function() {
+ 								var str ="";
+ 					                    //데이터 인풋
+ 								var vTable = $('#acllisttab').DataTable();
+ 								var seq = vTable.data().length;
+ 								 
+ 								var formData = $("#form02").serialize();
+ 								
 							 	vTable.row.add({
 									    "Seq"   :  seq.toString(),									    
 									    "Set"   :  (enableAcl.checked ? "1" : ""),									    
@@ -268,14 +274,18 @@ function aclModal(mode, serverId) {
 									    "Option"   :  authOption.value,
 									    "Changed"  :  "1"
 								}).draw();
-						}
-					}, {
-						text : "닫기",
-						click : function() {
-							$("#modify-aclinfo").modal("hide");
-						}
-					} ]
-				}).modal('show');		 	
+ 							}
+ 						}, {
+ 							text : "닫기",
+ 							click : function() {
+						    	dialog_acl.dialog("close");
+						        $("#modify-aclinfo").empty();
+ 							}
+ 						} ]
+ 					}); 
+ 				
+ 			zephyros.showDialog(dialog_acl, data);
+ 			
 			}, error: function (e) { 
 				ajaxErrorHandler(e);
 			},

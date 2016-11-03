@@ -3,10 +3,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <style>
-	h1,h2,h3,h4,h5,h6{margin:0 0 10px;font-weight:400;color:#00ffff;}h1.glyphicons,h2.glyphicons,h3.glyphicons,h4.glyphicons,h5.glyphicons,h6.glyphicons{color:#00ffff;}
 	select,textarea,input[type="text"],input[type="password"],input[type="datetime"],input[type="datetime-local"],input[type="date"],input[type="month"],input[type="time"],input[type="week"],input[type="number"],input[type="email"],input[type="url"],input[type="search"],input[type="tel"],input[type="color"],.uneditable-input{margin-bottom:0px;}
 	
-	
+	#tbody {background-color: rgba(0, 0, 0, 0.5);color:blue;}
 	.table-condensed th {background-color: rgba(0, 0, 0, 0.5); text-align: left;}
 	.table-condensed td {vertical-align: middle;}
 	#pinfoData label {float: left;vertical-align: middle;padding-right:20px;}
@@ -49,14 +48,14 @@
 								<option value="3">hostnossl</option>
 							</select>
 						</c:if>	
-						<c:if test="${mode !='I'}">
+ 						<c:if test="${mode !='I'}">
 							<input type="text" id="serverId" name="serverId" readonly="readonly" value="${serverInfo.server_id}" style="width:80%;">
 							<div class="pagination pagination-small pull-right" style="margin: 1px 4px 0px 0px;">
 								<div data-toggle="tooltip" data-placement="bottom" style="word-break:break-all; word-wrap:break-word; float: left;" title="비밀번호 수정">
 									<a id="passwordChangeBtn" class="btn-action glyphicons keys btn-inverse"  href="javascript:passwordCahnge('${serverInfo.server_id}');"><i></i></a>
 								</div>
 							</div>							
-						</c:if>			
+						</c:if>		
 						<input type="hidden" id="mode" value="${mode}"/>
 					</td>
 				</tr>					
@@ -181,15 +180,13 @@
 		} else if (mode == 'U') {
 			$("#form02").validate({
 				rules: {
-					serverIP: {required : true, charCheck: true},
-					password1: {required : true},
-					serverPort: {required : true},
-					comment: {required : true},
+					str_database: {required : true, charCheck: true},
+					str_user: {required : true, charCheck: true},
+					ip: {required : true},
 				}, messages: {
-					serverIP: {required : "이 필드는 필수입니다."},
-					password1: {required : "이 필드는 필수입니다."},
-					serverPort: {required : "이 필드는 필수입니다."},
-					comment: {required : "이 필드는 필수입니다."},
+					str_database: {required : "Required"},
+					str_user: {required : "Required"},
+					ip: {required : "Required"},
 				}
 			});
 		}
