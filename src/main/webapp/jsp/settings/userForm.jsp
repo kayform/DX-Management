@@ -147,9 +147,7 @@
 				</tr>
 				<tr>
 					<th scope="row">사용자만료일</th>
-					<td>
-						<input type="text"  id="userExpired" tabindex="-1">
-						<!-- 
+					<td>			
 						<c:if test="${mode !='V' }">
 							<div class="input-control text">	
 								<input type="text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;"/>
@@ -158,7 +156,6 @@
 						<c:if test="${mode =='V' }">
 							${userInfo.user_expd}
 						</c:if>
-						 -->
 					</td>	
 					<th scope="row">사용여부</th>
 					<td>
@@ -184,14 +181,14 @@
 						</c:if>
 					</td>	
 					<th scope="row">암호화 관리 경로</th>
-					<td>
+					<td>metr
 						<c:if test="${mode !='V' }">
 							<input class="input-control text" type="text" id="enc_mng_path" name="enc_mng_path" value="${userInfo.enc_mng_path}" style="width:80%;">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.enc_mng_path}
 						</c:if>
-					</td>
+					</td>								
 				</tr>			
 			</tbody>
 		</table>
@@ -202,7 +199,6 @@
 $( function() {
 	zephyros.showDatePicker('userExpired','${userInfo.user_expd}');
 });
-
 
 /* $(document).ready(function() {
 	var date = new Date();

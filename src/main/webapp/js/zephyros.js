@@ -1,15 +1,25 @@
 var zephyros = {};
 
 zephyros.showDatePicker = function(id, date){
-    $( "#" + id ).datepicker().on('changeDate', function(ev) {
-        //
-    }).on('hide', function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-    });
+	/*
+    $( "#" + id ).datepicker({
+        showOn: "button"
+    }).next('button').addClass('date-picker-button-hidden')
+    .after($('<span/>').addClass('mif-calendar'));
+    
     $( "#" + id ).datepicker( "option", "dateFormat", "yy-mm-dd" );
     $( "#" + id ).datepicker( "setDate", $.datepicker.parseDate( "yy-mm-dd", date ) );
+    */
     //$.datepicker.parseDate( "yy-mm-dd", date );
+
+	$("#" + id).datepicker({
+	    showOn: 'button',
+	    dateFormat : 'yy-mm-dd'
+	}).next('button').button({
+	    icons: {
+	        primary: 'ui-icon-calendar'
+	    }, text:false
+	});
 }
 
 zephyros.showDialog = function(dialog, content){	
