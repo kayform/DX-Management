@@ -1,12 +1,15 @@
 var zephyros = {};
 
-zephyros.showDatePicker = function(id){
-    $( "#" + id ).datepicker({
-        showOn: "button",
-        buttonImage: "images/calendar.gif",
-        buttonImageOnly: true,
-        buttonText: "Select date"
-      });
+zephyros.showDatePicker = function(id, date){
+    $( "#" + id ).datepicker().on('changeDate', function(ev) {
+        //
+    }).on('hide', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    });
+    $( "#" + id ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+    $( "#" + id ).datepicker( "setDate", $.datepicker.parseDate( "yy-mm-dd", date ) );
+    //$.datepicker.parseDate( "yy-mm-dd", date );
 }
 
 zephyros.showDialog = function(dialog, content){	
@@ -39,7 +42,7 @@ zephyros.callAjax = function(){
 	$.ajax({
 		url : url,
 		type : 'post',
-		data : null,
+		data : data,
 		success : success,
 		error : error, 
 		complete : complete

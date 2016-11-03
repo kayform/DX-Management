@@ -20,24 +20,33 @@
     <link href="theme/css/metro-responsive.css" rel="stylesheet">
     <link href="theme/css/metro-schemes.css" rel="stylesheet">
     <link href="theme/css/docs.css" rel="stylesheet">
+ 	<link href="css/dialog.css" rel="stylesheet">
 
+    <link href="theme/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="theme/css/select.dataTables.min.css" rel="stylesheet">
+	
+	<!-- JQuery UI -->
+	<link href="theme/script/jquery-ui/jquery-ui.css" rel="stylesheet">
+	<link href="theme/script/jquery-ui/jquery-ui.structure.css" rel="stylesheet">
+	<link href="theme/script/jquery-ui/jquery-ui.theme.css" rel="stylesheet">
+
+	
 	<!-- JQuery v2.1.3 -->
     <script src="theme/js/jquery-2.1.3.min.js"></script>
+    <script src="theme/js/jquery.dataTables.min.js"></script>
     <!-- metro V3 -->
     <script src="theme/js/metro.js"></script>
-    <!-- Bootstrap Script -->
-	<script src="bootstrap/js/bootstrap.min.js"></script>
     <!-- JQuery cookie -->
 	<script src="theme/script/jquery.cookie.js"></script>
 	<!-- Resize Script -->
 	<script src="theme/script/jquery.ba-resize.js"></script>
 	<!-- zephyros.js  -->
 	<script src="js/zephyros.js" type="text/javascript"></script>
-	<!-- BootBox  -->
-	<script src="bootstrap/extend/bootbox.min.js" type="text/javascript"></script>
     <script src="theme/js/docs.js"></script>
     <script src="theme/js/prettify/run_prettify.js"></script>
     <script src="theme/js/ga.js"></script>
+	<!--  JQuery UI -->
+	<script src="theme/script/jquery-ui/jquery-ui.js"></script>	
     	
     <style>
         .login-form {
@@ -54,7 +63,10 @@
             transform: scale(.8);
         }
     </style>
-
+    <div id="dialog_info">
+  		<form>
+  		</form>		
+	</div>     
     <script>
 
         /*
@@ -85,7 +97,15 @@
             });
         });
         
-      
+    dialog_info = $("#dialog_info").dialog({
+	  autoOpen: false,
+	  modal: true,
+	  width : 500,
+	  title: "메시지",
+	  close: function() {
+		$("#dialog_info").empty();
+	  }
+	});
         
         $(document).ready(function() {
         	var status = '${param.fail}';
@@ -93,9 +113,10 @@
         	if(status == 'true') {
         		//zephyros.alert({contents:"${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}"});
         		//showMetroDialog('#dialog', 'default', ($('<div>').addClass('padding20').html('hi! i am jquery content for dialog ')));        		
-        		showDialog('dialog-alert', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}", 'alert');
+        		//showDialog('dialog-alert', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}", 'alert');
         		//showMetroDialog('#dialog-alert', 'default', ($('<div>').addClass('padding20').html("${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}")));
         		//pushMessage('info', "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}");
+        		zephyros.showDialog(dialog_info, "${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}");
         	}
         	
         	// 쿠키 검사
@@ -165,11 +186,5 @@
             </div>
         </form>
     </div>
-    <div data-role="dialog" id="dialog-alert" class="padding20" data-close-button="true" data-type="alert" data-overlay="true">
-    	<h1>test</h1>
-        <p>
-        	This dialog opened with utility function
-        </p>
-    </div> 
 </body>
 </html>

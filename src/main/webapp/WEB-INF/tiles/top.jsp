@@ -90,17 +90,15 @@ dialog_profile = $("#dialog_profile").dialog({
 			} 
 			var formData = $("#form02").serialize();
 			
-			$.ajax({
+			zephyros.callAjax({
 				url : '/userProcess?mode='+ mode,
 				type : 'post',
 				data : formData,
 				success : function(data, status, xhr) {
 					dialog_profile.dialog("close");
 					zephyros.showDialog(dialog_info,  successTxt)
-				}, error: function (e) { 
-					ajaxErrorHandler(e);
 				}
-			});
+			});		
 	    },
 	    "취소": function() {
 	    	dialog_profile.dialog("close");
@@ -129,9 +127,7 @@ function profile(mode, userId) {
 		successTxt = '사용자가 수정되었습니다.';
 		width = 900;
 	} 
-	
-	//callAjax(url, 'post', null);
-	
+
 	zephyros.callAjax({
 		url : url,
 		type : 'post',
@@ -141,23 +137,5 @@ function profile(mode, userId) {
 			zephyros.showDialog(dialog_profile, data);
 		}
 	});
-	
-	/*
-	$.ajax({
-		url : url,
-		type : 'post',
-		data : null,
-		success : function(data, status, xhr) {
-			zephyros.loading.show();
-			showDialog(dialog_profile, data);
-		}, error: function (e) { 
-			ajaxErrorHandler(e);
-		},
-		complete : function(xhr, status) {
-			// double click 방지 해제
-			// $(':button', form).attr('disabled', false).removeClass('disabled');
-		}
-	});
-	*/
 }
 </script>
