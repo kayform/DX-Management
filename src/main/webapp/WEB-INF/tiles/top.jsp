@@ -43,6 +43,10 @@
   <form>
   </form>
 </div> 
+<div id="dialog_password">
+  <form>
+  </form>
+</div> 
 <script>
 $(document).ready(function() 
 {
@@ -112,6 +116,44 @@ dialog_profile = $("#dialog_profile").dialog({
 	  }
 	});
 
+dialog_password = $("#dialog_password").dialog({
+	  autoOpen: false,
+	  modal: true,
+	  title: "암호수정",
+	  buttons: {
+	    "저장" : function() {
+			if ($("#passwordForm").valid()) {
+				var passwordFormData = $("#passwordForm").serialize();
+				var formData = $("#form02").serialize();
+				var data = passwordFormData + '&' + formData;
+				$.ajax({
+					url : '/userPasswordProcess?mode=U',
+					type : 'post',
+					data : data,
+					success : function(data, status, xhr) {
+						$("#passwordDialog").modal("hide");
+						zephyros.alert({
+							contents : successTxt,
+							close : function() {
+								$("#userDialog").modal("show");
+							}
+						});
+					}, error: function (e) { 
+						ajaxErrorHandler(e);
+					}
+				});
+			}
+	    },
+	    "취소": function() {
+	    	dialog_password.dialog("close");
+	      $("#dialog_password").empty();
+	    }
+	  },
+	  close: function() {
+		$("#dialog_password").empty();
+	  }
+	});
+	
 function profile(mode, userId) {
 	zephyros.loading.show();
 	var url = '';
@@ -135,6 +177,28 @@ function profile(mode, userId) {
 		success : function(data, status, xhr) {
 			zephyros.loading.show();
 			zephyros.showDialog(dialog_profile, data);
+		}
+	});
+}
+
+function passwordModal(mode, userId) {
+	zephyros.loading.show();
+	var url = '';
+	var titleTxt = '';
+	var successTxt = '';
+	var width = 0;
+	url = '/userPasswordForm?mode=U&userId=' + userId;
+	titleTxt = '비밀번호 수정';
+	successTxt = '비밀번호가 수정되었습니다.';
+	width = 500;
+
+	zephyros.callAjax({
+		url : url,
+		type : 'post',
+		data : null,
+		success : function(data, status, xhr) {
+			zephyros.loading.show();
+			zephyros.showDialog(dialog_password, data);
 		}
 	});
 }

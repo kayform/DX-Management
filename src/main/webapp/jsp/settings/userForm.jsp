@@ -32,11 +32,14 @@
 						</c:if>	
 						<c:if test="${mode =='U'}">
 							<input type="text" id="userId" name="userId" readonly="readonly" value="${userInfo.user_id}" style="width:80%;">
+							<button id="passwordBtn" class="button mif-key"></button>
+							<!-- 
 							<div class="pagination pagination-small pull-right" style="margin: 1px 4px 0px 0px;">
 								<div data-toggle="tooltip" data-placement="bottom" style="word-break:break-all; word-wrap:break-word; float: left;" title="비밀번호 수정">
 									<a id="passwordChangeBtn" class="btn-action glyphicons keys btn-inverse"  href="javascript:passwordCahnge('${userInfo.user_id}');"><i></i></a>
 								</div>
-							</div>							
+							</div>
+							 -->							
 						</c:if>	
 						<c:if test="${mode =='V'}">
 							${userInfo.user_id}
@@ -148,10 +151,8 @@
 				<tr>
 					<th scope="row">사용자만료일</th>
 					<td>			
-						<c:if test="${mode !='V' }">
-							<div class="input-control text">	
-								<input type="text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;"/>
-							</div>
+						<c:if test="${mode !='V' }"> 
+								<input type="input-control text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;" readonly="true"/>
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.user_expd}
@@ -181,7 +182,7 @@
 						</c:if>
 					</td>	
 					<th scope="row">암호화 관리 경로</th>
-					<td>metr
+					<td>
 						<c:if test="${mode !='V' }">
 							<input class="input-control text" type="text" id="enc_mng_path" name="enc_mng_path" value="${userInfo.enc_mng_path}" style="width:80%;">
 						</c:if>
@@ -199,6 +200,11 @@
 $( function() {
 	zephyros.showDatePicker('userExpired','${userInfo.user_expd}');
 });
+
+$("#passwordBtn").on("click", function() {
+	passwordModal('${userInfo.user_id}', 'U');
+});
+
 
 /* $(document).ready(function() {
 	var date = new Date();
