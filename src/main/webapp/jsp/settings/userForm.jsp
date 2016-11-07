@@ -32,7 +32,7 @@
 						</c:if>	
 						<c:if test="${mode =='U'}">
 							<input type="text" id="userId" name="userId" readonly="readonly" value="${userInfo.user_id}" style="width:80%;">
-							<button id="passwordBtn" class="button mif-key"></button>
+							<button id="passwordBtn" class="button mif-key" type="button"></button>
 							<!-- 
 							<div class="pagination pagination-small pull-right" style="margin: 1px 4px 0px 0px;">
 								<div data-toggle="tooltip" data-placement="bottom" style="word-break:break-all; word-wrap:break-word; float: left;" title="비밀번호 수정">
@@ -202,7 +202,7 @@ $( function() {
 });
 
 $("#passwordBtn").on("click", function() {
-	passwordModal('${userInfo.user_id}', 'U');
+	passwordModal('U', '${userInfo.user_id}');
 });
 
 
