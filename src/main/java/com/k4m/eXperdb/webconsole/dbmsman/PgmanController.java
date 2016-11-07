@@ -53,6 +53,7 @@ import com.k4m.eXperdb.webconsole.util.DateUtils;
 
 
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -137,19 +138,43 @@ public class PgmanController {
 			@RequestParam(value = "seq", defaultValue = "") String seq) throws Exception {		
 		ModelAndView mav = new ModelAndView();
 		pgHbaConfigLine config = null;
-		Map<String, Object> userInfo = new HashMap<String, Object>();
+		Map<String, Object> aclInfo = new HashMap<String, Object>();
 		
-/*		for(int j = 0; j < hba.size(); j++){
-			config = hba.get(j);
-			if(config.getItemNumber() == Integer.parseInt(seq)){				
-				break;
+		if (mode.equals(Globals.MODE_DATA_UPDATE)) {
+			for(int j = 0; j < hba.size(); j++){
+				config = hba.get(j);
+				if(config.getItemNumber() == Integer.parseInt(seq)){
+					break;
+				}
 			}
-		}*/
-		
-		
+			aclInfo.put("Seq", seq);
+			aclInfo.put("Set", config.isComment() ? 0 : 1);
+			aclInfo.put("Type", config.getConnectType());
+			aclInfo.put("Database", config.getDatabase());
+			aclInfo.put("User", config.getUser());
+			aclInfo.put("Ip", config.getIpaddress());
+			aclInfo.put("Method", config.getMethod());
+			aclInfo.put("Option", config.getOption());
+			aclInfo.put("Changed", "");
+			mav.addObject("aclInfo", aclInfo);
+		}
 		mav.addObject("mode", mode);
 		mav.setViewName("aclForm");
 		return mav;
+		
+/*		
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> userInfo = new HashMap<String, Object>();
+		if (!(userId == null || userId.equals(""))) {			
+			HashMap<String, String> param = new HashMap<String, String>();
+			param.put("user_id", userId);
+			param.put("mode", mode);
+			userInfo = settingsService.selectUser(param);
+			mav.addObject("userInfo", userInfo);
+		} 
+		mav.addObject("mode", mode);
+		mav.setViewName("userForm");
+		return mav;*/
 	}
 		
 	/**
