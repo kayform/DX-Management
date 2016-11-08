@@ -1,17 +1,18 @@
 var zephyros = {};
 
-zephyros.showDatePicker = function(id, date){
-	/*
-    $( "#" + id ).datepicker({
-        showOn: "button"
-    }).next('button').addClass('date-picker-button-hidden')
-    .after($('<span/>').addClass('mif-calendar'));
-    
-    $( "#" + id ).datepicker( "option", "dateFormat", "yy-mm-dd" );
-    $( "#" + id ).datepicker( "setDate", $.datepicker.parseDate( "yy-mm-dd", date ) );
-    */
-    //$.datepicker.parseDate( "yy-mm-dd", date );
+zephyros.isFormValidate = function(id){
+	$("#" + id).append("<div><button id =\"validateBtn\" name=\"validateBtn\" class=\"button success\">Send</button></div>");
+	$("#validateBtn").click(); 	
+	$("#validateBtn").remove(); 
+	
+	if ($("#" + id).attr('isValid') == 'true') {
+		return true;
+	}else{
+		return;
+	}
+}
 
+zephyros.showDatePicker = function(id, date){
 	$("#" + id).datepicker({
 	    showOn: 'button',
 	    dateFormat : 'yy-mm-dd'

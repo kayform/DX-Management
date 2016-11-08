@@ -17,7 +17,7 @@
 </style>
 <!-- 내용 -->
 <div class="widget">
-	<form id="passwordForm" name="passwordForm"  method="post">
+	<form data-role="validator" data-on-before-submit="no_submit" data-on-submit="return false" data-hint-mode="hint" data-hint-easing="easeOutBounce" id="passwordForm" name="passwordForm"  method="post">
 		<table summary="사용자정보등록/수정" style="width: 100%;" class="table table-bordered table-condensed">
 			<colgroup>
 				<col width="30%">
@@ -30,42 +30,38 @@
 						<input type="password" id="password1" name="password1"  value="" style="width:95%;">
 					</td>										
 				</tr>
-				<tr>					
+				<tr>				
+				<!-- 	
 					<th scope="row">비밀번호 확인</th>
 					<td>
 						<input type="password" id="password2" name="password2"  value="" style="width:95%;">						
-					</td>					
+					</td>			
+					 -->		
+					<th scope="row">비밀번호 확인</th>
+					<td>
+						<input type="password" id="password2" name="password2"  value="" style="width:95%;" data-validate-func="required, custom" data-validate-arg=",checkPassword" data-validate-hint="패스워드가 비워있거나, 맞지 않습니다." data-validate-hint-position="top">
+                     <!--   <span class="input-state-error mif-warning"></span>
+                        <span class="input-state-success mif-checkmark"></span>		
+                        <div>
+         <button id ="checkPassword" name="checkPassword" class="button success">Send</button>  
+    </div>-->
+					</td>			
+					    
+					
 				</tr>
 			</tbody>
 		</table>
+
 	</form>	
 </div>
 
-<script>
-
-</script>
-
 <script type="text/javascript">
-	$(document).ready(function() {
-		
-		jQuery.validator.addMethod("passwordCheck", function(value, element) {
-			var password1 = $("#password1").val();
-			var password2 = value;
-			if(password1 != password2) {
-				return false;
-			}
-			return true;
-		}, "패스워드가 맞지 않습니다.");
-
-		$("#passwordForm").validate({
-			rules: {
-				password1: {required : true},
-				password2: {required : true, passwordCheck: true},
-			}, messages: {
-				password1: {required : "이 필드는 필수입니다."},
-				password2: {required : "이 필드는 필수입니다."},
-			}
-		});
-	});
-	
+	function checkPassword(value) {
+		var password1 = $("#password1").val();
+		var password2 = value;
+		if(password1 != password2) {
+			return false;
+		}
+		return true;
+	}
 </script>

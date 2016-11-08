@@ -52,6 +52,10 @@
   </form>
 </div> 
 <script>
+function no_submit(){
+    return false;
+}
+
 $(document).ready(function() 
 {
 	var menuName = location.pathname.substring(1, location.pathname.length) + "_menu";
@@ -129,24 +133,31 @@ dialog_password = $("#dialog_password").dialog({
 	  buttons: {
 	    "저장" : function() {
 			//if ($("#passwordForm").valid()) {
-				var passwordFormData = $("#passwordForm").serialize();
-				var formData = $("#form02").serialize();
-				var data = passwordFormData + '&' + formData;
-				var mode = 'U';
+				//$("#checkPassword").click();
 				
-				if (mode == 'U') {
-					successTxt = '암호가 수정되었습니다. ';
-				} 
+				//if ($("#passwordForm").attr('isValid') == 'false') {return;}
 				
-				zephyros.callAjax({
-					url : '/userPasswordProcess?mode='+ mode,
-					type : 'post',
-					data : data,
-					success : function(data, status, xhr) {
-						dialog_profile.dialog("close");
-						zephyros.showDialog(dialog_info,  successTxt)
-					}
-				});	
+				if (zephyros.isFormValidate('passwordForm')){
+					var passwordFormData = $("#passwordForm").serialize();
+					var formData = $("#form02").serialize();
+					var data = passwordFormData + '&' + formData;
+					var mode = 'U';
+					
+					if (mode == 'U') {
+						successTxt = '암호가 수정되었습니다. ';
+					} 
+					//zephyros.showDialog(dialog_info,  successTxt);
+ 					zephyros.callAjax({
+						url : '/userPasswordProcess?mode='+ mode,
+						type : 'post',
+						data : data,
+						success : function(data, status, xhr) {
+							zephyros.showDialog(dialog_info,  successTxt);
+							dialog_password.dialog("close");
+						}
+					});	 
+				}
+
 			//}
 	    },
 	    "취소": function() {
