@@ -1,6 +1,7 @@
 package com.k4m.eXperdb.webconsole.settings;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -177,6 +178,50 @@ public class SettingsController {
 		
 		dataHistoryService.add("userPassword", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), userId, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 		
+		mav.setViewName("user");
+		return mav;
+	}
+	
+	/**
+	 * 서버관리 > 사용자관리 메뉴에서 사용하는 사용자 목록 조회
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param searchAuthDivision
+	 * @param searchUseYn
+	 * @param searchUserName
+	 * @return
+	 * @throws Exception
+	 * @author manimany
+	 */
+	//TODO searchAuthDivision 사용여부 확인 및 제거할지 결정 !! user-mapper.xml에는 조건값에 포함되어 있음. remarked by manimany
+	@RequestMapping(value = "/user")
+	public ModelAndView user(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "searchAuthDivision", defaultValue = "") String searchAuthDivision, 
+			@RequestParam(value = "searchUseYn", defaultValue = "") String searchUseYn,
+			@RequestParam(value = "searchUserName", defaultValue = "") String searchUserName) throws Exception {
+		List<Map<String, Object>> userList = null;		
+		HashMap<String, String> param = new HashMap<String, String>();
+	
+		param.put("auth_dv", (searchAuthDivision == null || "".equals(searchAuthDivision)) ? "%" : "%" + searchAuthDivision + "%");
+		param.put("use_yn", (searchUseYn == null || "".equals(searchUseYn)) ? "%" : "%" + searchUseYn + "%");
+		param.put("user_nm", (searchUserName == null || "".equals(searchUserName)) ? "%" : "%" + searchUserName + "%");
+		
+		
+		try{
+			userList = settingsService.selectUserList(param);		
+		}catch (Exception e){
+			Globals.logger.error(e.getMessage(), e);
+		}
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("userList", userList);
+		mav.addObject("searchAuthDivision", searchAuthDivision);
+		mav.addObject("searchUseYn", searchUseYn);
+		mav.addObject("searchUserName", searchUserName);
+		
+		mav.addObject("serverId", session.getAttribute("serverId"));
+		mav.addObject("userAuth", session.getAttribute("userAuth"));
+
 		mav.setViewName("user");
 		return mav;
 	}
