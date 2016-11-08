@@ -31,23 +31,10 @@
 					</td>										
 				</tr>
 				<tr>				
-				<!-- 	
-					<th scope="row">비밀번호 확인</th>
-					<td>
-						<input type="password" id="password2" name="password2"  value="" style="width:95%;">						
-					</td>			
-					 -->		
 					<th scope="row">비밀번호 확인</th>
 					<td>
 						<input type="password" id="password2" name="password2"  value="" style="width:95%;" data-validate-func="required, custom" data-validate-arg=",checkPassword" data-validate-hint="패스워드가 비워있거나, 맞지 않습니다." data-validate-hint-position="top">
-                     <!--   <span class="input-state-error mif-warning"></span>
-                        <span class="input-state-success mif-checkmark"></span>		
-                        <div>
-         <button id ="checkPassword" name="checkPassword" class="button success">Send</button>  
-    </div>-->
 					</td>			
-					    
-					
 				</tr>
 			</tbody>
 		</table>

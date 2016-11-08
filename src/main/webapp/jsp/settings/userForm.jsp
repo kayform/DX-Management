@@ -206,7 +206,7 @@ $("#passwordBtn").on("click", function() {
 });
 
 
-/* $(document).ready(function() {
+$(document).ready(function() {
 	var date = new Date();
 	var now = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
 	getCalendar('form02','userExpired', now);	
@@ -250,59 +250,7 @@ $("#passwordBtn").on("click", function() {
 		
 		var tmp = year + '-' + month + '-' + day;
 		$("#userExpired").val(tmp);
-	}
-	
-	jQuery.validator.addMethod("charCheck", function(value, element) {
-		var userId = value;
-		var excludeCharacter = "{}[]()<>?_|~`!@#$%^&*-+\"'\\/ "; //입력을 막을 특수문자 기재.					
-
-		for (var i = 0; i < userId.length; i++) {
-			if (-1 != excludeCharacter.indexOf(userId[i])) {
-				return false;
-			}
-		}
-		return true;
-	}, "특수문자를 입력할수 없습니다.");
-	
-	jQuery.validator.addMethod("dupCheck", function(value, element) {
-		var dupCheck = false;
-		var userId = value;
-		$.ajax({
-			url : '/userDuplicateCheack?mode=I&userId=' + userId,
-			type : 'post',
-			async: false,
-			success : function(data, status, xhr) {
-				if (data == 'Y') {
-					dupCheck = false;
-				} else {
-					dupCheck = true;		
-				}
-			}, error: function (e) { {}
-				ajaxErrorHandler(e);
-			}
-		});
-		return dupCheck;
-	}, "사용할수 없는 사용자아이디 입니다.");
-	
-	jQuery.validator.addMethod("passwordCheck", function(value, element) {
-		var password1 = $("#password1").val();
-		var password2 = value;
-		if(password1 != password2) {
-			return false;
-		}
-		return true;
-	}, "패스워드가 맞지 않습니다.");
-	
-	//jQuery.validator.addMethod("pg_mon_client_path_check", existsFile($('#pg_mon_client_path').val()), "PG 모니터링 경로가 우요하지 않습니다.");
-	
-	jQuery.validator.addMethod("existsFileCheck", function(value, element) {			
-		if (element.name == "pg_mon_client_path") {
-			return existsFile(value, "DX.MonPostgres.exe");
-		} else {
-			return existsFile(value, "edgedb-admin-console.exe");
-		}						
-
-	}, "경로가 우효하지 않습니다.");
+	}	
 			
 	if (mode == 'I') {
 	// validate signup form on keyup and submit
@@ -352,7 +300,71 @@ $("#passwordBtn").on("click", function() {
 			}
 		});
 	}
-}); */
+}); 
+
+charCheck = function(value, element) {
+	var userId = value;
+	var excludeCharacter = "{}[]()<>?_|~`!@#$%^&*-+\"'\\/ "; //입력을 막을 특수문자 기재.					
+
+	for (var i = 0; i < userId.length; i++) {
+		if (-1 != excludeCharacter.indexOf(userId[i])) {
+			return false;
+		}
+	}
+	return true;
+};
+
+dupCheck = function(value, element) {
+	var dupCheck = false;
+	var userId = value;
+	/*
+	$.ajax({
+		url : '/userDuplicateCheack?mode=I&userId=' + userId,
+		type : 'post',
+		async: false,
+		success : function(data, status, xhr) {
+			if (data == 'Y') {
+				dupCheck = false;
+			} else {
+				dupCheck = true;		
+			}
+		}, error: function (e) { {}
+			ajaxErrorHandler(e);
+		}
+	});
+	*/
+ 	zephyros.callAjax({
+		url : '/userDuplicateCheack?mode=I&userId=' + userId,
+		type : 'post',
+		data : null,
+		success : function(data, status, xhr) {
+			if (data == 'Y') {
+				dupCheck = false;
+			} else {
+				dupCheck = true;		
+			}
+		}
+	}); 
+	return dupCheck;
+};
+
+function existsFileCheck(value, element) {			
+	if (element.name == "pg_mon_client_path") {
+		return zephyros.existsFile(value, "DX.MonPostgres.exe");
+	} else {
+		return zephyros.existsFile(value, "edgedb-admin-console.exe");
+	}						
+
+};
+
+function checkPassword(value) {
+	var password1 = $("#password1").val();
+	var password2 = value;
+	if(password1 != password2) {
+		return false;
+	}
+	return true;
+};
 
 //사용자정보 수정시 Select Box의 Option값이 DB에서 가져온 값과 일치하는 경우 Selected를 설정
 function selected(target, value) {
@@ -361,5 +373,5 @@ function selected(target, value) {
 	        document.getElementById(target).options[i].selected = "selected";
 	    }
 	}
-}	
+};
 </script>

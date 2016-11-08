@@ -132,11 +132,6 @@ dialog_password = $("#dialog_password").dialog({
 	  width: 800,
 	  buttons: {
 	    "저장" : function() {
-			//if ($("#passwordForm").valid()) {
-				//$("#checkPassword").click();
-				
-				//if ($("#passwordForm").attr('isValid') == 'false') {return;}
-				
 				if (zephyros.isFormValidate('passwordForm')){
 					var passwordFormData = $("#passwordForm").serialize();
 					var formData = $("#form02").serialize();
@@ -157,8 +152,6 @@ dialog_password = $("#dialog_password").dialog({
 						}
 					});	 
 				}
-
-			//}
 	    },
 	    "취소": function() {
 	    	dialog_password.dialog("close");
