@@ -48,6 +48,10 @@
 	<!--  JQuery UI -->
 	<script src="theme/script/jquery-ui/jquery-ui.js"></script>	
 	
+		<!-- JQuery VAlidation -->
+    <script src="theme/script/jquery-validation/jquery.validate.js"></script>
+    <script src="theme/script/jquery-validation/additional-methods.js"></script>
+	
 	<!-- Themer -->
 	<script>
 	var themerPrimaryColor = '#00aba9';
