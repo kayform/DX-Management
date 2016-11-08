@@ -47,7 +47,15 @@
   <form>
   </form>
 </div> 
+<div id="dialog_password2">
+  <form>
+  </form>
+</div> 
 <script>
+function no_submit(){
+    return false;
+}
+
 $(document).ready(function() 
 {
 	var menuName = location.pathname.substring(1, location.pathname.length) + "_menu";
@@ -120,29 +128,30 @@ dialog_password = $("#dialog_password").dialog({
 	  autoOpen: false,
 	  modal: true,
 	  title: "암호수정",
+	  height: 300,
+	  width: 800,
 	  buttons: {
 	    "저장" : function() {
-			if ($("#passwordForm").valid()) {
-				var passwordFormData = $("#passwordForm").serialize();
-				var formData = $("#form02").serialize();
-				var data = passwordFormData + '&' + formData;
-				$.ajax({
-					url : '/userPasswordProcess?mode=U',
-					type : 'post',
-					data : data,
-					success : function(data, status, xhr) {
-						$("#passwordDialog").modal("hide");
-						zephyros.alert({
-							contents : successTxt,
-							close : function() {
-								$("#userDialog").modal("show");
-							}
-						});
-					}, error: function (e) { 
-						ajaxErrorHandler(e);
-					}
-				});
-			}
+				if (zephyros.isFormValidate('passwordForm')){
+					var passwordFormData = $("#passwordForm").serialize();
+					var formData = $("#form02").serialize();
+					var data = passwordFormData + '&' + formData;
+					var mode = 'U';
+					
+					if (mode == 'U') {
+						successTxt = '암호가 수정되었습니다. ';
+					} 
+					//zephyros.showDialog(dialog_info,  successTxt);
+ 					zephyros.callAjax({
+						url : '/userPasswordProcess?mode='+ mode,
+						type : 'post',
+						data : data,
+						success : function(data, status, xhr) {
+							zephyros.showDialog(dialog_info,  successTxt);
+							dialog_password.dialog("close");
+						}
+					});	 
+				}
 	    },
 	    "취소": function() {
 	    	dialog_password.dialog("close");
@@ -170,7 +179,7 @@ function profile(mode, userId) {
 		width = 900;
 	} 
 
-	zephyros.callAjax({
+ 	zephyros.callAjax({
 		url : url,
 		type : 'post',
 		data : null,
@@ -178,11 +187,11 @@ function profile(mode, userId) {
 			zephyros.loading.show();
 			zephyros.showDialog(dialog_profile, data);
 		}
-	});
+	}); 
 }
 
 function passwordModal(mode, userId) {
-	zephyros.loading.show();
+	//zephyros.loading.show();
 	var url = '';
 	var titleTxt = '';
 	var successTxt = '';
@@ -192,7 +201,7 @@ function passwordModal(mode, userId) {
 	successTxt = '비밀번호가 수정되었습니다.';
 	width = 500;
 
-	zephyros.callAjax({
+ 	zephyros.callAjax({
 		url : url,
 		type : 'post',
 		data : null,
@@ -200,6 +209,6 @@ function passwordModal(mode, userId) {
 			zephyros.loading.show();
 			zephyros.showDialog(dialog_password, data);
 		}
-	});
+	}); 
 }
 </script>

@@ -114,8 +114,9 @@ public class pgHbaConfigLine {
 			    	return;
 			    
 			    ipaddress = st.nextToken();
-			    if(!ipaddress.contains("/"))
-			    	return;
+			    if(!ipaddress.contains("/")){
+			    	ipaddress += "/32";
+			    }
 			}
 //5		    
 		    if(!st.hasMoreTokens())

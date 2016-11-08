@@ -9223,6 +9223,9 @@ $.widget( "metro.validator" , {
             }
             var reg = new RegExp(pat);
             return reg.test(val);
+        },
+        custom: function(val, func){
+        	return window[func](val);
         }
     },
 
@@ -9254,9 +9257,10 @@ $.widget( "metro.validator" , {
     _createValidator: function(){
         var that = this, element = this.element, o = this.options;
         var inputs = element.find("[data-validate-func]");
-
+        
         element.attr('novalidate', 'novalidate');
-
+        element.attr('isValid', 'false');
+        
         if (o.showRequiredState) {
             $.each(inputs, function(){
                 var input = $(this);
@@ -9298,7 +9302,7 @@ $.widget( "metro.validator" , {
         var that = this, element = this.element, o = this.options;
         var inputs = element.find("[data-validate-func]");
         var submit = element.find(":submit").attr('disabled', 'disabled').addClass('disabled');
-
+        
         var result = 0;
         $('.validator-hint').hide();
         inputs.removeClass('error success');
@@ -9369,6 +9373,7 @@ $.widget( "metro.validator" , {
 
         if (result !== 0) {
             submit.removeAttr('disabled').removeClass('disabled');
+            element.attr('isValid', 'false');
             return false;
         }
 
@@ -9384,7 +9389,7 @@ $.widget( "metro.validator" , {
         }
 
         submit.removeAttr('disabled').removeClass('disabled');
-
+        element.attr('isValid', 'true');
         return result;
     },
 

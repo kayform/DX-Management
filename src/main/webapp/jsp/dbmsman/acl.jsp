@@ -67,7 +67,7 @@
 						</div>
 						
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
-							<button id="removeBtn" class="button alert"><span class="mif-cross"></span> 삭제</button>
+							<button id="removeBtn" class="button alert" onclick="javascript:aclModal('D',selectServerName.value);">><span class="mif-cross"></span> 삭제</button>
 						</div>
 		
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
@@ -116,17 +116,17 @@ function aclModal(mode, serverId) {
 	var successTxt = '';
 	var width = 0;
 	if (mode == 'U') {
-		var aclId;
 		var uTable = $('#acllisttab').DataTable();
-		uTable.row('.selected');
-		url = '/aclForm?mode=U&aclId=' + aclId;
-		titleTxt = '사용자 수정';
-		successTxt = '사용자가 수정되었습니다.';
-		width = 1000;
+//		var seq = uTable.row('.selected').index();
+		var seq = uTable.row('.selected').data().Seq;
+		url = '/aclForm?mode=U&seq=' + seq;
+		titleTxt = '접근권한 수정';
+		successTxt = '접근권한이 수정되었습니다.';
+		width = 600;
 	} else if (mode == 'V') {
 		url = '/aclForm?mode=V&serverId=' + serverId;
-		titleTxt = '사용자 조회';
-		successTxt = '사용자가 수정되었습니다.';
+		titleTxt = '접근권한 조회';
+		successTxt = '접근권한이 수정되었습니다.';
 		width = 1000; 
 		$('#selectServerName').val(serverId);
 	} else if (mode == 'I') {
@@ -163,11 +163,6 @@ function aclModal(mode, serverId) {
 		 	        data: jsonData,
 		 	        "columns" : 
 			 			[
-/* Sequence Number	 			{"data" : 'Seq', "width": "0pt",
-				 				render: function (data, type, row, meta) {
-				 			        return meta.row + meta.settings._iDisplayStart + 1;
-				 			    }
-				 			}  */ 
 				 			{"data" : 'Seq', "width": "1%"},
 				 			{"data" : 'Set', "width": "1%",
 				 	            render: function ( data, type, row ) {
@@ -189,6 +184,10 @@ function aclModal(mode, serverId) {
 					        {"data" : 'Changed', "width": "0%"}
 				        ],
 				   columnDefs: [
+				                   {
+				                       "targets": [ 0 ],
+				                       "visible": false
+				                   },
 				                   {
 				                       "targets": [ 8 ],
 				                       "visible": false
@@ -212,7 +211,27 @@ function aclModal(mode, serverId) {
 				// double click 방지 해제
 				// $(':button', form).attr('disabled', false).removeClass('disabled');
 			}
-		}); 
+		});
+	} else if (mode == 'D') {
+		successTxt = '접근권한이 삭제되었습니다.';
+		var dTable = $('#acllisttab').DataTable();		
+		var seq = dTable.row('.selected').data().Seq;
+		dTable.row('.selected').remove().draw( false );
+ 		$.ajax({
+				url : '/aclDelete?seq=' + seq,
+			    type: 'POST',
+				data: null,
+				success : function(data, status, xhr) {
+					zephyros.alert({
+						contents : successTxt,
+						close : function() {
+							window.location.href ='/acl';
+						}
+					});
+				}, error: function (e) { 
+					ajaxErrorHandler(e);
+				}
+			});
 	} else if (mode == 'S') {		
 		var head = [],
 	    i = 0,
@@ -258,15 +277,28 @@ function aclModal(mode, serverId) {
  							click : function() {
  								var str ="";
  					                    //데이터 인풋
+ 					            var dialogMode = $("#mode").val();
  								var vTable = $('#acllisttab').DataTable();
- 								var seq = vTable.data().length;
- 								 
- 								var formData = $("#form02").serialize();
- 								
-							 	vTable.row.add({
+
+ 								if(dialogMode == 'I') {
+ 	 								var seq = vTable.data().length;
+								 	vTable.row.add({
 									    "Seq"   :  seq.toString(),									    
 									    "Set"   :  (enableAcl.checked ? "1" : ""),									    
-									    "Type"     :  connType.options[connType.value].text,
+									    "Type"     :  selectConnType.options[selectConnType.value].text,
+									    "Database" :  str_database.value,
+									    "User"     :  str_user.value,
+									    "Ip"       :  ip.value,
+									    "Method"   :  selectMethod.options[selectMethod.value].text,
+									    "Option"   :  authOption.value,
+									    "Changed"  :  "1"
+									}).draw();
+ 								} else {
+ 									var seq = vTable.row('.selected').data().Seq;
+ 								 	vTable.row('.selected').data({
+									    "Seq"   :  seq,									    
+									    "Set"   :  (enableAcl.checked ? "1" : ""),									    
+									    "Type"     :  selectConnType.options[selectConnType.value].text,
 									    "Database" :  str_database.value,
 									    "User"     :  str_user.value,
 									    "Ip"       :  ip.value,
@@ -274,6 +306,9 @@ function aclModal(mode, serverId) {
 									    "Option"   :  authOption.value,
 									    "Changed"  :  "1"
 								}).draw();
+ 								}
+							 	dialog_acl.dialog("close");
+							 	$("#modify-aclinfo").empty();
  							}
  						}, {
  							text : "닫기",

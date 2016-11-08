@@ -1,17 +1,18 @@
 var zephyros = {};
 
-zephyros.showDatePicker = function(id, date){
-	/*
-    $( "#" + id ).datepicker({
-        showOn: "button"
-    }).next('button').addClass('date-picker-button-hidden')
-    .after($('<span/>').addClass('mif-calendar'));
-    
-    $( "#" + id ).datepicker( "option", "dateFormat", "yy-mm-dd" );
-    $( "#" + id ).datepicker( "setDate", $.datepicker.parseDate( "yy-mm-dd", date ) );
-    */
-    //$.datepicker.parseDate( "yy-mm-dd", date );
+zephyros.isFormValidate = function(id){
+	$("#" + id).append("<div><button id =\"validateBtn\" name=\"validateBtn\" class=\"button success\">Send</button></div>");
+	$("#validateBtn").click(); 	
+	$("#validateBtn").remove(); 
+	
+	if ($("#" + id).attr('isValid') == 'true') {
+		return true;
+	}else{
+		return;
+	}
+}
 
+zephyros.showDatePicker = function(id, date){
 	$("#" + id).datepicker({
 	    showOn: 'button',
 	    dateFormat : 'yy-mm-dd'
@@ -57,6 +58,32 @@ zephyros.callAjax = function(){
 		error : error, 
 		complete : complete
 	});
+}
+
+zephyros.runProgram = function(path)
+{
+    var shell = new ActiveXObject("WScript.Shell");
+    var replace_path = "\"" + path.replace(/\\/gi, "\\") + "\" ";
+    shell.Run(replace_path);
+}
+
+zephyros.existsFile = function (path, fileName)
+{
+	if (path == '') {
+		return true;
+	}
+	
+    var shell = new ActiveXObject("Scripting.FileSystemObject");
+    //var replace_path = path.replace(/\\/gi, "\\");
+    
+    if (!shell.FileExists(path)) {
+    	//alert("해당 경로에 파일이 존재하지 않습니다.")
+    	return false;
+    } else if (shell.GetFileName(path) != fileName) {
+    	return false;
+    }else {
+    	return true;
+    }
 }
 
 zephyros.makeModal = function() {
@@ -636,30 +663,4 @@ function ajaxErrorHandler(e, parentModalId) {
 			zephyros.alertError({parentModal: parentModalId, contents:'세션이 만료되었습니다.', close : function() {location.reload();}});
 		}
 	}
-}
-
-function runProgram(path)
-{
-    var shell = new ActiveXObject("WScript.Shell");
-    var replace_path = "\"" + path.replace(/\\/gi, "\\") + "\" ";
-    shell.Run(replace_path);
-}
-
-function existsFile(path, fileName)
-{
-	if (path == '') {
-		return true;
-	}
-	
-    var shell = new ActiveXObject("Scripting.FileSystemObject");
-    //var replace_path = path.replace(/\\/gi, "\\");
-    
-    if (!shell.FileExists(path)) {
-    	//alert("해당 경로에 파일이 존재하지 않습니다.")
-    	return false;
-    } else if (shell.GetFileName(path) != fileName) {
-    	return false;
-    }else {
-    	return true;
-    }
 }

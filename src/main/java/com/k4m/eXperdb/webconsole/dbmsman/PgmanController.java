@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import com.k4m.eXperdb.webconsole.common.SHA256;
 //import com.k4m.eXperdb.webconsole.common.StrUtil;
 import com.k4m.eXperdb.webconsole.common.pgHbaConfigLine;
 import com.k4m.eXperdb.webconsole.util.DateUtils;
+
+
 
 
 
@@ -137,16 +140,26 @@ public class PgmanController {
 			@RequestParam(value = "seq", defaultValue = "") String seq) throws Exception {		
 		ModelAndView mav = new ModelAndView();
 		pgHbaConfigLine config = null;
-		Map<String, Object> userInfo = new HashMap<String, Object>();
+		Map<String, Object> aclInfo = new HashMap<String, Object>();
 		
-/*		for(int j = 0; j < hba.size(); j++){
-			config = hba.get(j);
-			if(config.getItemNumber() == Integer.parseInt(seq)){				
-				break;
+		if (mode.equals(Globals.MODE_DATA_UPDATE)) {
+			for(int j = 0; j < hba.size(); j++){
+				config = hba.get(j);
+				if(config.getItemNumber() == Integer.parseInt(seq)){
+					break;
+				}
 			}
-		}*/
-		
-		
+			aclInfo.put("Seq", seq);
+			aclInfo.put("Set", config.isComment() ? 0 : 1);
+			aclInfo.put("Type", config.getConnectType());
+			aclInfo.put("Database", config.getDatabase());
+			aclInfo.put("User", config.getUser());
+			aclInfo.put("Ip", config.getIpaddress());
+			aclInfo.put("Method", config.getMethod());
+			aclInfo.put("Option", config.getOption());
+			aclInfo.put("Changed", "");
+			mav.addObject("aclInfo", aclInfo);
+		}
 		mav.addObject("mode", mode);
 		mav.setViewName("aclForm");
 		return mav;
@@ -264,13 +277,16 @@ public class PgmanController {
 				if((aclObject.get("Changed")).equals("1")){
 					int seqNumber = Integer.parseInt((String)aclObject.get("Seq"));
 					pgHbaConfigLine config = null;
-					for(int j = 0; j < hba.size(); j++){
-						config = hba.get(j);
+										
+			        Iterator<Integer> keys = hba.keySet().iterator();
+			        while( keys.hasNext() ){
+			            Integer key = keys.next();
+			            config = hba.get(key);
 						if(config.getItemNumber() == seqNumber){
 							found = true;
 							break;
 						}
-					}
+			        }
 
 					if(!found){
 					    config = new pgHbaConfigLine(null);					    
@@ -287,7 +303,6 @@ public class PgmanController {
 					config.setIpaddress((String)aclObject.get("Ip"));
 					config.setMethod((String)aclObject.get("Method"));
 					config.setOption((String)aclObject.get("Option"));
-					
 					if(!found){
 						hba.put(hba.size(), config);
 					}
@@ -299,11 +314,14 @@ public class PgmanController {
         }
             
 		String buffer = "";
-		for(int i =0; i < hba.size(); i++){
-			pgHbaConfigLine config = (pgHbaConfigLine) hba.get(i);
-			buffer += config.getText() + "\n";
-		}
-		
+        Iterator<Integer> keys = hba.keySet().iterator();
+        while( keys.hasNext() ){
+            Integer key = keys.next();
+            pgHbaConfigLine config = hba.get(key);
+            if(config != null)
+				buffer += config.getText() + "\n";
+        }
+
 		String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
 	    String usr = "postgres";  
 	    String pwd = "robin";
@@ -341,188 +359,43 @@ public class PgmanController {
 		return mav;
 	}
 	
-///*	@RequestMapping(value = "/monthlystatistic")
-//	public ModelAndView monthlystatistic(Model model, HttpSession session, HttpServletRequest request) throws Exception {
-//		ModelAndView mav = new ModelAndView();
-//		mav.setViewName("monthlystatistic");
-//		
-//		String year = request.getParameter("searchYear");
-//		String sysNm = request.getParameter("searchSysNm");
-//		
-//		List<Map<String,Object>> prsnCdList = pgmanService.selectPrsnCdList();
-//		
-//		List<Map<String,Object>> dbmsList = pgmanService.selectDBMSList();
-//
-//		if(year == null || "".equals(year)) {
-//			year = new SimpleDateFormat("yyyy").format(new Date());
-//		}
-//		
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.YEAR, -10);
-//		int firstYear = cal.get(Calendar.YEAR);
-//		List<Integer> yearList = new ArrayList<Integer>();
-//		for(int y=firstYear;y<=firstYear+10;y++) {
-//			yearList.add(y);
-//		}
-//		
-//		if((sysNm == null || "".equals(sysNm)) && dbmsList.size() > 0) {
-//			sysNm = dbmsList.get(0).get("sys_nm").toString();
-//		}
-//		
-//		List<Map<String,Object>> statisticsList = pgmanService.selectMonthlyStatistics(year, sysNm);
-//		
-//		List<Map<String,Object>> statisticsTableList = pgmanService.makeMonthlyStatisticsList(prsnCdList, statisticsList);
-//		
-//		mav.addObject("searchYear", year);
-//		mav.addObject("searchSysNm", sysNm);
-//		mav.addObject("prsnCdList", prsnCdList);
-//		mav.addObject("dbmsList", dbmsList);
-//		mav.addObject("statisticsList", statisticsList);
-//		mav.addObject("statisticsTableList", statisticsTableList);
-//		mav.addObject("yearList", yearList);
-//		
-//		return mav;
-//	}
-//
-//	@RequestMapping(value = "/yearlystatistic")
-//	public ModelAndView yearlystatistic(Model model, HttpSession session, HttpServletRequest request) throws Exception {
-//		ModelAndView mav = new ModelAndView();
-//		mav.setViewName("yearlystatistic");
-//
-//		String sysNm = request.getParameter("searchSysNm");
-//		
-//		List<Map<String,Object>> prsnCdList = pgmanService.selectPrsnCdList();
-//		
-//		List<Map<String,Object>> dbmsList = pgmanService.selectDBMSList();
-//
-//		if((sysNm == null || "".equals(sysNm)) && dbmsList.size() > 0) {
-//			sysNm = dbmsList.get(0).get("sys_nm").toString(); 
-//		}
-//		
-//		List<Map<String,Object>> statisticsList = pgmanService.selectYearlyStatistics(sysNm);
-//		
-//		List<Map<String,Object>> statisticsTableList = pgmanService.makeYearlyStatisticsList(prsnCdList, statisticsList);
-//
-//		
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.YEAR, -10);
-//		int firstYear = cal.get(Calendar.YEAR);
-//		List<Map<String,Object>> yearList = new ArrayList<Map<String,Object>>();
-//		for(int y=firstYear;y<=firstYear+12;y++) {
-//			Map<String,Object> row = new HashMap<String,Object>();
-//			int cnt = 0;
-//			row.put("yyyy", y);
-//			for(Map<String,Object> sel : statisticsTableList) {
-//				//yearList.add(y);
-//				if(((java.math.BigDecimal)sel.get("number")).intValue() == y) {
-//					row.put("col_tot_rslt_cnt", sel.get("col_tot_rslt_cnt"));
-//					cnt++;
-//				}
-//			}
-//			if(cnt == 0) {
-//				row.put("col_tot_rslt_cnt", 0);
-//			}
-//			yearList.add(row);
-//		}
-//		
-//		mav.addObject("searchSysNm", sysNm);
-//		mav.addObject("prsnCdList", prsnCdList);
-//		mav.addObject("dbmsList", dbmsList);
-//		mav.addObject("statisticsList", statisticsList);
-//		mav.addObject("statisticsTableList", statisticsTableList);
-//		mav.addObject("yearList", yearList);
-//		
-//		return mav;
-//	}
-//	
-//	public void statisticsRegist() throws Exception {
-//		pgmanService.statisticsRegist();
-//	}
-//	
-//	
-//	@RequestMapping(value = "/monthlystatistic/download")
-//	public ModelAndView downloadMonthlystatistic(Model model, HttpSession session, HttpServletRequest request, 
-//			@RequestParam(value = "searchYear", defaultValue = "") String year,
-//			@RequestParam(value = "searchSysNm", defaultValue = "") String sysNm,
-//			@RequestParam(value = "password", defaultValue = "") String password
-//		) throws Exception {
-//		ModelAndView mav = new ModelAndView();
-//		mav.setViewName("monthlystatistic");
-//		
-//		List<Map<String,Object>> prsnCdList = pgmanService.selectPrsnCdList();
-//		
-//		List<Map<String,Object>> dbmsList = pgmanService.selectDBMSList();
-//
-//		if(year == null || "".equals(year)) {
-//			year = new SimpleDateFormat("yyyy").format(new Date());
-//		}
-//		
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.YEAR, -10);
-//		int firstYear = cal.get(Calendar.YEAR);
-//		List<Integer> yearList = new ArrayList<Integer>();
-//		for(int y=firstYear;y<=firstYear+10;y++) {
-//			yearList.add(y);
-//		}
-//		
-//		if((sysNm == null || "".equals(sysNm)) && dbmsList.size() > 0) {
-//			sysNm = dbmsList.get(0).get("sys_nm").toString();
-//		}
-//		
-//		List<Map<String,Object>> statisticsList = pgmanService.selectMonthlyStatistics(year, sysNm);
-//		
-//		List<Map<String,Object>> statisticsTableList = pgmanService.makeMonthlyStatisticsList(prsnCdList, statisticsList);
-//		
-//		Map<String, Object> resultMap = new HashMap<String, Object>();
-//		resultMap.put("systemName", sysNm);
-//		resultMap.put("list", statisticsTableList);
-//		
-//		String fileName = "개인정보점검결과 월별통계내역(" + new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + ")";
-//		
-//		Map<String, Object> item = new HashMap<String, Object>();
-//		item.put("file", "monthlystatistic");
-//		item.put("fileName", fileName);
-//		item.put("content", resultMap);
-//		item.put("password", password);	
-//		
-//			
-//		return new ModelAndView("excelDownload", "item", item);
-//	}
-//	
-//	@RequestMapping(value = "/yearlystatistic/download")
-//	public ModelAndView downloadYearlystatistic(Model model, HttpSession session, HttpServletRequest request,
-//			@RequestParam(value = "searchSysNm", defaultValue = "") String sysNm,
-//			@RequestParam(value = "password", defaultValue = "") String password
-//		) throws Exception {
-//		ModelAndView mav = new ModelAndView();
-//		mav.setViewName("yearlystatistic");
-//
-//		List<Map<String,Object>> prsnCdList = pgmanService.selectPrsnCdList();
-//		
-//		List<Map<String,Object>> dbmsList = pgmanService.selectDBMSList();
-//
-//		if((sysNm == null || "".equals(sysNm)) && dbmsList.size() > 0) {
-//			sysNm = dbmsList.get(0).get("sys_nm").toString(); 
-//		}
-//		
-//		List<Map<String,Object>> statisticsList = pgmanService.selectYearlyStatistics(sysNm);
-//		
-//		List<Map<String,Object>> statisticsTableList = pgmanService.makeYearlyStatisticsList(prsnCdList, statisticsList);
-//
-//		Map<String, Object> resultMap = new HashMap<String, Object>();
-//		resultMap.put("systemName", sysNm);
-//		resultMap.put("list", statisticsTableList);
-//		
-//		String fileName = "개인정보점검결과 연별통계내역(" + new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + ")";
-//		
-//		Map<String, Object> item = new HashMap<String, Object>();
-//		item.put("file", "yearlystatistic");
-//		item.put("fileName", fileName);
-//		item.put("content", resultMap);
-//		item.put("password", password);	
-//		
-//		return new ModelAndView("excelDownload", "item", item);
-//	}*/
+	
+	/**
+	 * 사용자 ID와 Mode(CRU)를 입력받아 입력받은 사용자에 대한 정보를 리턴
+	 * 페이지에서 해당 Mode에 따라 각각에 맞는 화면을 출력
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param seq
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/aclDelete")
 
+	public ModelAndView aclDelete(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "seq", defaultValue = "") String seq) throws Exception {		
+		ModelAndView mav = new ModelAndView();
+		pgHbaConfigLine config = null;
+		
+/*		for(int j = 0; j < hba.size(); j++){
+			config = hba.get(j);
+			if(config.getItemNumber() == Integer.parseInt(seq)){
+				hba.remove(j);
+				break;
+			}
+		}*/
+		
+        Iterator<Integer> keys = hba.keySet().iterator();
+        while( keys.hasNext() ){
+            Integer key = keys.next();
+            config = hba.get(key);
+			if(config.getItemNumber() == Integer.parseInt(seq)){
+				hba.remove(key);
+				break;
+			}
+        }
 
+		mav.setViewName("acl");
+		return mav;
+	}
 }

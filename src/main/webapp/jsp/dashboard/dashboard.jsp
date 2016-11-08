@@ -46,7 +46,7 @@
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
                     <h1 class="text-light">Virtual machines <span class="mif-drive-eta place-right"></span></h1>
                     <hr class="thin bg-grayLighter">
-                    <input type="text"  id="userExpired">
+                    <button id="passwordBtn" class="button mif-key"></button>
                     <button class="button primary" onclick="zephyros.showDialog(dialog_info, '야호')"><span class="mif-plus"></span> Create...</button>
                     <button class="button success" onclick="pushMessage('success')"><span class="mif-play"></span> Start</button>
                     <button class="button warning" onclick="pushMessage('warning')"><span class="mif-loop2"></span> Restart</button>
@@ -108,7 +108,7 @@
         </div>
     </div>
     <script>
-    $( function() {
-    	zephyros.showDatePicker('userExpired','${userInfo.user_expd}');
+    $("#passwordBtn").on("click", function() {
+    	passwordModal('U', '${userInfo.user_id}');
     });
     </script>
