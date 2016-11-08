@@ -195,7 +195,7 @@ public class SettingsController {
 	 * @author manimany
 	 */
 	//TODO searchAuthDivision 사용여부 확인 및 제거할지 결정 !! user-mapper.xml에는 조건값에 포함되어 있음. remarked by manimany
-	@RequestMapping(value = "/user") 
+	@RequestMapping(value = "/user")   
 	public ModelAndView user(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "searchAuthDivision", defaultValue = "") String searchAuthDivision, 
 			@RequestParam(value = "searchUseYn", defaultValue = "") String searchUseYn,
