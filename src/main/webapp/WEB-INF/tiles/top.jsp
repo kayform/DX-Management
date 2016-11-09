@@ -52,9 +52,10 @@
   </form>
 </div> 
 <script>
+/*
 function no_submit(){
     return false;
-}
+}*/
 
 $(document).ready(function() 
 {
@@ -76,6 +77,13 @@ dialog_info = $("#dialog_info").dialog({
 	  autoOpen: false,
 	  modal: true,
 	  title: "메시지",
+	  resizable: false,
+	  buttons: {
+	  "확인" : function() {		  
+		  $("#dialog_info").dialog("close");
+		  $("#dialog_info").empty();
+	    }
+	  },
 	  close: function() {
 	    //form[0].reset();
 	    //allFields.removeClass("ui-state-error");
@@ -89,28 +97,32 @@ dialog_profile = $("#dialog_profile").dialog({
 	  width: 1250,
 	  modal: true,
 	  title: "사용자수정",
+	  resizable: false,
 	  buttons: {
 	    "저장" : function() {
-			var url = '/userProcess?mode=';
-			var mode = 'U';
-			var titleTxt = "";
-			var successTxt = "";
-			
-			if (mode == 'U') {
-				titleTxt = '사용자 수정';
-				successTxt = '사용자가 수정되었습니다. ';
-			} 
-			var formData = $("#form02").serialize();
-			
-			zephyros.callAjax({
-				url : '/userProcess?mode='+ mode,
-				type : 'post',
-				data : formData,
-				success : function(data, status, xhr) {
-					dialog_profile.dialog("close");
-					zephyros.showDialog(dialog_info,  successTxt)
-				}
-			});		
+	    	if (zephyros.isFormValidate('form02')){
+				var url = '/userProcess?mode=';
+				var mode = 'U';
+				var titleTxt = "";
+				var successTxt = "";
+				
+				if (mode == 'U') {
+					titleTxt = '사용자 수정';
+					successTxt = '사용자가 수정되었습니다. ';
+				} 
+				var formData = $("#form02").serialize();
+				
+				zephyros.callAjax({
+					url : '/userProcess?mode='+ mode,
+					type : 'post',
+					data : formData,
+					success : function(data, status, xhr) {
+						dialog_profile.dialog("close");
+						zephyros.showDialog(dialog_info,  successTxt)
+					}
+				});		
+	    	}
+
 	    },
 	    "취소": function() {
 	    	dialog_profile.dialog("close");
@@ -130,6 +142,7 @@ dialog_password = $("#dialog_password").dialog({
 	  title: "암호수정",
 	  height: 300,
 	  width: 800,
+	  resizable: false,
 	  buttons: {
 	    "저장" : function() {
 				if (zephyros.isFormValidate('passwordForm')){
