@@ -72,10 +72,8 @@
 	  <![CDATA[
 		SELECT T2.SYS_MNT_CD AS SYS_MNT_CD,
                    T2.SYS_MNT_CD_NM AS SYS_MNT_CD_NM
-      			FROM WEBADMIN.TB_MT_CO_CODEGRP T1, WEBADMIN.TB_MT_CO_CODEGRPDTL T2
-           WHERE T1.SYS_GRPCD =T2.SYS_GRPCD
-             AND T1.SYS_GRPCD = #{systemCode}
-             AND T1.USE_YN ='Y'
+      			FROM WEBADMIN.TB_MT_CO_CODEGRPDTL T2
+           WHERE T2.SYS_GRPCD = #{systemCode}
              AND T2.USE_YN ='Y'
              AND T2.CN != 'PO'
            ORDER BY T2.PRT_PROCE ASC

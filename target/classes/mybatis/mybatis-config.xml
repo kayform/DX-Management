@@ -13,5 +13,11 @@
 		
 		<!-- 공통 -->
 		<mapper resource="mybatis/common-mapper.xml"/>
+
+		<!-- 사용자관리 -->
+		<mapper resource="mybatis/user-mapper.xml"/>
+		
+		<!-- 서버관리 및 기타셋팅 -->
+		<mapper resource="mybatis/settings-mapper.xml"/>
 	</mappers>
 </configuration>

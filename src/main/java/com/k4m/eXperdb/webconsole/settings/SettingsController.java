@@ -1,5 +1,7 @@
 package com.k4m.eXperdb.webconsole.settings;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +16,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.dxmig.db.DBCPPoolManager;
+import com.dxmig.db.datastructure.ConfigInfo;
+import com.dxmig.svr.socket.client.ClientAdapter;
+import com.k4m.eXperdb.webconsole.common.CommonService;
 import com.k4m.eXperdb.webconsole.common.DataHistoryService;
 import com.k4m.eXperdb.webconsole.common.Globals;
 import com.k4m.eXperdb.webconsole.common.SHA256;
+import com.k4m.eXperdb.webconsole.common.StrUtil;
+import com.k4m.eXperdb.webconsole.security.CustomUserDetails;
 import com.k4m.eXperdb.webconsole.util.DateUtils;
+import com.k4m.eXperdb.webconsole.util.SecureManager;
 
 @Controller
 public class SettingsController {
@@ -29,6 +39,8 @@ public class SettingsController {
 	private SettingsService settingsService;
 	@Autowired
 	private DataHistoryService dataHistoryService;
+	@Autowired
+	private CommonService commonService;
 	/**
 	 * 사용자 ID와 Mode(CRU)를 입력받아 입력받은 사용자에 대한 정보를 리턴
 	 * 페이지에서 해당 Mode에 따라 각각에 맞는 화면을 출력
@@ -121,8 +133,8 @@ public class SettingsController {
 		param.put("pwd_use_term", passwordUseTerm);
 		param.put("use_yn", useYn);
 		param.put("sngl_athr_yn", sngl_athr_yn);
-		param.put("pg_mon_client_path", pg_mon_client_path);
-		param.put("enc_mng_path", enc_mng_path);
+		param.put("pg_mon_client_path", StrUtil.hasValue(pg_mon_client_path));
+		param.put("enc_mng_path", StrUtil.hasValue(enc_mng_path));
 		
 		int rowCount = 0;
 		
@@ -223,5 +235,296 @@ public class SettingsController {
 
 		mav.setViewName("user");
 		return mav;
+	}
+	
+	@RequestMapping(value = "/server")
+	public ModelAndView dbms(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSystemName", defaultValue = "") String searchSystemName,
+			@RequestParam(value = "type", defaultValue = "") String type, 
+			@RequestParam(value = "searchIp", defaultValue = "") String searchIp, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		try {
+			// 리스트 네이게이션 개수
+			int countPerPage = 5;
+			// 리스트 개수
+			int countPerList = 10;
+			
+			if (currentPage < 1) {
+				currentPage = 1;
+			}
+			
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("searchSystemName", (searchSystemName == null || searchSystemName.equals("")) ? "%" : "%" + searchSystemName + "%");
+			param.put("type", (type == null || type.equals("")) ? "%" : "%" + type + "%");			
+			param.put("searchIp", (searchIp == null || searchIp.equals("")) ? "%" : "%" + searchIp + "%");
+			
+			Map<String , Object> requestMap = new HashMap<String, Object>();
+			requestMap.put("SEARCH_PARAM", param);
+			requestMap.put("PAGE_SIZE", Integer.toString(countPerList));
+			requestMap.put("CURRENT_PAGE", Integer.toString(currentPage));
+			
+			int totalCount = settingsService.selectSERVERTotalCount(param); // 데이터 전체 건수 조회
+			List<Map<String, Object>> list = settingsService.selectSERVER(requestMap); // 데이터 리스트 조회
+
+			List<Map<String,Object>> serverTypeList = commonService.selectSystemCode("R0001");
+			mav.addObject("serverTypeList", serverTypeList);
+			/*
+			PagingUtil pageUtil = new PagingUtil(currentPage, countPerPage, totalCount, countPerList);
+			String page = pageUtil.getPageForKor("form01", "/server");
+			String pageNavigator = pageUtil.getPageNavigator();
+			
+			mav.addObject("page" , page);
+			mav.addObject("pageNavigator" , pageNavigator);
+			mav.addObject("currentPage", currentPage);
+			mav.addObject("searchSystemName", searchSystemName);
+			mav.addObject("searchIp", searchIp);
+			*/
+			
+			mav.addObject("list", list);
+			mav.setViewName("server");
+		} catch (Exception e) {
+			Globals.logger.error(e.getMessage(), e);
+			throw e;
+		}
+		return mav;
+	}
+	
+	/**
+	 * 사용자 등록시 입력한 사용자 ID에 대해 중복값을 체크
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param user_id
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/userDuplicateCheack")
+	public @ResponseBody String userDuplicateCheack(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "userId", defaultValue = "") String userId) throws Exception {		
+		
+		Map<String, Object> userInfo = new HashMap<String, Object>();
+		String isDuplicate = "Y";
+		if (!(userId == null || "".equals(userId))) {			
+			HashMap<String, String> param = new HashMap<String, String>();
+			param.put("mode", "I");
+			param.put("user_id", userId);
+			userInfo = settingsService.selectUser(param);
+			
+			String tmp = (String) userInfo.get("user_id");
+			
+			if (userId.equals(tmp)) {
+				isDuplicate = "Y";
+			} else {
+				isDuplicate = "N";
+			}
+		}
+		
+		return isDuplicate;
+	}
+	
+	@RequestMapping(value = "/serverForm")
+	public ModelAndView dbmsForm(Model model, HttpSession session, HttpServletRequest request,
+			@RequestParam(value = "mode", defaultValue = "") String mode,
+			@RequestParam(value = "sys_nm", defaultValue = "") String systemName,
+			@RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "ip", defaultValue = "") String ip) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		Map<String, Object> param = new HashMap<String, Object>();
+
+		List<Map<String,Object>> serverTypeList = commonService.selectSystemCode("R0001");
+		mav.addObject("serverTypeList", serverTypeList);
+		
+		if(!Globals.MODE_DATA_INSERT.equals(mode)) {
+			param = new HashMap<String, Object>();
+			param.put("searchSystemName", systemName);
+			param.put("type", type);
+			param.put("ip", ip);
+			
+			List<Map<String, Object>> serverInfoList = settingsService.selectSERVERDetail(param); // 데이터 전체 건수 조회
+			
+			if(serverInfoList.size() > 0) {
+				mav.addObject("serverInfo", serverInfoList);
+				/*
+				mav.addObject("systemName", list.get(0).get("sys_nm").toString());
+				mav.addObject("type", list.get(0).get("type").toString());
+				mav.addObject("databaseName", list.get(0).get("db_nm").toString());
+				mav.addObject("ip", list.get(0).get("ip").toString());
+				mav.addObject("port", list.get(0).get("port").toString());
+				mav.addObject("user_id",list.get(0).get("user_id").toString());
+				mav.addObject("user_pw",list.get(0).get("user_pw").toString());
+				mav.addObject("lt_wk_dtti",list.get(0).get("lt_wk_dtti").toString());
+				mav.addObject("lt_wk_prsn",list.get(0).get("lt_wk_prsn").toString());
+				*/
+			}
+		}
+		
+		mav.addObject("mode", mode);
+		mav.setViewName("serverForm");
+		return mav;
+	}
+
+	@RequestMapping(value = "/serverProcess")
+	@ResponseBody
+	public Map<String, Object> dbmsProcess(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "mode", defaultValue = "") String mode,
+			@RequestParam(value = "sys_nm", defaultValue = "") String sys_nm,
+			@RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "db_nm", defaultValue = "") String db_nm,
+			@RequestParam(value = "ip", defaultValue = "") String ip,
+			@RequestParam(value = "port", defaultValue = "") String port,
+			@RequestParam(value = "user_id", defaultValue = "") String user_id,
+			@RequestParam(value = "user_pw", defaultValue = "") String user_pw) throws Exception {
+		HashMap<String , String> param = null;
+		Map<String, Object> resMap = new HashMap<String, Object>();
+		try {
+			if(Globals.MODE_DATA_DELETE.equals(mode)) {
+				param = new HashMap<String, String>();
+				param.put("sys_nm", sys_nm);
+
+				int setCnt = settingsService.deleteSERVER(param);				
+			} else if(Globals.MODE_DATA_TEST.equals(mode)) {
+				ConfigInfo configInfo = new ConfigInfo();
+	       		configInfo.SERVERIP = ip;
+	            configInfo.USERID = user_id;
+	            configInfo.DB_PW = user_pw;
+	            configInfo.PORT = port;
+	            configInfo.DBNAME = db_nm;
+	            configInfo.SCHEMA_NAME = user_id;
+	            configInfo.DB_TYPE = "POG";	            
+
+	    		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+	    		Map<String, Object> tempMap  = new HashMap<String, Object>();
+
+	    		List<String> message = null;
+	    		String rtn = "";
+	    		try {
+	    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 1);
+	    		} catch (Exception e) {
+	    			Globals.logger.error(e.getMessage(), e);
+	    			
+	    			rtn = e.getMessage();
+	    			tempMap.put("rtn", rtn);
+	    			resultList.add(tempMap);
+		    		resMap.put("resultList", resultList);
+	    			throw new Exception(e.getMessage(), e);
+	    		}finally{
+	        		DBCPPoolManager.shutdownDriver(sys_nm);
+	    		}
+
+	    		rtn  = "접속이 성공했습니다.";
+
+	    		ByteArrayOutputStream requestOutputStream = new ByteArrayOutputStream();
+	    		requestOutputStream.write(rtn.getBytes("UTF-8"));
+	    		rtn = requestOutputStream.toString("UTF-8");
+				
+	    		tempMap.put("rtn", rtn);
+				resultList.add(tempMap);
+				
+	    		resMap.put("resultList", resultList);
+			} else {
+				param = new HashMap<String, String>();
+				param.put("sys_nm", sys_nm);
+				param.put("type", type);
+				param.put("db_nm", db_nm);
+				param.put("ip", ip);
+				param.put("port", port);
+				param.put("user_id", user_id);
+				
+				switch(type){
+				case "POSTGRESQL":
+		    		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		    		Map<String, Object> tempMap  = new HashMap<String, Object>();
+					ConfigInfo configInfo = new ConfigInfo();
+		       		configInfo.SERVERIP = ip;
+		            configInfo.USERID = user_id;
+		            configInfo.DB_PW = user_pw;
+		            configInfo.PORT = port;
+		            configInfo.DBNAME = db_nm;
+		            configInfo.SCHEMA_NAME = user_id;
+		            configInfo.DB_TYPE = "POG";	   
+		    		String rtn = "";
+		    		try {
+		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 1);
+		    		} catch (Exception e) {
+		    			Globals.logger.error(e.getMessage(), e);
+		    			
+		    			rtn = e.getMessage();
+		    			tempMap.put("rtn", rtn);
+		    			resultList.add(tempMap);
+			    		resMap.put("resultList", resultList);
+		    			throw new Exception(e.getMessage(), e);
+		    		}finally{
+		        		DBCPPoolManager.shutdownDriver(sys_nm);
+		    		}
+					break;
+				case "KAFKA":
+					break;
+				case "KAFKA-CONNECT":
+					break;
+				case "KAFKA-SCHEMA-REGISTRY":
+					break;
+				case "CLOUDERA-MANAGER":
+					break;
+				}
+				String databasePw = "";
+				try {
+					//db_pw = SecureManager.encrypt(req.getParameter("databasePassword"));
+					databasePw = SecureManager.encrypt(user_pw);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					Globals.logger.error(e.getMessage(), e);
+				}
+				param.put("user_pw", databasePw);
+				
+
+				CustomUserDetails userDetails = (CustomUserDetails) session.getAttribute("userLoginInfo");
+				param.put("lt_wk_prsn", userDetails.getUserid());
+				
+				if(Globals.MODE_DATA_INSERT.equals(mode)) {
+					int cnt = settingsService.insertSERVER(param);
+					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
+				} else if(Globals.MODE_DATA_UPDATE.equals(mode)) {
+					int cnt = settingsService.updateSERVER(param);
+					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
+				}
+			}
+			
+			resMap.put("result", "SUCCESS");
+			resMap.put("msg", "");
+		} catch (Exception e) {
+			Globals.logger.error(e.getMessage(), e);
+			resMap.put("result", "ERROR");
+			resMap.put("msg", e.getMessage());
+		}
+		return resMap;
+	}
+	
+	@RequestMapping(value = "/systemNameCheck")
+	@ResponseBody
+	public Map<String, Object> dbmsSystemNameCheck(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "sys_nm", defaultValue = "") String systemName,
+			@RequestParam(value = "ip", defaultValue = "") String ip,
+			@RequestParam(value = "port", defaultValue = "") String port) throws Exception {
+		HashMap<String , String> param = null;
+		Map<String, Object> resMap = new HashMap<String, Object>();
+		try {
+			param = new HashMap<String, String>();
+			param.put("sys_nm", systemName);
+			param.put("ip", systemName);
+			param.put("port", systemName);
+			int cnt = settingsService.selectSERVERDupCheck(param);
+			if(cnt > 0) {
+				resMap.put("ischeck", false);
+			} else {
+				resMap.put("ischeck", true);
+			}
+			resMap.put("result", "SUCCESS");
+			resMap.put("msg", "");
+		} catch (Exception e) {
+			Globals.logger.error(e.getMessage(), e);
+			resMap.put("ischeck", false);
+			resMap.put("result", "ERROR");
+			resMap.put("msg", e.getMessage());
+		}
+		return resMap;
 	}
 }
