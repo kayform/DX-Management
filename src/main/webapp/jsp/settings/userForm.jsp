@@ -14,7 +14,7 @@
 		margin-bottom: 0px;
 	}
 </style>
-        <form id="form02" name="form02"  method="post">
+        <form id="form02" name="form02"  method="post" data-role="validator" data-on-before-submit="return false" data-on-submit="return false" data-hint-mode="hint" data-hint-easing="easeOutBounce">
 		<table summary="사용자정보등록/수정" style="width: 100%;" class="table">
 			<colgroup>
 				<col width="15%">
@@ -28,7 +28,7 @@
 					<td >
 						<div class="input-control text">					
 						<c:if test="${mode =='I' }">
-							<input type="text" id="userId" name="userId" value="${userInfo.user_id}" onchange="javascript:userIdChange();" style="width:80%;">							
+							<input type="text" id="userId" name="userId" value="${userInfo.user_id}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",dupCheck" data-validate-hint="ID는 필수이고, 다른 ID와 중복될 수 없습니다." data-validate-hint-position="top" >							
 						</c:if>	
 						<c:if test="${mode =='U'}">
 							<input type="text" id="userId" name="userId" readonly="readonly" value="${userInfo.user_id}" style="width:80%;">
@@ -50,7 +50,7 @@
 					<th scope="row">사용자명 *</th>					
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="userName" name="userName"  value="${userInfo.user_nm}" style="width:80%;">
+							<input class="input-control text" type="text" id="userName" name="userName"  value="${userInfo.user_nm}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",charCheck" data-validate-hint="이 필드는 필수이며, 특수문자를 입력할수 없습니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.user_nm}
@@ -65,7 +65,7 @@
 						</td>
 						<th scope="row">패스워드확인 *</th>
 						<td>
-							<input class="input-control text" type="password" id="password2" name="password2"  value="" style="width:80%;">							
+							<input class="input-control text" type="password" id="password2" name="password2"  value="" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",checkPassword" data-validate-hint="패스워드가 비워있거나, 맞지 않습니다." data-validate-hint-position="top">							
 						</td>					
 					</tr>
 				</c:if>		
@@ -73,7 +73,7 @@
 					<th scope="row">소속 *</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="blg" name="blg"  value="${userInfo.blg}" style="width:80%;">
+							<input class="input-control text" type="text" id="blg" name="blg"  value="${userInfo.blg}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.blg}
@@ -82,7 +82,7 @@
 					<th scope="row">부서 *</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="department" name="department"  value="${userInfo.dept}" style="width:80%;">
+							<input class="input-control text" type="text" id="department" name="department"  value="${userInfo.dept}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.dept}
@@ -93,7 +93,7 @@
 					<th scope="row">직급 *</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="jgd" name="jgd"  value="${userInfo.jgd}" style="width:80%;">
+							<input class="input-control text" type="text" id="jgd" name="jgd"  value="${userInfo.jgd}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.jgd}
@@ -102,7 +102,7 @@
 					<th scope="row">담당업무</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="cg_biz_def" name="cg_biz_def"  value="${userInfo.cg_biz_def}" style="width:80%;">
+							<input class="input-control text" type="text" id="cg_biz_def" name="cg_biz_def"  value="${userInfo.cg_biz_def}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.cg_biz_def}
@@ -175,7 +175,7 @@
 					<th scope="row">PG 모니터링 경로</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="pg_mon_client_path" name="pg_mon_client_path" value="${userInfo.pg_mon_client_path}" style="width:80%;">	
+							<input class="input-control text" type="text" id="pg_mon_client_path" name="pg_mon_client_path" value="${userInfo.pg_mon_client_path}" style="width:80%;" data-validate-func="custom" data-validate-arg="existsFilePgmonCheck" data-validate-hint="파일 경로가 유효하지 않습니다." data-validate-hint-position="top">	
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.pg_mon_client_path}
@@ -184,7 +184,7 @@
 					<th scope="row">암호화 관리 경로</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="enc_mng_path" name="enc_mng_path" value="${userInfo.enc_mng_path}" style="width:80%;">
+							<input class="input-control text" type="text" id="enc_mng_path" name="enc_mng_path" value="${userInfo.enc_mng_path}" style="width:80%;" data-validate-func="custom" data-validate-arg="existsFileEdgeDbCheck" data-validate-hint="파일 경로가 유효하지 않습니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.enc_mng_path}
@@ -251,7 +251,7 @@ $(document).ready(function() {
 		var tmp = year + '-' + month + '-' + day;
 		$("#userExpired").val(tmp);
 	}	
-			
+			/*
 	if (mode == 'I') {
 	// validate signup form on keyup and submit
 		$("#form02").validate({
@@ -299,10 +299,10 @@ $(document).ready(function() {
 				authDivision: {required : "이 필드는 필수입니다."}
 			}
 		});
-	}
+	}*/
 }); 
 
-charCheck = function(value, element) {
+charCheck = function(value) {
 	var userId = value;
 	var excludeCharacter = "{}[]()<>?_|~`!@#$%^&*-+\"'\\/ "; //입력을 막을 특수문자 기재.					
 
@@ -312,9 +312,10 @@ charCheck = function(value, element) {
 		}
 	}
 	return true;
-};
+}
+;
 
-dupCheck = function(value, element) {
+dupCheck = function(value) {
 	var dupCheck = false;
 	var userId = value;
 	/*
@@ -348,16 +349,24 @@ dupCheck = function(value, element) {
 	return dupCheck;
 };
 
-function existsFileCheck(value, element) {			
-	if (element.name == "pg_mon_client_path") {
-		return zephyros.existsFile(value, "DX.MonPostgres.exe");
-	} else {
-		return zephyros.existsFile(value, "edgedb-admin-console.exe");
-	}						
+function existsFilePgmonCheck(value) {			
+	return zephyros.existsFile(value, "DX.MonPostgres.exe");
+};
 
+function existsFileEdgeDbCheck(value) {			
+	return zephyros.existsFile(value, "edgedb-admin-console.exe");
 };
 
 function checkPassword(value) {
+	var password1 = $("#password1").val();
+	var password2 = value;
+	if(password1 != password2) {
+		return false;
+	}
+	return true;
+};
+
+function userIdChange(value) {
 	var password1 = $("#password1").val();
 	var password2 = value;
 	if(password1 != password2) {

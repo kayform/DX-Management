@@ -61,7 +61,7 @@ public class SettingsController {
 	/**
 	 * 사용자정보와 Mode(CUD)를 입력받아 사용자 정보를 DB에 저장, 수정, 삭제
 	 * 
-	 * data history 기능 사용자 요구사항에 의거 제거 edited by manimany 
+	 * data history 기능 사용자 요구사항에 의거 제거 edited by manimany  
 	 * 
 	 * @param model
 	 * @param session

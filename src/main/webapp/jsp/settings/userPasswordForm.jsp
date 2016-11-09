@@ -17,7 +17,7 @@
 </style>
 <!-- 내용 -->
 <div class="widget">
-	<form data-role="validator" data-on-before-submit="no_submit" data-on-submit="return false" data-hint-mode="hint" data-hint-easing="easeOutBounce" id="passwordForm" name="passwordForm"  method="post">
+	<form data-role="validator" data-on-before-submit="return false" data-on-submit="return false" data-hint-mode="hint" data-hint-easing="easeOutBounce" id="passwordForm" name="passwordForm"  method="post">
 		<table summary="사용자정보등록/수정" style="width: 100%;" class="table table-bordered table-condensed">
 			<colgroup>
 				<col width="30%">
