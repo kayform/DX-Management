@@ -1,2 +1,4 @@
 # DX-Management
-Management server for database system.
+Management server for database syste
+
+
