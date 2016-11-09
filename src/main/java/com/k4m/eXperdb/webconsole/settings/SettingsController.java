@@ -61,6 +61,8 @@ public class SettingsController {
 	/**
 	 * 사용자정보와 Mode(CUD)를 입력받아 사용자 정보를 DB에 저장, 수정, 삭제
 	 * 
+	 * data history 기능 사용자 요구사항에 의거 제거 edited by manimany 
+	 * 
 	 * @param model
 	 * @param session
 	 * @param request
@@ -127,13 +129,10 @@ public class SettingsController {
 		if (mode.equals(Globals.MODE_DATA_INSERT)) {
 			param.put("user_pw", SHA256.SHA256(password1));
 			rowCount = settingsService.insertUser(param);
-			dataHistoryService.add("user", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), userId, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 		} else if (mode.equals(Globals.MODE_DATA_UPDATE)) {
 			rowCount = settingsService.updateUser(param);
-			dataHistoryService.add("user", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), userId, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 		} else if (mode.equals(Globals.MODE_DATA_DELETE)) {
 			rowCount = settingsService.deleteUser(param);
-			dataHistoryService.add("user", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), userId, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 		}
 		
 		mav.setViewName("user");
@@ -194,7 +193,7 @@ public class SettingsController {
 	 * @throws Exception
 	 * @author manimany
 	 */
-	//TODO searchAuthDivision 사용여부 확인 및 제거할지 결정 !! user-mapper.xml에는 조건값에 포함되어 있음. remarked by manimany
+	//TODO searchAuthDivision 및 searchUseYn 사용여부 확인 및 제거할지 결정 !! user-mapper.xml에는 조건값에 포함되어 있음. remarked by manimany
 	@RequestMapping(value = "/user")   
 	public ModelAndView user(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "searchAuthDivision", defaultValue = "") String searchAuthDivision, 
@@ -219,8 +218,8 @@ public class SettingsController {
 		mav.addObject("searchUseYn", searchUseYn);
 		mav.addObject("searchUserName", searchUserName);
 		
-		mav.addObject("serverId", session.getAttribute("serverId"));
-		mav.addObject("userAuth", session.getAttribute("userAuth"));
+		//mav.addObject("serverId", session.getAttribute("serverId"));
+		//mav.addObject("userAuth", session.getAttribute("userAuth"));
 
 		mav.setViewName("user");
 		return mav;
