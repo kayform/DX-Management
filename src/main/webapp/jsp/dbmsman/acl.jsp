@@ -132,8 +132,6 @@ function aclModal(mode, serverId) {
 		successTxt = '접근권한이 수정되었습니다.';
 		width = 1000; 
 		$('#selectServerName').val(serverId);
-		var dTable = $('#acllisttab').DataTable();
-		dTable.destroy();
 	} else if (mode == 'I') {
 		url = '/aclForm?mode=I';
 		titleTxt = '접근권한 추가';
@@ -149,6 +147,11 @@ function aclModal(mode, serverId) {
 	var html = '';
 	if (mode == 'V') {		
 		var jsonData;
+ 		
+		var table = $('#acllisttab').DataTable();		
+		table.destroy();
+		$('#acllisttab').empty();
+
 		$.ajax({
             'contentType': 'application/json',
             'dataType': 'json',
@@ -157,7 +160,7 @@ function aclModal(mode, serverId) {
 			success : function(data, status, xhr) {
 				jsonData = data;
 
-	 	 		var table = $('#acllisttab').DataTable({
+	 	 		table = $('#acllisttab').DataTable({
 	 	 			retrieve: true,
 	 	 			scrollY: 200,
 	 	 			bscrollCollapse: false,
