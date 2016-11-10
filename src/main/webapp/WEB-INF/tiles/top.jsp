@@ -43,14 +43,6 @@
   <form>
   </form>
 </div> 
-<div id="dialog_password">
-  <form>
-  </form>
-</div> 
-<div id="dialog_password2">
-  <form>
-  </form>
-</div>
 <div id="dialog_progressBar">
 <div id="DetailLinks" >
      <div id="progressbar">
@@ -146,43 +138,6 @@ dialog_profile = $("#dialog_profile").dialog({
 	  }
 	});
 
-dialog_password = $("#dialog_password").dialog({
-	  autoOpen: false,
-	  modal: true,
-	  title: "암호수정",
-	  height: 300,
-	  width: 800,
-	  resizable: false,
-	  buttons: {
-	    "저장" : function() {
-				if (zephyros.isFormValidate('passwordForm')){
-					zephyros.loading.show();
-					var passwordFormData = $("#passwordForm").serialize();
-					var formData = $("#form02").serialize();
-					var data = passwordFormData + '&' + formData;
-					var mode = $('#mode').val(); 
-
- 					zephyros.callAjax({
-						url : '/userPasswordProcess',
-						type : 'post',
-						data : data,
-						success : function(data, status, xhr) {
-							zephyros.loading.hide();
-							zephyros.checkAjaxDialogResult(dialog_password, data);
-						}
-					});	 
-				}
-	    },
-	    "취소": function() {
-	    	dialog_password.dialog("close");
-	      $("#dialog_password").empty();
-	    }
-	  },
-	  close: function() {
-		$("#dialog_password").empty();
-	  }
-	});
-
 dialog_progressBar = $("#dialog_progressBar").dialog({
     autoOpen: false,
     modal: true,  //Lässt keine Aktion bis zum Schließen des Dialog zu
@@ -218,28 +173,6 @@ function profile(mode, userId) {
 		success : function(data, status, xhr) {
 			zephyros.loading.hide();
 			zephyros.showDialog(dialog_profile, data);
-		}
-	}); 
-}
-
-function passwordModal(mode, userId) {
-	//zephyros.loading.show();
-	var url = '';
-	var titleTxt = '';
-	var successTxt = '';
-	var width = 0;
-	url = '/userPasswordForm?mode=U&userId=' + userId;
-	titleTxt = '비밀번호 수정';
-	successTxt = '비밀번호가 수정되었습니다.';
-	width = 500;
-
- 	zephyros.callAjax({
-		url : url,
-		type : 'post',
-		data : null,
-		success : function(data, status, xhr) {
-			zephyros.loading.show();
-			zephyros.showDialog(dialog_password, data);
 		}
 	}); 
 }

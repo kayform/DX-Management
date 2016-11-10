@@ -441,9 +441,56 @@ public class SettingsController {
 		return mav;
 	}
 
+	@RequestMapping(value = "/serverConnCheck")
+	@ResponseBody
+	public Map<String, Object> serverConnCheck(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "mode", defaultValue = "") String mode,
+			@RequestParam(value = "sys_nm", defaultValue = "") String sys_nm,
+			@RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "db_nm", defaultValue = "") String db_nm,
+			@RequestParam(value = "ip", defaultValue = "") String ip,
+			@RequestParam(value = "port", defaultValue = "") String port,
+			@RequestParam(value = "user_id", defaultValue = "") String user_id,
+			@RequestParam(value = "user_pw", defaultValue = "") String user_pw) throws Exception {
+		Map<String, Object> resMap = new HashMap<String, Object>();
+		ConfigInfo configInfo = new ConfigInfo();
+   		configInfo.SERVERIP = ip;
+        configInfo.USERID = user_id;
+        configInfo.DB_PW = user_pw;
+        configInfo.PORT = port;
+        configInfo.DBNAME = db_nm;
+        configInfo.SCHEMA_NAME = user_id;
+        configInfo.DB_TYPE = "POG";	            
+
+		String msg = "";
+		try {
+			DBCPPoolManager.setupDriver(configInfo, sys_nm, 1);
+		} catch (Exception e) {
+			Globals.logger.error(e.getMessage(), e);
+			
+			msg = e.getMessage();
+			resMap.put("msg", msg);
+			resMap.put("result", "FAIL");
+			throw new Exception(e.getMessage(), e);
+		}finally{
+    		DBCPPoolManager.shutdownDriver(sys_nm);
+		}
+
+		msg  = "접속이 성공했습니다.";
+
+		ByteArrayOutputStream requestOutputStream = new ByteArrayOutputStream();
+		requestOutputStream.write(msg.getBytes("UTF-8"));
+		msg = requestOutputStream.toString("UTF-8");
+
+		resMap.put("result", "SUCCESS");
+		resMap.put("msg", msg);
+		
+		return resMap;
+	}
+	
 	@RequestMapping(value = "/serverProcess")
 	@ResponseBody
-	public Map<String, Object> dbmsProcess(Model model, HttpSession session, HttpServletRequest request, 
+	public Map<String, Object> serverProcess(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "mode", defaultValue = "") String mode,
 			@RequestParam(value = "sys_nm", defaultValue = "") String sys_nm,
 			@RequestParam(value = "type", defaultValue = "") String type,
@@ -463,43 +510,14 @@ public class SettingsController {
 			user_id = StrUtil.hasValue(user_id);
 			user_pw = StrUtil.hasValue(user_pw);
 			
+			int rowCount = 0;
+			String msg = "";
+			
 			if(Globals.MODE_DATA_DELETE.equals(mode)) {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
-
-				int setCnt = settingsService.deleteSERVER(param);				
-			} else if(Globals.MODE_DATA_TEST.equals(mode)) {
-				ConfigInfo configInfo = new ConfigInfo();
-	       		configInfo.SERVERIP = ip;
-	            configInfo.USERID = user_id;
-	            configInfo.DB_PW = user_pw;
-	            configInfo.PORT = port;
-	            configInfo.DBNAME = db_nm;
-	            configInfo.SCHEMA_NAME = user_id;
-	            configInfo.DB_TYPE = "POG";	            
-
-	    		String msg = "";
-	    		try {
-	    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 1);
-	    		} catch (Exception e) {
-	    			Globals.logger.error(e.getMessage(), e);
-	    			
-	    			msg = e.getMessage();
-	    			resMap.put("msg", msg);
-					resMap.put("result", "FAIL");
-	    			throw new Exception(e.getMessage(), e);
-	    		}finally{
-	        		DBCPPoolManager.shutdownDriver(sys_nm);
-	    		}
-
-	    		msg  = "접속이 성공했습니다.";
-
-	    		ByteArrayOutputStream requestOutputStream = new ByteArrayOutputStream();
-	    		requestOutputStream.write(msg.getBytes("UTF-8"));
-	    		msg = requestOutputStream.toString("UTF-8");
-
-				resMap.put("result", "SUCCESS");
-				resMap.put("msg", msg);
+				msg = "서버정보가 삭제되었습니다.";
+				rowCount = settingsService.deleteSERVER(param);				
 			} else {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
@@ -557,18 +575,26 @@ public class SettingsController {
 
 				CustomUserDetails userDetails = (CustomUserDetails) session.getAttribute("userLoginInfo");
 				param.put("lt_wk_prsn", userDetails.getUserid());
-				
+
 				if(Globals.MODE_DATA_INSERT.equals(mode)) {
-					int cnt = settingsService.insertSERVER(param);
+					rowCount = settingsService.insertSERVER(param);
+					msg = "서버정보가 추가되었습니다.";
 					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 				} else if(Globals.MODE_DATA_UPDATE.equals(mode)) {
-					int cnt = settingsService.updateSERVER(param);
+					rowCount = settingsService.updateSERVER(param);
+					msg = "서버정보가 수정되었습니다.";
 					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 				}
 			}
 			
+			if (rowCount == 0) {
+				resMap.put("msg", "수정/삭제할 서버정보를 찾을 수 없습니다.");
+				resMap.put("result", "FAIL");
+				return resMap;
+			}
+			
 			resMap.put("result", "SUCCESS");
-			resMap.put("msg", "");
+			resMap.put("msg", msg);
 		} catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);
 			resMap.put("result", "ERROR");

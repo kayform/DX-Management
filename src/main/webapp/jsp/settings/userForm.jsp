@@ -196,6 +196,14 @@
 		</table>
 		<label style="text-align: right; font-weight: bold;">* 필수입력항목</label>    
         </form>
+		<div id="dialog_password">
+  			<form>
+  			</form>
+		</div> 
+		<div id="dialog_password2">
+  			<form>
+  			</form>
+		</div>        
 <script>
 
 $( function() {
@@ -252,55 +260,6 @@ $(document).ready(function() {
 		var tmp = year + '-' + month + '-' + day;
 		$("#userExpired").val(tmp);
 	}	
-			/*
-	if (mode == 'I') {
-	// validate signup form on keyup and submit
-		$("#form02").validate({
-			rules: {
-				userId: {required : true, charCheck: true, dupCheck: true},
-				userName: {required : true, charCheck: true},
-				password1: {required : true},
-				password2: {required : true, passwordCheck: true},
-				blg: {required : true},
-				department: {required : true},
-				jgd: {required : true},
-				authDivision: {required : true},
-				pg_mon_client_path : {existsFileCheck: true},
-				enc_mng_path : {existsFileCheck: true}
-			}, messages: {
-				userId: {required : "이 필드는 필수입니다."},
-				userName: {required : "이 필드는 필수입니다."},
-				password1: {required : "이 필드는 필수입니다."},
-				password2: {required : "이 필드는 필수입니다."},
-				blg: {required : "이 필드는 필수입니다."},
-				department: {required : "이 필드는 필수입니다."},
-				jgd: {required : "이 필드는 필수입니다."},
-				authDivision: {required : "이 필드는 필수입니다."}
-			}
-		});
-	} else if (mode == 'U') {
-		$("#form02").validate({
-			rules: {
-				userName: {required : true, charCheck: true},
-				password1: {required : true},
-				password2: {required : true, passwordCheck: true},
-				blg: {required : true},
-				department: {required : true},
-				jgd: {required : true},
-				authDivision: {required : true},
-				pg_mon_client_path : {existsFileCheck: true},
-				enc_mng_path : {existsFileCheck: true}
-			}, messages: {
-				userName: {required : "이 필드는 필수입니다."},
-				password1: {required : "이 필드는 필수입니다."},
-				password2: {required : "이 필드는 필수입니다."},
-				blg: {required : "이 필드는 필수입니다."},
-				department: {required : "이 필드는 필수입니다."},
-				jgd: {required : "이 필드는 필수입니다."},
-				authDivision: {required : "이 필드는 필수입니다."}
-			}
-		});
-	}*/
 }); 
 
 charCheck = function(value) {
@@ -319,22 +278,7 @@ charCheck = function(value) {
 dupCheck = function(value) {
 	var dupCheck = false;
 	var userId = value;
-	/*
-	$.ajax({
-		url : '/userDuplicateCheack?mode=I&userId=' + userId,
-		type : 'post',
-		async: false,
-		success : function(data, status, xhr) {
-			if (data == 'Y') {
-				dupCheck = false;
-			} else {
-				dupCheck = true;		
-			}
-		}, error: function (e) { {}
-			ajaxErrorHandler(e);
-		}
-	});
-	*/
+
  	zephyros.callAjax({
 		url : '/userDuplicateCheack?mode=I&userId=' + userId,
 		type : 'post',
@@ -385,4 +329,63 @@ function selected(target, value) {
 	    }
 	}
 };
+
+dialog_password = $("#dialog_password").dialog({
+	  autoOpen: false,
+	  modal: true,
+	  title: "암호수정",
+	  height: 300,
+	  width: 800,
+	  resizable: false,
+	  buttons: {
+	    "저장" : function() {
+				if (zephyros.isFormValidate('passwordForm')){
+					zephyros.loading.show();
+					var passwordFormData = $("#passwordForm").serialize();
+					var formData = $("#form02").serialize();
+					var data = passwordFormData + '&' + formData;
+					var mode = $('#mode').val(); 
+
+					zephyros.callAjax({
+						url : '/userPasswordProcess',
+						type : 'post',
+						data : data,
+						success : function(data, status, xhr) {
+							zephyros.loading.hide();
+							zephyros.checkAjaxDialogResult(dialog_password, data);
+						}
+					});	 
+				}
+	    },
+	    "취소": function() {
+	    	dialog_password.dialog("close");
+	      $("#dialog_password").empty();
+	    }
+	  },
+	  close: function() {
+		$("#dialog_password").empty();
+	  }
+	});
+	
+function passwordModal(mode, userId) {
+	//zephyros.loading.show();
+	var url = '';
+	var titleTxt = '';
+	var successTxt = '';
+	var width = 0;
+	url = '/userPasswordForm?mode=U&userId=' + userId;
+	titleTxt = '비밀번호 수정';
+	successTxt = '비밀번호가 수정되었습니다.';
+	width = 500;
+
+	zephyros.callAjax({
+		url : url,
+		type : 'post',
+		data : null,
+		success : function(data, status, xhr) {
+			zephyros.loading.show();
+			zephyros.showDialog(dialog_password, data);
+		}
+	}); 
+}
 </script>

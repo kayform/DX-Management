@@ -133,17 +133,9 @@ dialog_serverForm = $("#dialog_serverForm").dialog({
 	    		zephyros.loading.show();
 				//var url = '/serverProcess?mode=';
 				var mode = $('#mode').val(); 
-				
-				//var url = '/serverProcess';
-				
+
 				var url = '/serverProcess';
-				var titleTxt = "";
-				var successTxt = '서버등록이 완료되었습니다.';
-				
-				if (mode == 'U') {
-					successTxt = '서버정보가 수정되었습니다.';
-				} 
-				
+
 				var formData = $("#serverForm").serialize();				
 
 				zephyros.callAjax({
