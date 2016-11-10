@@ -161,9 +161,14 @@ serverConnCheck = function(value) {
 		type : 'post',
 		async: false,
 		data: {
+			mode: 'T',
 			sys_nm: $('#sys_nm').val(),
+			type: $('#type').val(),
+			db_nm: $('#db_nm').val(),
 			ip: $('#ip').val(),
-			port: $('#port').val()
+			port: $('#port').val(),
+			user_id: $('#user_id').val(),
+			user_pw: $('#user_pw').val()
 		}, 
 		success : function(data, status, xhr) {
 			if (data.isDuplicate == 'true') {

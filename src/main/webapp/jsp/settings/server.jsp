@@ -130,6 +130,7 @@ dialog_serverForm = $("#dialog_serverForm").dialog({
 	  buttons: {
 	    "저장" : function() {
 	    	if (zephyros.isFormValidate('serverForm')){
+	    		zephyros.loading.show();
 				//var url = '/serverProcess?mode=';
 				var mode = $('#mode').val(); 
 				
@@ -150,8 +151,8 @@ dialog_serverForm = $("#dialog_serverForm").dialog({
 					type : 'post',
 					data : formData,
 					success : function(data, status, xhr) {
-						dialog_serverForm.dialog("close");
-						zephyros.showDialog(dialog_info,  successTxt)
+						zephyros.loading.hide();
+						zephyros.checkAjaxDialogResult(dialog_serverForm, data);
 					}
 				});		
 	    	}
@@ -172,13 +173,13 @@ dialog_serverForm = $("#dialog_serverForm").dialog({
 function showServerForm(mode) {
 	zephyros.loading.show();
 	var url = '/serverForm?mode='+mode;
-
+	
  	zephyros.callAjax({
 		url : url,
 		type : 'post',
 		data : null,
 		success : function(data, status, xhr) {
-			zephyros.loading.show();
+			zephyros.loading.hide();
 			zephyros.showDialog(dialog_serverForm, data);
 		}
 	}); 

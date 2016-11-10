@@ -1,5 +1,33 @@
 var zephyros = {};
 
+/*데이터 추가/업데이트/삭제 등의 ajax call 시에 return 되는 값을 map데이터(result, msg)로 통일하고
+ * 결과를 출력 및 다이얼로그 창을 닫는 공통 함수
+ */
+zephyros.checkAjaxDialogResult = function(dialog, result){
+	if (result.result == 'SUCCESS'){		
+		zephyros.showDialog(dialog_info,  result.msg);
+		dialog.dialog("close");
+	}else {
+		alert(result.msg);
+	}
+}
+
+/*
+ * 로딩바
+ */
+zephyros.loading = {
+	show : function() {
+		dialog_progressBar.parent().find(".ui-dialog-titlebar").hide();
+		dialog_progressBar.dialog("open");
+	},
+	hide : function() {
+		dialog_progressBar.dialog("close");
+	}
+};
+
+/*
+ * form validate 함수
+ */
 zephyros.isFormValidate = function(id){
 	$("#" + id).append("<div><button id =\"validateBtn\" name=\"validateBtn\" class=\"button success\">Send</button></div>");
 	$("#validateBtn").click(); 	
@@ -562,33 +590,7 @@ zephyros.dialog = function () {
 	
 	// SHOW
 	return $("#" + id);
-};
-
-zephyros.loading = {
-		display: "none",
-		show : function() {
-			var id = arguments[0] ? "#" + arguments[0] : "body";
-			$("body").data("loading-parent-id", id);
-			$("body").data("loading-display", true);
-			$(id).append("<div class=\"loading-overlay\">");
-			// 1초간 설정이 없을 경우
-			setTimeout( function() {
-				if($("body").data("loading-display")) {
-					var id = $("body").data("loading-parent-id");
-					$(id).append("</div><div class=\"loading bar\"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>");
-					if(!$("body").data("loading-display")) {
-						zephyros.loading.hide(id);
-					}
-				};
-			}, 300);
-		},
-		hide : function() {
-			$("body").data("loading-display", false);
-			$(".loading").remove();
-			$(".loading-overlay").remove();
-		}
-};
-	
+};	
 
 function getCalendar(formName, startDate, endDate){
 	if ($('#'+startDate).length) {

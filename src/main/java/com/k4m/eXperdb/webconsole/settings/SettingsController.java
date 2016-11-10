@@ -97,7 +97,8 @@ public class SettingsController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/userProcess")
-	public ModelAndView userProcess(Model model, HttpSession session, HttpServletRequest request, 
+	@ResponseBody
+	public Map<String, Object> userProcess(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "mode", defaultValue = "") String mode,
 			@RequestParam(value = "userId", defaultValue = "") String userId,
 			@RequestParam(value = "userName", defaultValue = "") String userName,
@@ -114,7 +115,8 @@ public class SettingsController {
 			@RequestParam(value = "useYn", defaultValue = "") String useYn,
 			@RequestParam(value = "sngl_athr_yn", defaultValue = "") String sngl_athr_yn,
 			@RequestParam(value = "pg_mon_client_path", defaultValue = "") String pg_mon_client_path,
-			@RequestParam(value = "enc_mng_path", defaultValue = "") String enc_mng_path) throws Exception {		
+			@RequestParam(value = "enc_mng_path", defaultValue = "") String enc_mng_path) throws Exception {
+		/*
 		ModelAndView mav = new ModelAndView();
 		
 		HashMap<String, String> param = new HashMap<String, String>();
@@ -149,6 +151,63 @@ public class SettingsController {
 		
 		mav.setViewName("user");
 		return mav;
+		*/
+		
+		Map<String, Object> resMap  = new HashMap<String, Object>();
+		
+		String rtn = "";
+		try{
+			HashMap<String, String> param = new HashMap<String, String>();
+			
+			param.put("mode", mode);
+			param.put("user_id", userId);
+			param.put("user_nm", userName);
+			
+			param.put("jgd", jgd);
+			param.put("auth_dv", authDivision);
+			param.put("blg", blg);
+			param.put("dept", department);
+			param.put("hpnm_no", phoneNo);
+			param.put("cg_biz_def", cg_biz_def);
+			param.put("user_expd", DateUtils.Str2Str(userExpired, "yyyy-mm-dd", "yyyymmdd"));
+			param.put("pwd_use_term", passwordUseTerm);
+			param.put("use_yn", useYn);
+			param.put("sngl_athr_yn", sngl_athr_yn);
+			param.put("pg_mon_client_path", StrUtil.hasValue(pg_mon_client_path));
+			param.put("enc_mng_path", StrUtil.hasValue(enc_mng_path));
+			
+			int rowCount = 0;
+			
+			if (mode.equals(Globals.MODE_DATA_INSERT)) {
+				param.put("user_pw", SHA256.SHA256(password1));
+				rowCount = settingsService.insertUser(param);
+				rtn = "유저가 추가되었습니다.";
+			} else if (mode.equals(Globals.MODE_DATA_UPDATE)) {
+				rowCount = settingsService.updateUser(param);
+				rtn = "유저정보가 수정되었습니다.";
+			} else if (mode.equals(Globals.MODE_DATA_DELETE)) {
+				rowCount = settingsService.deleteUser(param);
+				rtn = "유저가 삭제되었습니다.";
+			}
+			
+			if (rowCount == 0) {
+				resMap.put("msg", "암호를 수정할 유저정보를 찾을 수 없습니다.");
+				resMap.put("result", "FAIL");
+				return resMap;
+			}
+		}catch(Exception e){
+			Globals.logger.error(e.getMessage(), e);
+			
+			rtn = e.getMessage();
+			resMap.put("msg", rtn);
+			resMap.put("result", "FAIL");
+			throw new Exception(e.getMessage(), e);
+		}				
+		
+		resMap.put("msg", rtn);
+		resMap.put("result", "SUCCESS");
+		
+		return resMap;
 	}
 	
 	@RequestMapping(value = "/userPasswordForm")
@@ -170,27 +229,47 @@ public class SettingsController {
 	}
 	
 	@RequestMapping(value = "/userPasswordProcess")
-	public ModelAndView userPasswordProcess(Model model, HttpSession session, HttpServletRequest request, 
+	@ResponseBody
+	public Map<String, Object> userPasswordProcess(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "mode", defaultValue = "") String mode,
 			@RequestParam(value = "userId", defaultValue = "") String userId,
 			@RequestParam(value = "password1", defaultValue = "") String password1,
 			@RequestParam(value = "password2", defaultValue = "") String password2) throws Exception {		
-		ModelAndView mav = new ModelAndView();
+		//ModelAndView mav = new ModelAndView();
 		
 		HashMap<String, String> param = new HashMap<String, String>();
+		Map<String, Object> resMap  = new HashMap<String, Object>();
+		String rtn = "암호가 수정되었습니다.";
+		try{
+			param.put("mode", mode);
+			param.put("user_id", userId);
+			param.put("user_pw", SHA256.SHA256(password1));		
+			
+			int rowCount = 0;
+			
+			rowCount = settingsService.updateUserPassword(param);
+			
+			if (rowCount == 0) {
+				resMap.put("msg", "암호를 수정할 유저정보를 찾을 수 없습니다.");
+				resMap.put("result", "FAIL");
+				return resMap;
+			}
+		}catch(Exception e){
+			Globals.logger.error(e.getMessage(), e);
+			
+			rtn = e.getMessage();
+			resMap.put("msg", rtn);
+			resMap.put("result", "FAIL");
+			throw new Exception(e.getMessage(), e);
+		}				
 		
-		param.put("mode", mode);
-		param.put("user_id", userId);
-		param.put("user_pw", SHA256.SHA256(password1));		
+		resMap.put("msg", rtn);
+		resMap.put("result", "SUCCESS");
+		//dataHistoryService.add("userPassword", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), userId, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 		
-		int rowCount = 0;
-		
-		rowCount = settingsService.updateUserPassword(param);
-		
-		dataHistoryService.add("userPassword", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), userId, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
-		
-		mav.setViewName("user");
-		return mav;
+		//mav.setViewName("user");
+		//return mav;
+		return resMap;
 	}
 	
 	/**
@@ -376,13 +455,13 @@ public class SettingsController {
 		HashMap<String , String> param = null;
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
-			sys_nm = StrUtil.hasValue("sys_nm");
-			type = StrUtil.hasValue("type");
-			db_nm = StrUtil.hasValue("db_nm");
-			ip = StrUtil.hasValue("ip");
-			port = StrUtil.hasValue("port");
-			user_id = StrUtil.hasValue("user_id");
-			user_pw = StrUtil.hasValue("user_pw");
+			sys_nm = StrUtil.hasValue(sys_nm);
+			type = StrUtil.hasValue(type);
+			db_nm = StrUtil.hasValue(db_nm);
+			ip = StrUtil.hasValue(ip);
+			port = StrUtil.hasValue(port);
+			user_id = StrUtil.hasValue(user_id);
+			user_pw = StrUtil.hasValue(user_pw);
 			
 			if(Globals.MODE_DATA_DELETE.equals(mode)) {
 				param = new HashMap<String, String>();
@@ -399,35 +478,28 @@ public class SettingsController {
 	            configInfo.SCHEMA_NAME = user_id;
 	            configInfo.DB_TYPE = "POG";	            
 
-	    		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-	    		Map<String, Object> tempMap  = new HashMap<String, Object>();
-
-	    		List<String> message = null;
-	    		String rtn = "";
+	    		String msg = "";
 	    		try {
 	    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 1);
 	    		} catch (Exception e) {
 	    			Globals.logger.error(e.getMessage(), e);
 	    			
-	    			rtn = e.getMessage();
-	    			tempMap.put("rtn", rtn);
-	    			resultList.add(tempMap);
-		    		resMap.put("resultList", resultList);
+	    			msg = e.getMessage();
+	    			resMap.put("msg", msg);
+					resMap.put("result", "FAIL");
 	    			throw new Exception(e.getMessage(), e);
 	    		}finally{
 	        		DBCPPoolManager.shutdownDriver(sys_nm);
 	    		}
 
-	    		rtn  = "접속이 성공했습니다.";
+	    		msg  = "접속이 성공했습니다.";
 
 	    		ByteArrayOutputStream requestOutputStream = new ByteArrayOutputStream();
-	    		requestOutputStream.write(rtn.getBytes("UTF-8"));
-	    		rtn = requestOutputStream.toString("UTF-8");
-				
-	    		tempMap.put("rtn", rtn);
-				resultList.add(tempMap);
-				
-	    		resMap.put("resultList", resultList);
+	    		requestOutputStream.write(msg.getBytes("UTF-8"));
+	    		msg = requestOutputStream.toString("UTF-8");
+
+				resMap.put("result", "SUCCESS");
+				resMap.put("msg", msg);
 			} else {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
@@ -456,9 +528,8 @@ public class SettingsController {
 		    			Globals.logger.error(e.getMessage(), e);
 		    			
 		    			rtn = e.getMessage();
-		    			tempMap.put("rtn", rtn);
-		    			resultList.add(tempMap);
-			    		resMap.put("resultList", resultList);
+		    			resMap.put("msg", rtn);
+						resMap.put("result", "FAIL");
 		    			throw new Exception(e.getMessage(), e);
 		    		}finally{
 		        		DBCPPoolManager.shutdownDriver(sys_nm);

@@ -50,13 +50,19 @@
 <div id="dialog_password2">
   <form>
   </form>
-</div> 
+</div>
+<div id="dialog_progressBar">
+<div id="DetailLinks" >
+     <div id="progressbar">
+     </div>
+</div>
+</div>
 <script>
 /*
 function no_submit(){
     return false;
-}*/
-
+}
+*/
 $(document).ready(function() 
 {
 	var menuName = location.pathname.substring(1, location.pathname.length) + "_menu";
@@ -102,6 +108,7 @@ dialog_profile = $("#dialog_profile").dialog({
 	    "저장" : function() {
 	    	if (zephyros.isFormValidate('form02')){
 				//var url = '/userProcess?mode=';
+				zephyros.loading.show();
 				var url = '/userProcess';
 				var mode = $('#mode').val(); 
 				var titleTxt = "";
@@ -118,8 +125,10 @@ dialog_profile = $("#dialog_profile").dialog({
 					type : 'post',
 					data : formData,
 					success : function(data, status, xhr) {
-						dialog_profile.dialog("close");
-						zephyros.showDialog(dialog_info,  successTxt)
+						//dialog_profile.dialog("close");
+						//zephyros.showDialog(dialog_info,  successTxt)
+						zephyros.loading.hide();
+						zephyros.checkAjaxDialogResult(dialog_profile, data);
 					}
 				});		
 	    	}
@@ -147,22 +156,19 @@ dialog_password = $("#dialog_password").dialog({
 	  buttons: {
 	    "저장" : function() {
 				if (zephyros.isFormValidate('passwordForm')){
+					zephyros.loading.show();
 					var passwordFormData = $("#passwordForm").serialize();
 					var formData = $("#form02").serialize();
 					var data = passwordFormData + '&' + formData;
-					var mode = 'U';
-					
-					if (mode == 'U') {
-						successTxt = '암호가 수정되었습니다. ';
-					} 
-					//zephyros.showDialog(dialog_info,  successTxt);
+					var mode = $('#mode').val(); 
+
  					zephyros.callAjax({
-						url : '/userPasswordProcess?mode='+ mode,
+						url : '/userPasswordProcess',
 						type : 'post',
 						data : data,
 						success : function(data, status, xhr) {
-							zephyros.showDialog(dialog_info,  successTxt);
-							dialog_password.dialog("close");
+							zephyros.loading.hide();
+							zephyros.checkAjaxDialogResult(dialog_password, data);
 						}
 					});	 
 				}
@@ -176,7 +182,19 @@ dialog_password = $("#dialog_password").dialog({
 		$("#dialog_password").empty();
 	  }
 	});
-	
+
+dialog_progressBar = $("#dialog_progressBar").dialog({
+    autoOpen: false,
+    modal: true,  //Lässt keine Aktion bis zum Schließen des Dialog zu
+    height : 65,
+    width : 400,
+    open: function(event, ui) {
+		$( "#progressbar" ).progressbar({
+		    value: false
+		  });
+    }
+});
+
 function profile(mode, userId) {
 	zephyros.loading.show();
 	var url = '';
@@ -198,7 +216,7 @@ function profile(mode, userId) {
 		type : 'post',
 		data : null,
 		success : function(data, status, xhr) {
-			zephyros.loading.show();
+			zephyros.loading.hide();
 			zephyros.showDialog(dialog_profile, data);
 		}
 	}); 

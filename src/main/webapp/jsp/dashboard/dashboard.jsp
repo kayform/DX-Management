@@ -47,7 +47,7 @@
                     <h1 class="text-light">Virtual machines <span class="mif-drive-eta place-right"></span></h1>
                     <hr class="thin bg-grayLighter">
                     <button id="passwordBtn" class="button mif-key"></button>
-                    <button class="button primary" onclick="zephyros.showDialog(dialog_info, '야호')"><span class="mif-plus"></span> Create...</button>
+                    <button class="button primary" onclick="pushMessage('success')"><span class="mif-plus"></span> Create...</button>
                     <button class="button success" onclick="pushMessage('success')"><span class="mif-play"></span> Start</button>
                     <button class="button warning" onclick="pushMessage('warning')"><span class="mif-loop2"></span> Restart</button>
                     <button class="button alert" onclick="pushMessage('alert')">Stop all machines</button>
@@ -107,8 +107,8 @@
             </div>
         </div>
     </div>
-    <script>
+    <script>	
     $("#passwordBtn").on("click", function() {
-    	passwordModal('U', '${userInfo.user_id}');
+    	zephyros.loading.show();
     });
     </script>

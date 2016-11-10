@@ -86,6 +86,19 @@
                 flex-basis: calc(100% - 52px);
             }
         }
+        
+        .ui-progressbar {
+    		position: relative;
+    		background-color: #ccc;
+  		}
+
+  		.progress-label {
+    		position: absolute;
+    		left: 50%;
+    		top: 4px;
+    		font-weight: bold;
+    		text-shadow: 1px 1px 0 #fff;
+  		}       
     </style>
 
     <script>
