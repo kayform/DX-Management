@@ -134,7 +134,11 @@ dupCheck = function(value) {
  	zephyros.callAjax({
 		url : '/systemNameCheck',
 		type : 'post',
-		data : null,
+		data: {
+			sys_nm: $('#sys_nm').val(),
+			ip: $('#ip').val(),
+			port: $('#port').val()
+		}, 
 		success : function(data, status, xhr) {
 			if (data == 'Y') {
 				dupCheck = false;

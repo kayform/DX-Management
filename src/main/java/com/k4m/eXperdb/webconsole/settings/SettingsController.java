@@ -501,16 +501,16 @@ public class SettingsController {
 	@RequestMapping(value = "/systemNameCheck")
 	@ResponseBody
 	public Map<String, Object> dbmsSystemNameCheck(Model model, HttpSession session, HttpServletRequest request, 
-			@RequestParam(value = "sys_nm", defaultValue = "") String systemName,
+			@RequestParam(value = "sys_nm", defaultValue = "") String sys_nm,
 			@RequestParam(value = "ip", defaultValue = "") String ip,
 			@RequestParam(value = "port", defaultValue = "") String port) throws Exception {
 		HashMap<String , String> param = null;
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
 			param = new HashMap<String, String>();
-			param.put("sys_nm", systemName);
-			param.put("ip", systemName);
-			param.put("port", systemName);
+			param.put("sys_nm", sys_nm);
+			param.put("ip", ip);
+			param.put("port", port);
 			int cnt = settingsService.selectSERVERDupCheck(param);
 			if(cnt > 0) {
 				resMap.put("ischeck", false);
