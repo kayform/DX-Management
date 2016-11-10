@@ -18,7 +18,7 @@
 </style>
 <!-- 내용 -->
 <div class="widget" style="margin-bottom: 0px;" >
-	<form id="form02" name="form02"  method="post">
+	<form id="form02" name="form02"  method="post" data-role="validator" data-on-before-submit="return false" data-on-submit="return false" data-hint-mode="hint" data-hint-easing="easeOutBounce">
 		<table summary="접근권한등록/수정" style="width: 80%;" class="table table-bordered table-condensed">
 			<colgroup>
 				<col width="15%">
@@ -32,7 +32,7 @@
 					<th scope="row">Set </th>					
 					<td>
 						<c:if test="${mode =='I' }">
-							<label class="checkbox"><input type="checkbox" class="checkbox" value="10" id="enableAcl" name="enableAcl"></label>
+							<label class="checkbox"><input type="checkbox" class="checkbox" value="10" id="enableAcl" name="enableAcl" ></label>
 						</c:if>
 						<c:if test="${mode =='U' }">
 							<c:if test="${aclInfo.Set == 0}">
@@ -60,7 +60,7 @@
 				<tr>					
 					<th scope="row">Database *</th>					
 					<td>
-						<input type="text" name="str_database" id="str_database" value="${aclInfo.Database}" style="width:45%;">
+ 						<input type="text" name="str_database" id="str_database" value="${aclInfo.Database}" style="width:45%;" data-validate-func="required, custom" data-validate-arg=",charCheck" data-validate-hint="이 필드는 필수이며, 특수문자를 입력할수 없습니다." data-validate-hint-position="top">
 						<select margin-right:10px" name="selectDatabase" id="selectDatabase"  style="width:48%;">					
 							<option value="0">직접 입력</option>
 							<option value="1">all</option>
@@ -76,8 +76,8 @@
 				<tr>						
 					<th scope="row">User  *</th>
 					<td>
-						<input type="text" name="str_user" id="str_user" value="${aclInfo.User}" style="width:45%;">
-							<select margin-right:10px" name="selectUser" id="selectUser"  style="width:48%;">					
+ 						<input type="text" name="str_user" id="str_user" value="${aclInfo.User}" style="width:45%;" data-validate-func="required, custom" data-validate-arg=",charCheck" data-validate-hint="이 필드는 필수이며, 특수문자를 입력할수 없습니다." data-validate-hint-position="top">
+						<select margin-right:10px" name="selectUser" id="selectUser"  style="width:48%;">					
 							<option value="1">직접 입력</option>
 							<option value="2">all</option>
 						</select>
@@ -139,6 +139,16 @@
 			
 		}
 
+		charCheck = function(value) {
+			var userId = value;
+			var excludeCharacter = "{}[]()<>?_|~`!@#$%^&*-+\"'\\/ "; //입력을 막을 특수문자 기재.					
+			for (var i = 0; i < userId.length; i++) {
+				if (-1 != excludeCharacter.indexOf(userId[i])) {
+					return false;
+				}
+			}
+			return true;
+		}; 
 /*  		jQuery.validator.addMethod("charCheck", function(value, element) {
 			var serverId = value;
 			var excludeCharacter = "{}[]()<>?_|~`!@#$%^&*-+\"'\\/ "; //입력을 막을 특수문자 기재.					

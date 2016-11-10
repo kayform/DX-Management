@@ -67,7 +67,7 @@
 						</div>
 						
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
-							<button id="removeBtn" class="button alert" onclick="javascript:aclModal('D',selectServerName.value);">><span class="mif-cross"></span> 삭제</button>
+							<button id="removeBtn" class="button alert" onclick="javascript:aclModal('D',selectServerName.value);"><span class="mif-cross"></span> 삭제</button>
 						</div>
 		
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
@@ -109,7 +109,10 @@
     </div>
 
 <script type="text/javascript">
-        
+$(document).ready(function() {
+	
+}); 
+
 function aclModal(mode, serverId) {
 	var url = '';
 	var titleTxt = '';
@@ -144,6 +147,11 @@ function aclModal(mode, serverId) {
 	var html = '';
 	if (mode == 'V') {		
 		var jsonData;
+ 		
+		var table = $('#acllisttab').DataTable();		
+		table.destroy();
+		$('#acllisttab').empty();
+
 		$.ajax({
             'contentType': 'application/json',
             'dataType': 'json',
@@ -151,7 +159,8 @@ function aclModal(mode, serverId) {
             'type': 'POST',
 			success : function(data, status, xhr) {
 				jsonData = data;
-	 	 		var table = $('#acllisttab').DataTable({
+
+	 	 		table = $('#acllisttab').DataTable({
 	 	 			retrieve: true,
 	 	 			scrollY: 200,
 	 	 			bscrollCollapse: false,
@@ -275,40 +284,42 @@ function aclModal(mode, serverId) {
  						buttons : [ {
  							text : "저장",
  							click : function() {
- 								var str ="";
+ 								if (zephyros.isFormValidate('form02')){
+ 									var str ="";
  					                    //데이터 인풋
- 					            var dialogMode = $("#mode").val();
- 								var vTable = $('#acllisttab').DataTable();
+	 					            var dialogMode = $("#mode").val();
+	 								var vTable = $('#acllisttab').DataTable();
 
- 								if(dialogMode == 'I') {
- 	 								var seq = vTable.data().length;
-								 	vTable.row.add({
-									    "Seq"   :  seq.toString(),									    
-									    "Set"   :  (enableAcl.checked ? "1" : ""),									    
-									    "Type"     :  selectConnType.options[selectConnType.value].text,
-									    "Database" :  str_database.value,
-									    "User"     :  str_user.value,
-									    "Ip"       :  ip.value,
-									    "Method"   :  selectMethod.options[selectMethod.value].text,
-									    "Option"   :  authOption.value,
-									    "Changed"  :  "1"
-									}).draw();
- 								} else {
- 									var seq = vTable.row('.selected').data().Seq;
- 								 	vTable.row('.selected').data({
-									    "Seq"   :  seq,									    
-									    "Set"   :  (enableAcl.checked ? "1" : ""),									    
-									    "Type"     :  selectConnType.options[selectConnType.value].text,
-									    "Database" :  str_database.value,
-									    "User"     :  str_user.value,
-									    "Ip"       :  ip.value,
-									    "Method"   :  selectMethod.options[selectMethod.value].text,
-									    "Option"   :  authOption.value,
-									    "Changed"  :  "1"
-								}).draw();
+	 								if(dialogMode == 'I') {
+	 	 								var seq = vTable.data().length;
+									 	vTable.row.add({
+										    "Seq"   :  seq.toString(),									    
+										    "Set"   :  (enableAcl.checked ? "1" : ""),									    
+										    "Type"     :  selectConnType.options[selectConnType.value].text,
+										    "Database" :  str_database.value,
+										    "User"     :  str_user.value,
+										    "Ip"       :  ip.value,
+										    "Method"   :  selectMethod.options[selectMethod.value].text,
+										    "Option"   :  authOption.value,
+										    "Changed"  :  "1"
+										}).draw();
+	 								} else {
+	 									var seq = vTable.row('.selected').data().Seq;
+	 								 	vTable.row('.selected').data({
+										    "Seq"   :  seq,									    
+										    "Set"   :  (enableAcl.checked ? "1" : ""),									    
+										    "Type"     :  selectConnType.options[selectConnType.value].text,
+										    "Database" :  str_database.value,
+										    "User"     :  str_user.value,
+										    "Ip"       :  ip.value,
+										    "Method"   :  selectMethod.options[selectMethod.value].text,
+										    "Option"   :  authOption.value,
+										    "Changed"  :  "1"
+										}).draw();
+	 								}
+								 	dialog_acl.dialog("close");
+								 	$("#modify-aclinfo").empty();
  								}
-							 	dialog_acl.dialog("close");
-							 	$("#modify-aclinfo").empty();
  							}
  						}, {
  							text : "닫기",
