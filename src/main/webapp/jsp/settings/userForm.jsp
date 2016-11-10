@@ -15,6 +15,7 @@
 	}
 </style>
         <form id="form02" name="form02"  method="post" data-role="validator" data-on-before-submit="return false" data-on-submit="return false" data-hint-mode="hint" data-hint-easing="easeOutBounce">
+        <input type="hidden" id="mode" name="mode" value="${mode}" />
 		<table summary="사용자정보등록/수정" style="width: 100%;" class="table">
 			<colgroup>
 				<col width="15%">
@@ -337,6 +338,7 @@ dupCheck = function(value) {
  	zephyros.callAjax({
 		url : '/userDuplicateCheack?mode=I&userId=' + userId,
 		type : 'post',
+		async : false,
 		data : null,
 		success : function(data, status, xhr) {
 			if (data == 'Y') {

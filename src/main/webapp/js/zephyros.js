@@ -37,6 +37,7 @@ zephyros.callAjax = function(){
 	var success = options.success;
 	var error = options.error;
 	var complete = options.complete;
+	var async = options.async;
 	
 	if (!error) {
 		erorr = function (e) { 
@@ -50,10 +51,15 @@ zephyros.callAjax = function(){
 		};
 	}
 	
+	if (async != false) {
+		async = true;
+	}
+	
 	$.ajax({
 		url : url,
 		type : 'post',
 		data : data,
+		async : async,
 		success : success,
 		error : error, 
 		complete : complete

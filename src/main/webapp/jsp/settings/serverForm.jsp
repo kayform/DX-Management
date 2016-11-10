@@ -15,6 +15,7 @@
 	}
 </style>
         <form id="serverForm" name="serverForm"  method="post" data-role="validator" data-on-before-submit="return false" data-on-submit="return false" data-hint-mode="hint" data-hint-easing="easeOutBounce">
+		<input type="hidden" id="mode" name="mode" value="${mode}" />
 		<table summary="서버등록/수정" style="width: 100%;" class="table">
 			<colgroup>
 				<col width="15%">
@@ -43,7 +44,7 @@
 					<th scope="row">유형 *</th>					
 					<td>
 						<c:if test="${mode !='V' }">
-								<select id="searchType" name="searchType" style="width: 250px;" onChange="javascript:refreshElement()">			
+								<select id="type" name="type" style="width: 250px;" onChange="javascript:refreshElement()">			
 									<c:forEach var="item" items="${serverTypeList}">
 										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd}</option>
 									</c:forEach>
@@ -134,13 +135,14 @@ dupCheck = function(value) {
  	zephyros.callAjax({
 		url : '/systemNameCheck',
 		type : 'post',
+		async: false,
 		data: {
 			sys_nm: $('#sys_nm').val(),
 			ip: $('#ip').val(),
 			port: $('#port').val()
 		}, 
 		success : function(data, status, xhr) {
-			if (data == 'Y') {
+			if (data.isDuplicate == 'true') {
 				dupCheck = false;
 			} else {
 				dupCheck = true;		
@@ -150,6 +152,29 @@ dupCheck = function(value) {
 	return dupCheck;
 };
 
+serverConnCheck = function(value) {
+	var dupCheck = false;
+	var userId = value;
+
+ 	zephyros.callAjax({
+		url : '/systemProcess',
+		type : 'post',
+		async: false,
+		data: {
+			sys_nm: $('#sys_nm').val(),
+			ip: $('#ip').val(),
+			port: $('#port').val()
+		}, 
+		success : function(data, status, xhr) {
+			if (data.isDuplicate == 'true') {
+				dupCheck = false;
+			} else {
+				dupCheck = true;		
+			}
+		}
+	}); 
+	return dupCheck;
+};
 
 //사용자정보 수정시 Select Box의 Option값이 DB에서 가져온 값과 일치하는 경우 Selected를 설정
 function selected(target, value) {
@@ -161,13 +186,13 @@ function selected(target, value) {
 };
 
 function refreshElement() {
-	if ($('#searchType').val() == 'POSTGRESQL' || $('#searchType').val() == 'CLOUDERA-MANAGER'){
+	if ($('#type').val() == 'POSTGRESQL' || $('#type').val() == 'CLOUDERA-MANAGER'){
 		//$("#userInfoTr").css("display","");
 		$("#userInfoTr").prop("disabled",false);  
 		$("#user_id").prop("readonly",false);
 		$("#user_pw").prop("readonly",false);
 		
-		if ($('#searchType').val() == 'POSTGRESQL') {
+		if ($('#type').val() == 'POSTGRESQL') {
 			$("#dbNmTr").prop("disabled",false);  
 			$("#db_nm").prop("readonly",false);
 		}else{

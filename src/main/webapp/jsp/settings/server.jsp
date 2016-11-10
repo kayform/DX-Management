@@ -130,18 +130,23 @@ dialog_serverForm = $("#dialog_serverForm").dialog({
 	  buttons: {
 	    "저장" : function() {
 	    	if (zephyros.isFormValidate('serverForm')){
-				var url = '/serverProcess?mode=';
-				var mode = 'U';
+				//var url = '/serverProcess?mode=';
+				var mode = $('#mode').val(); 
+				
+				//var url = '/serverProcess';
+				
+				var url = '/serverProcess';
 				var titleTxt = "";
 				var successTxt = '서버등록이 완료되었습니다.';
 				
 				if (mode == 'U') {
 					successTxt = '서버정보가 수정되었습니다.';
 				} 
-				var formData = $("#serverForm").serialize();
 				
+				var formData = $("#serverForm").serialize();				
+
 				zephyros.callAjax({
-					url : url + mode,
+					url : url,
 					type : 'post',
 					data : formData,
 					success : function(data, status, xhr) {

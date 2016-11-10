@@ -101,10 +101,11 @@ dialog_profile = $("#dialog_profile").dialog({
 	  buttons: {
 	    "저장" : function() {
 	    	if (zephyros.isFormValidate('form02')){
-				var url = '/userProcess?mode=';
-				var mode = 'U';
+				//var url = '/userProcess?mode=';
+				var url = '/userProcess';
+				var mode = $('#mode').val(); 
 				var titleTxt = "";
-				var successTxt = "";
+				var successTxt = "사용자가 생성되었습니다";
 				
 				if (mode == 'U') {
 					titleTxt = '사용자 수정';
@@ -113,7 +114,7 @@ dialog_profile = $("#dialog_profile").dialog({
 				var formData = $("#form02").serialize();
 				
 				zephyros.callAjax({
-					url : '/userProcess?mode='+ mode,
+					url : url,
 					type : 'post',
 					data : formData,
 					success : function(data, status, xhr) {

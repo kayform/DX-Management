@@ -376,6 +376,14 @@ public class SettingsController {
 		HashMap<String , String> param = null;
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		try {
+			sys_nm = StrUtil.hasValue("sys_nm");
+			type = StrUtil.hasValue("type");
+			db_nm = StrUtil.hasValue("db_nm");
+			ip = StrUtil.hasValue("ip");
+			port = StrUtil.hasValue("port");
+			user_id = StrUtil.hasValue("user_id");
+			user_pw = StrUtil.hasValue("user_pw");
+			
 			if(Globals.MODE_DATA_DELETE.equals(mode)) {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
@@ -513,15 +521,15 @@ public class SettingsController {
 			param.put("port", port);
 			int cnt = settingsService.selectSERVERDupCheck(param);
 			if(cnt > 0) {
-				resMap.put("ischeck", false);
+				resMap.put("isDuplicate", true);
 			} else {
-				resMap.put("ischeck", true);
+				resMap.put("isDuplicate", false);
 			}
 			resMap.put("result", "SUCCESS");
 			resMap.put("msg", "");
 		} catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);
-			resMap.put("ischeck", false);
+			resMap.put("isDuplicate", true);
 			resMap.put("result", "ERROR");
 			resMap.put("msg", e.getMessage());
 		}
