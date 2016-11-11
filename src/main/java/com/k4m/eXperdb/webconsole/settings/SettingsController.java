@@ -701,14 +701,6 @@ public class SettingsController {
 	
 				rowCount = settingsService.updateUserAuthList(paramList);
 				
-				dataHistoryService.add("userAuth", "I", (String)session.getAttribute("userId"), request.getRemoteAddr(), userIdArr[0], null, JSONArray.toJSONString(paramList).getBytes("UTF-8"));
-				
-//				if (mode.equals(Globals.MODE_DATA_INSERT)) {
-//					rowCount = settingsService.insertUserAuth(param);
-//				} else if (mode.equals(Globals.MODE_DATA_DELETE)) {
-//					rowCount = settingsService.deleteUserAuth(param);
-//				}
-				
 				responseMap.put("resultMessage", "SUCCESS");
 			} else {
 				throw new Exception("잘못된 요청입니다.");
