@@ -42,6 +42,10 @@
 <div id="dialog_profile">
   <form>
   </form>
+</div>
+<div id="dialog_userAuth">
+  <form>
+  </form>
 </div> 
 <div id="dialog_progressBar">
 <div id="DetailLinks" >
