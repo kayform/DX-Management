@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -631,5 +632,93 @@ public class SettingsController {
 			resMap.put("msg", e.getMessage());
 		}
 		return resMap;
+	}
+	
+	/**
+	 * 사용자 ID를 입력받아 해당 사용자가 접근가능한 메뉴리스트를 반환
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param userId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/userAuthForm")
+	public ModelAndView userAuthForm(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "userId", defaultValue = "") String userId) throws Exception {		
+		ModelAndView mav = new ModelAndView();
+		HashMap<String, String> param = new HashMap<String, String>();
+		param.put("user_id", userId);
+		List<Map<String, Object>> menuList = settingsService.selectUserAuth(param);
+		mav.addObject("menuList", menuList);
+		mav.addObject("userId", userId);
+		mav.setViewName("userAuthForm");
+		return mav;
+	}
+	
+	
+	/**
+	 * 사용자에 대한 메뉴권한 처리
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param mode
+	 * @param userId
+	 * @param menuId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/userAuthProcess")
+	@ResponseBody
+	public HashMap<String, Object> userAuthProcess(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "mode", defaultValue = "") String[] mode,
+			@RequestParam(value = "userId", defaultValue = "") String[] userId,
+			@RequestParam(value = "menuId", defaultValue = "") String[] menuId) throws Exception {	
+		HashMap<String, Object> responseMap = new HashMap<String, Object>();
+		try {
+
+//			HashMap<String, String> param = new HashMap<String, String>();
+//			param.put("mode", mode);
+//			param.put("user_id", userId);
+//			param.put("menu_id", menuId);
+			
+			@SuppressWarnings("unused")
+			int rowCount = 0;
+
+			String[] modeArr = request.getParameterValues("mode");
+			String[] userIdArr = request.getParameterValues("userId");
+			String[] menuIdArr = request.getParameterValues("menuId");
+		    
+			if(modeArr != null) {
+				List<HashMap<String, String>> paramList = new ArrayList<HashMap<String, String>>();
+				for(int i=0;i<modeArr.length;i++) {
+					HashMap<String, String> param = new HashMap<String, String>();
+					param.put("mode", modeArr[i]);
+					param.put("user_id", userIdArr[i]);
+					param.put("menu_id", menuIdArr[i]);
+					paramList.add(param);
+				}
+	
+				rowCount = settingsService.updateUserAuthList(paramList);
+				
+				dataHistoryService.add("userAuth", "I", (String)session.getAttribute("userId"), request.getRemoteAddr(), userIdArr[0], null, JSONArray.toJSONString(paramList).getBytes("UTF-8"));
+				
+//				if (mode.equals(Globals.MODE_DATA_INSERT)) {
+//					rowCount = settingsService.insertUserAuth(param);
+//				} else if (mode.equals(Globals.MODE_DATA_DELETE)) {
+//					rowCount = settingsService.deleteUserAuth(param);
+//				}
+				
+				responseMap.put("resultMessage", "SUCCESS");
+			} else {
+				throw new Exception("잘못된 요청입니다.");
+			}
+		} catch (Exception e) {
+			if (!(e.getMessage().indexOf("duplicate key value violates unique constraint") > -1)) {
+				Globals.logger.error(e.getMessage(), e);
+				responseMap.put("resultMessage", e.getMessage());
+			}			
+		}
+		return responseMap;
 	}
 }
