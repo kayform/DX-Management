@@ -6,19 +6,10 @@
 
 	<select id="selectServerList" resultType="hashmap">
 		  <![CDATA[
-			select T1.user_id, T1.user_nm, T1.user_pw,
-				(SELECT SYS_MNT_CD_NM
-				FROM webadmin.tb_mt_CO_CODEGRPDTL S2
-				WHERE S2.SYS_GRPCD='C0001'
-				AND S2.SYS_MNT_CD = T1.auth_dv )  AS auth_dv,
-				T1.jgd, T1.dept, T1.hpnm_no, T1.blg,
-				(SELECT SYS_MNT_CD_NM
-				FROM webadmin.tb_mt_CO_CODEGRPDTL S2
-				WHERE S2.SYS_GRPCD='C0002'
-				AND S2.SYS_MNT_CD = T1.use_yn )  AS use_yn,
-				T1.cg_biz_def  from webadmin.tb_mt_co_user  T1
-          where auth_dv like #{auth_dv} and use_yn like  #{use_yn}  and user_nm like  #{user_nm}
-          order by lt_wk_dtti desc
+			select * 
+			from webadmin.tb_mt_co_svrinfo
+			where type = 'POSTGRESQL'
+            order by sys_nm desc
           ]]>
 	</select>
 

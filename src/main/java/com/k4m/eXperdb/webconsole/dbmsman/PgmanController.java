@@ -56,6 +56,7 @@ import com.k4m.eXperdb.webconsole.util.DateUtils;
 
 
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -94,17 +95,10 @@ public class PgmanController {
 		 * @throws Exception
 		 */
 		@RequestMapping(value = "/acl")
-		public ModelAndView acl(Model model, HttpSession session, HttpServletRequest request, 
-				@RequestParam(value = "searchAuthDivision", defaultValue = "") String searchAuthDivision, 
-				@RequestParam(value = "searchUseYn", defaultValue = "") String searchUseYn,
-				@RequestParam(value = "searchUserName", defaultValue = "") String searchUserName) throws Exception {
+		public ModelAndView acl(Model model, HttpSession session, HttpServletRequest request) throws Exception {
 			List<Map<String, Object>> serverList = null;		
 			HashMap<String, String> param = new HashMap<String, String>();
-			
-			param.put("auth_dv", (searchAuthDivision == null || "".equals(searchAuthDivision)) ? "%" : "%" + searchAuthDivision + "%");
-			param.put("use_yn", (searchUseYn == null || "".equals(searchUseYn)) ? "%" : "%" + searchUseYn + "%");
-			param.put("user_nm", (searchUserName == null || "".equals(searchUserName)) ? "%" : "%" + searchUserName + "%");
-			
+						
 			try{
 				serverList = pgmanService.selectServerList(param);		
 			}catch (Exception e){
@@ -112,16 +106,11 @@ public class PgmanController {
 			}
 			ModelAndView mav = new ModelAndView();
 			mav.addObject("serverList", serverList);
-			mav.addObject("searchAuthDivision", searchAuthDivision);
-			mav.addObject("searchUseYn", searchUseYn);
-			mav.addObject("searchUserName", searchUserName);
-			
-			mav.addObject("serverId", session.getAttribute("serverId"));
-			mav.addObject("userAuth", session.getAttribute("userAuth"));
 
 			mav.setViewName("acl");
 			return mav;
-		}		
+		}	
+		
 
 	/**
 	 * 사용자 ID와 Mode(CRU)를 입력받아 입력받은 사용자에 대한 정보를 리턴

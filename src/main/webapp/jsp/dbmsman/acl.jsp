@@ -21,7 +21,7 @@
                             <th class="sortable-column sort-asc" style="width: 180px">Server Name</th>
                             <th class="sortable-column" style="width: 180px">IP Address</th>
                             <th class="sortable-column" style="width: 100px">Port</th>
-                            <th class="sortable-column" style="width: 50%">Comment</th>
+                            <th class="sortable-column" style="width: 50%">Database</th>
                             <th></th>
                         </tr>
                         </thead>
@@ -35,10 +35,10 @@
 							<c:otherwise>
 								<c:forEach items="${serverList}" var="item">
 									<tr>
-										<td>${item.user_id}</td>
-										<td>${item.user_id}</td>
-										<td>${item.user_id}</td>
-										<td>${item.user_id}</td>
+										<td>${item.sys_nm}</td>
+										<td>${item.ip}</td>
+										<td>${item.port}</td>
+										<td>${item.db_nm}</td>
 										<td>
 											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:aclModal('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
 										</td>
@@ -84,11 +84,11 @@
  				 <table id="acllisttab" class="cell-border dataTable no-footer" cellspacing="0" width="100%">
                    <thead>
                    <tr>
-						<th style="width:0">Seq</th>
-						<th style="width:0">Set</th>
-						<th style="width:40">Type</th>
-						<th style="width:17%">Database</th>
-						<th style="width:17%">User</th>
+						<th style="width:0;visibility:hidden;display:none;">Seq</th>
+						<th style="width:1%;">Set</th>
+						<th style="width:5%">Type</th>
+						<th style="width:15%">Database</th>
+						<th style="width:10%">User</th>
 						<th style="width:17%">IP-Address</th>
 						<th style="width:12%">Method</th>
 						<th style="width:12%">Option</th>
@@ -148,10 +148,10 @@ function aclModal(mode, serverId) {
 	if (mode == 'V') {		
 		var jsonData;
  		
-		var table = $('#acllisttab').DataTable();		
+ 		var table = $('#acllisttab').DataTable();
 		table.destroy();
-		$('#acllisttab').empty();
-
+		$('#acllisttab tbody').empty();
+ 
 		$.ajax({
             'contentType': 'application/json',
             'dataType': 'json',
@@ -161,14 +161,16 @@ function aclModal(mode, serverId) {
 				jsonData = data;
 
 	 	 		table = $('#acllisttab').DataTable({
-	 	 			retrieve: true,
-	 	 			scrollY: 200,
+		 	        fixedHeader: true,
+/* 	 	 			retrieve: true, */
+	 	 			scrollY: 300,
 	 	 			bscrollCollapse: false,
 	 	 			paging: false,
 	 				autoWidth : true,
 	 				processing: true,
 	 				ordering: false,
 	 				searching: false,
+	 				destroy: true,
 		 	        data: jsonData,
 		 	        "columns" : 
 			 			[
@@ -185,9 +187,9 @@ function aclModal(mode, serverId) {
 				 	            },
 				 			}, 
 					        {"data" : 'Type', "width": "5%"},
-					        {"data" : 'Database', "width": "17%"}, 
-					        {"data" : 'User', "width": "17%"}, 
-					        {"data" : 'Ip', "width": "17%"},
+					        {"data" : 'Database', "width": "15%"}, 
+					        {"data" : 'User', "width": "12%"}, 
+					        {"data" : 'Ip', "width": "12%"},
 					        {"data" : 'Method', "width": "12%"}, 
 					        {"data" : 'Option', "width": "12%"},
 					        {"data" : 'Changed', "width": "0%"}
@@ -205,11 +207,20 @@ function aclModal(mode, serverId) {
 				   select: {
 				        style: 'os',
 				        selector: 'td:not(:last-child)' // no row selection on last column
-				    }
+				    },
+				   buttons: [
+			        	{
+			                text: 'Reload table',
+			                action: function () {
+			                    table.ajax.reload();
+			                }
+			            }
+			        ]
 		 	    });
 	 	 		
 	 	 		//table.column( 8 ).visible( false );
-	 	 	    
+
+	 	 	     		
 		 	 	$('#removeBtn').click( function () {
 		 	         table.row('.selected').remove().draw( false );
 		 	    });
@@ -221,6 +232,8 @@ function aclModal(mode, serverId) {
 				// $(':button', form).attr('disabled', false).removeClass('disabled');
 			}
 		});
+		
+    
 	} else if (mode == 'D') {
 		successTxt = '접근권한이 삭제되었습니다.';
 		var dTable = $('#acllisttab').DataTable();		
