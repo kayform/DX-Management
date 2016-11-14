@@ -208,8 +208,7 @@ public class SettingsServiceImpl implements SettingsService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Map<String,Object>> selectSERVER(Map<String, Object> param) {
-		Map<String , Object> searchParams = (Map<String , Object>) param.get("SEARCH_PARAM");
-		
+		/*
 		int pageSize = Integer.parseInt((String) param.get("PAGE_SIZE"));
 		int currentPage = Integer.parseInt((String) param.get("CURRENT_PAGE"));
 		
@@ -218,8 +217,8 @@ public class SettingsServiceImpl implements SettingsService {
 		
 		searchParams.put("start", start);
 		searchParams.put("end", end);
-		
-		return settingsDAO.selectSERVER(searchParams);
+		*/
+		return settingsDAO.selectSERVER(param);
 	}
 
 	@Override

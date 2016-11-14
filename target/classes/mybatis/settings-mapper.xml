@@ -25,7 +25,6 @@
 			       	   AND T1.TYPE LIKE #{type}
 			       	   AND T1.IP LIKE #{ip}
 					  ) T2 
-				WHERE T2.NO BETWEEN #{start} AND #{end}
          ]]>
 	</select>
 	<!-- SERVER 전체 건수 조회 -->

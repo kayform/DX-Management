@@ -44,7 +44,7 @@
 					<th scope="row">유형 *</th>					
 					<td>
 						<c:if test="${mode !='V' }">
-								<select id="type" name="type" style="width: 250px;" onChange="javascript:refreshElement()">			
+								<select id="type" name="type" style="width: 250px;" onchange="javascript:refreshElement()">			
 									<c:forEach var="item" items="${serverTypeList}">
 										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd}</option>
 									</c:forEach>
@@ -191,6 +191,8 @@ function selected(target, value) {
 };
 
 function refreshElement() {
+	alert($('#type option:selected').text());
+	/*
 	if ($('#type').val() == 'POSTGRESQL' || $('#type').val() == 'CLOUDERA-MANAGER'){
 		//$("#userInfoTr").css("display","");
 		$("#userInfoTr").prop("disabled",false);  
@@ -214,6 +216,6 @@ function refreshElement() {
 		$("#user_pw").val("");
 		$("#db_nm").val("");
 		//$("#userInfoTr").css("display","none");
-	}
+	}*/
 };
 </script>

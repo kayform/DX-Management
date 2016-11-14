@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.dxmig.db.DBCPPoolManager;
 import com.dxmig.db.datastructure.ConfigInfo;
 import com.k4m.eXperdb.webconsole.settings.SettingsService;
+import com.k4m.eXperdb.webconsole.util.SecureManager;
 
 public class DBCPInitalizingBean implements InitializingBean {
 	@Autowired SettingsService settingsService;
@@ -25,14 +26,16 @@ public class DBCPInitalizingBean implements InitializingBean {
 			param.put("type", "%");			
 			param.put("ip", "%");
 			
+			/*
 			int totalCount = settingsService.selectSERVERTotalCount(param); // 데이터 전체 건수 조회
-			
+
 			Map<String , Object> requestMap = new HashMap<String, Object>();
 			requestMap.put("SEARCH_PARAM", param);
 			requestMap.put("PAGE_SIZE", Integer.toString(1));
 			requestMap.put("CURRENT_PAGE", Integer.toString(totalCount));
+			*/
 			
-			List<Map<String, Object>> serverList = settingsService.selectSERVER(requestMap); // 데이터 리스트 조회
+			List<Map<String, Object>> serverList = settingsService.selectSERVER(param); // 데이터 리스트 조회
 			
     		Map<String, Object> tempMap  = new HashMap<String, Object>();
     		
@@ -41,6 +44,7 @@ public class DBCPInitalizingBean implements InitializingBean {
            		configInfo.SERVERIP = (String)map.get("ip");
                 configInfo.USERID = (String)map.get("user_id");
                 configInfo.DB_PW = (String)map.get("user_pw");;
+                configInfo.DB_PW = SecureManager.decrypt(configInfo.DB_PW);
                 configInfo.PORT = (String)map.get("port");;
                 configInfo.DBNAME = (String)map.get("db_nm");;
                 configInfo.SCHEMA_NAME = (String)map.get("user_id");;
