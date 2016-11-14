@@ -47,10 +47,15 @@ public class DBCPInitalizingBean implements InitializingBean {
                 configInfo.DB_TYPE = "POG";	   
                 
                 String sys_nm = (String)map.get("sys_nm");
-                DBCPPoolManager.setupDriver(configInfo, sys_nm, 5);
+                
+                try{
+                	DBCPPoolManager.setupDriver(configInfo, sys_nm, 5);
+                }catch (Exception e) {
+                	DBCPPoolManager.shutdownDriver(sys_nm);
+        			Globals.logger.error(e.getMessage(), e);
+        		}                
     		}
 		} catch (Exception e) {
-			DBCPPoolManager.shutdownAllDriver();;
 			Globals.logger.error(e.getMessage(), e);
 		}
 	}
