@@ -136,9 +136,7 @@
 		<beans:property name="dataSource" ref="dataSource"></beans:property>
 	</beans:bean>
 	
-	<!-- 
-	<beans:bean name="propertieInitializingBean" class="com.k4m.eXperdb.webconsole.common.PropertieInitializingBean"/>
- 	-->
+	<beans:bean name="propertieInitializingBean" class="com.k4m.eXperdb.webconsole.common.DBCPInitalizingBean"/>
 	
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	
