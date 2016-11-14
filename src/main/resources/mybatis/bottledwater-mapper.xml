@@ -4,11 +4,11 @@
 
 <mapper namespace="bottledwater-mapper">
  
-	<select id="serverList" resultType="hashmap">
+	<select id="selectServerList" resultType="hashmap">
 		  <![CDATA[
 			select * 
 			from webadmin.tb_mt_co_svrinfo
-			where type = #{type}
+			where type = 'POSTGRESQL'
             order by sys_nm desc
           ]]>
 	</select>
