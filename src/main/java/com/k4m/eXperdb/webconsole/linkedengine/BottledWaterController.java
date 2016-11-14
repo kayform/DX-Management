@@ -37,7 +37,7 @@ public class BottledWaterController {
 	 * 
 	 * searchServerType 파라미터는 현재 사용하지 않으나 향후 요구사항 변경을 대비하여 존치시킴 remarked by manimany
 	 * 
-	 * @param model
+	 * @param model 
 	 * @param session
 	 * @param request
 	 * @param searchServerType
@@ -133,10 +133,12 @@ public class BottledWaterController {
 	    } catch(Exception e) {
 	    	Globals.logger.error(e.getMessage(), e);
 	    }
+		Statement listST = null;
+		ResultSet listRS = null;
 		
 	    try {
-			Statement listST = conn.createStatement();
-			ResultSet listRS = listST.executeQuery(databaseListQuery);
+			listST = conn.createStatement();
+			listRS = listST.executeQuery(databaseListQuery);
 
 			Statement st = conn.createStatement();
 			ResultSet rs = null;
@@ -173,23 +175,24 @@ public class BottledWaterController {
 					Globals.logger.debug("============ e.getSQLState() ======="+e.getSQLState()+"==========");
 					
 					//테이블이 없을 경우 42P01 반환, function이 없을 경우 42883 반환
-					if(e.getSQLState().equals("42P01") || e.getSQLState().equals("42883")) {
+					if(e.getSQLState().equals("42P01") || e.getSQLState().equals("42883") ) {
 						Globals.logger.info(dbName+"은 extension이 설치되지 않았습니다.");
-						rs.close();
-						st.close();
 					}
 					else {
-						rs.close();
-						st.close();
 						throw e;
 					}
+				} finally{
+			    	if(rs !=  null) rs.close();
+			    	if(st !=  null) st.close();
 				}
 			}
 			
-			listRS.close();
-			listST.close();			
 	    } catch (Exception e) {
 	    	Globals.logger.error(e.getMessage(), e);
+	    } finally{
+	    	if(listRS !=  null) listRS.close();
+	    	if(listST !=  null) listRS.close();
+	    	if(conn !=  null) listRS.close();
 	    }
 	    
 		Globals.logger.debug("============ databaseList.size() ======="+databaseList.size()+"==========");
