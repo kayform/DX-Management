@@ -20,7 +20,7 @@
 		<!-- 서버관리 및 기타셋팅 -->
 		<mapper resource="mybatis/settings-mapper.xml"/>
 		
-		<!-- 서버관리 및 기타셋팅 -->
-		<mapper resource="mybatis/bottlewater-mapper.xml"/>
+		<!-- bottledwater 셋팅 -->
+		<mapper resource="mybatis/bottledwater-mapper.xml"/>
 	</mappers>
 </configuration>
