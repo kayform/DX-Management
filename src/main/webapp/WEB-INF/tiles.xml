@@ -163,4 +163,14 @@
 	<definition name="wcThread" template="/jsp/settings/thread.jsp"/>
 	<!-- 500 에러-->
 	<definition name="error" template="/jsp/err500.jsp"/>
+	
+	<!-- bottledwater 관리 -->
+	<definition name="bottledWater" extends="base.definition">
+		<put-attribute name="content" value="/jsp/linkedengine/bottledWater.jsp" />
+	</definition>
+	<definition name="databaseList" template="/jsp/linkedengine/databaseList.jsp">
+	</definition>
+	
+	
+	
 </tiles-definitions>
