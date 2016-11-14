@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -318,9 +317,9 @@ public class SettingsController {
 	}
 	
 	@RequestMapping(value = "/server")
-	public ModelAndView dbms(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSystemName", defaultValue = "") String searchSystemName,
+	public ModelAndView dbms(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "sys_nm", defaultValue = "") String sys_nm,
 			@RequestParam(value = "type", defaultValue = "") String type, 
-			@RequestParam(value = "searchIp", defaultValue = "") String searchIp, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
+			@RequestParam(value = "ip", defaultValue = "") String ip, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		try {
 			// 리스트 네이게이션 개수
@@ -333,9 +332,9 @@ public class SettingsController {
 			}
 			
 			Map<String, Object> param = new HashMap<String, Object>();
-			param.put("searchSystemName", (searchSystemName == null || searchSystemName.equals("")) ? "%" : "%" + searchSystemName + "%");
+			param.put("sys_nm", (sys_nm == null || sys_nm.equals("")) ? "%" : "%" + sys_nm + "%");
 			param.put("type", (type == null || type.equals("")) ? "%" : "%" + type + "%");			
-			param.put("searchIp", (searchIp == null || searchIp.equals("")) ? "%" : "%" + searchIp + "%");
+			param.put("ip", (ip == null || ip.equals("")) ? "%" : "%" + ip + "%");
 			
 			Map<String , Object> requestMap = new HashMap<String, Object>();
 			requestMap.put("SEARCH_PARAM", param);
@@ -343,7 +342,8 @@ public class SettingsController {
 			requestMap.put("CURRENT_PAGE", Integer.toString(currentPage));
 			
 			int totalCount = settingsService.selectSERVERTotalCount(param); // 데이터 전체 건수 조회
-			List<Map<String, Object>> list = settingsService.selectSERVER(requestMap); // 데이터 리스트 조회
+//			List<Map<String, Object>> serverList = settingsService.selectSERVER(requestMap); // 데이터 리스트 조회
+			List<Map<String, Object>> serverList = settingsService.selectSERVER(requestMap); // 데이터 리스트 조회
 
 			List<Map<String,Object>> serverTypeList = commonService.selectSystemCode("R0001");
 			mav.addObject("serverTypeList", serverTypeList);
@@ -359,7 +359,7 @@ public class SettingsController {
 			mav.addObject("searchIp", searchIp);
 			*/
 			
-			mav.addObject("list", list);
+			mav.addObject("serverList", serverList);
 			mav.setViewName("server");
 		} catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);
@@ -542,16 +542,19 @@ public class SettingsController {
 		            configInfo.DB_TYPE = "POG";	   
 		    		String rtn = "";
 		    		try {
-		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 1);
-		    		} catch (Exception e) {
+		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 5);
+		    		} catch (Exception e) {		    			
 		    			Globals.logger.error(e.getMessage(), e);
 		    			
 		    			rtn = e.getMessage();
 		    			resMap.put("msg", rtn);
 						resMap.put("result", "FAIL");
+						
+						if (DBCPPoolManager.ContaintPool(sys_nm)){
+							DBCPPoolManager.shutdownDriver(sys_nm);
+						}
+						
 		    			throw new Exception(e.getMessage(), e);
-		    		}finally{
-		        		DBCPPoolManager.shutdownDriver(sys_nm);
 		    		}
 					break;
 				case "KAFKA":
@@ -563,15 +566,16 @@ public class SettingsController {
 				case "CLOUDERA-MANAGER":
 					break;
 				}
-				String databasePw = "";
+				
+				String userPw = "";
 				try {
 					//db_pw = SecureManager.encrypt(req.getParameter("databasePassword"));
-					databasePw = SecureManager.encrypt(user_pw);
+					userPw = SecureManager.encrypt(user_pw);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					Globals.logger.error(e.getMessage(), e);
 				}
-				param.put("user_pw", databasePw);
+				param.put("user_pw", userPw);
 				
 
 				CustomUserDetails userDetails = (CustomUserDetails) session.getAttribute("userLoginInfo");
@@ -632,85 +636,5 @@ public class SettingsController {
 			resMap.put("msg", e.getMessage());
 		}
 		return resMap;
-	}
-	
-	/**
-	 * 사용자 ID를 입력받아 해당 사용자가 접근가능한 메뉴리스트를 반환
-	 * @param model
-	 * @param session
-	 * @param request
-	 * @param userId
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/userAuthForm")
-	public ModelAndView userAuthForm(Model model, HttpSession session, HttpServletRequest request, 
-			@RequestParam(value = "userId", defaultValue = "") String userId) throws Exception {		
-		ModelAndView mav = new ModelAndView();
-		HashMap<String, String> param = new HashMap<String, String>();
-		param.put("user_id", userId);
-		List<Map<String, Object>> menuList = settingsService.selectUserAuth(param);
-		mav.addObject("menuList", menuList);
-		mav.addObject("userId", userId);
-		mav.setViewName("userAuthForm");
-		return mav;
-	}
-	
-	
-	/**
-	 * 사용자에 대한 메뉴권한 처리
-	 * @param model
-	 * @param session
-	 * @param request
-	 * @param mode
-	 * @param userId
-	 * @param menuId
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/userAuthProcess")
-	@ResponseBody
-	public HashMap<String, Object> userAuthProcess(Model model, HttpSession session, HttpServletRequest request, 
-			@RequestParam(value = "mode", defaultValue = "") String[] mode,
-			@RequestParam(value = "userId", defaultValue = "") String[] userId,
-			@RequestParam(value = "menuId", defaultValue = "") String[] menuId) throws Exception {	
-		HashMap<String, Object> responseMap = new HashMap<String, Object>();
-		try {
-
-//			HashMap<String, String> param = new HashMap<String, String>();
-//			param.put("mode", mode);
-//			param.put("user_id", userId);
-//			param.put("menu_id", menuId);
-			
-			@SuppressWarnings("unused")
-			int rowCount = 0;
-
-			String[] modeArr = request.getParameterValues("mode");
-			String[] userIdArr = request.getParameterValues("userId");
-			String[] menuIdArr = request.getParameterValues("menuId");
-		    
-			if(modeArr != null) {
-				List<HashMap<String, String>> paramList = new ArrayList<HashMap<String, String>>();
-				for(int i=0;i<modeArr.length;i++) {
-					HashMap<String, String> param = new HashMap<String, String>();
-					param.put("mode", modeArr[i]);
-					param.put("user_id", userIdArr[i]);
-					param.put("menu_id", menuIdArr[i]);
-					paramList.add(param);
-				}
-	
-				rowCount = settingsService.updateUserAuthList(paramList);
-				
-				responseMap.put("resultMessage", "SUCCESS");
-			} else {
-				throw new Exception("잘못된 요청입니다.");
-			}
-		} catch (Exception e) {
-			if (!(e.getMessage().indexOf("duplicate key value violates unique constraint") > -1)) {
-				Globals.logger.error(e.getMessage(), e);
-				responseMap.put("resultMessage", e.getMessage());
-			}			
-		}
-		return responseMap;
 	}
 }

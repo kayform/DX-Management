@@ -21,9 +21,9 @@
 				      		  FROM webadmin.TB_MT_CO_USER S1
 				     		 WHERE S1.USER_ID= T1.LT_WK_PRSN ) AS LT_WK_PRSN
 			      	  FROM webadmin.tb_mt_co_svrinfo T1
-			     	 WHERE T1.SYS_NM LIKE #{systemName}
-			       	   AND T1.TYPE = #{type}
-			       	   AND T1.IP LIKE #{searchIp}
+			     	 WHERE T1.SYS_NM LIKE #{sys_nm}
+			       	   AND T1.TYPE LIKE #{type}
+			       	   AND T1.IP LIKE #{ip}
 					  ) T2 
 				WHERE T2.NO BETWEEN #{start} AND #{end}
          ]]>
@@ -33,9 +33,9 @@
 	  <![CDATA[
   	            SELECT COUNT(*) AS TOTAL_COUNT
 				  FROM webadmin.tb_mt_co_svrinfo T1
-				 WHERE T1.SYS_NM LIKE #{systemName}
-			       AND T1.TYPE = #{type}
-			       AND T1.IP LIKE #{searchIp}
+				 WHERE T1.SYS_NM LIKE #{sys_nm}
+			       AND T1.TYPE LIKE #{type}
+			       AND T1.IP LIKE #{ip}
          ]]>
 	</select>
 	<!-- SERVER 상세보기 조회 -->
@@ -53,9 +53,9 @@
 				      		  FROM webadmin.TB_MT_CO_USER S1
 				     		 WHERE S1.USER_ID= T1.LT_WK_PRSN ) AS LT_WK_PRSN
 			      	  FROM webadmin.tb_mt_co_svrinfo T1
-			     	 WHERE T1.SYS_NM LIKE #{systemName}
+			     	 WHERE T1.SYS_NM LIKE #{sys_nm}
 			       	   AND T1.TYPE = #{type}
-			       	   AND T1.IP LIKE #{searchIp}
+			       	   AND T1.IP LIKE #{ip}
          ]]>
 	</select>
 	<!-- SERVER 관리 등록 START -->
@@ -91,7 +91,7 @@
 	  <![CDATA[
 			SELECT COUNT(*) AS CNT
 			  FROM webadmin.tb_mt_co_svrinfo T1
-			 WHERE T1.SYS_NM = #{systemName}
+			 WHERE T1.SYS_NM = #{sys_nm}
 			   AND T1.IP = #{ip}
 			   AND T1.PORT = #{port}
 	  ]]>
