@@ -132,7 +132,7 @@ public class BottledWaterController {
 			
 			//database 명 조회
 			while (listRS.next()) {
-				dbName = listRS.getString(1);
+				dbName = listRS.getString(1); 
 				Globals.logger.debug(" database명  "+dbName+" 에 대한 연계정보 조회" );
 
 				extensionCheckQuery = "select * from dblink('dbname="+ dbName +"', 'select count(*) from pg_extension where extname in (''bottledwater'', ''bwcontrol'')') as t1(count bigint)";
@@ -140,8 +140,8 @@ public class BottledWaterController {
 				extensionCheckRS = extensionCheckST.executeQuery(extensionCheckQuery);
 
 				//익스텐션 확장자가 설치되어 있다면...
-				if(extensionCheckRS.next() && extensionCheckRS.getInt(1) == 2) {
-					databaseQuery = "select database_name, pg_get_status_ingest, connect_name"
+				if(extensionCheckRS.next() && extensionCheckRS.getInt(1) == 2) { 
+					databaseQuery = "select database_name, pg_get_status_ingest, connect_name" 
 									+" from dblink('dbname="+dbName+"'," 
 									+" 'select t2.database_name, pg_get_status_ingest ,  t2.connect_name"
 									+" from pg_get_status_ingest() pg_get_status_ingest left outer join"
