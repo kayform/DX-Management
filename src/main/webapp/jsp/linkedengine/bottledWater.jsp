@@ -9,8 +9,9 @@
                 <div class="cell size-x200" id="cell-sidebar" style="background-color: #71b1d1; height: 100%">
                 </div>            
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
-                    <h1 class="text-light">BottledWater 관리</h1>  디버그 정보 : userId=${sessionScope.userId}  userAuth=${sessionScope.userAuth} 
+                    <h1 class="text-light">BottledWater 관리</h1>  
                     <h5 class="sub-alt-header">* BottledWater을 관리합니다.</h5>
+                    <P>디버그 정보 : userId=${sessionScope.userId}  userAuth=${sessionScope.userAuth} 
                     <hr class="thin bg-grayLighter">
                     <p>* PostgreSQL 서버 리스트
                     <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
