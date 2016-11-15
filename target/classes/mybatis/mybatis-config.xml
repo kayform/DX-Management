@@ -22,5 +22,8 @@
 		
 		<!-- bottledwater 셋팅 -->
 		<mapper resource="mybatis/bottledwater-mapper.xml"/>
+		
+		<!-- pg 관련 쿼리 셋팅 -->
+		<mapper resource="mybatis/pginfo-mapper.xml"/>
 	</mappers>
 </configuration>

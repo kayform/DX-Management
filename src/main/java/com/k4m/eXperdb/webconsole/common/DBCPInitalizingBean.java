@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dxmig.db.DBCPPoolManager;
-import com.dxmig.db.datastructure.ConfigInfo;
+import com.k4m.eXperdb.webconsole.db.ConfigInfo;
+import com.k4m.eXperdb.webconsole.db.DBCPPoolManager;
 import com.k4m.eXperdb.webconsole.settings.SettingsService;
 import com.k4m.eXperdb.webconsole.util.SecureManager;
 

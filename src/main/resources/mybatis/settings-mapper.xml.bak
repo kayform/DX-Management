@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="settings-mapper">
+	<!-- SERVER 관리 검색 리스트 --> 	
+	<select id="selectSERVER"  resultType="hashmap">
+	  <![CDATA[
+	  			SELECT * 
+	  			FROM (
+	  	            SELECT ROW_NUMBER() OVER (ORDER BY T1.SYS_NM) AS NO, 
+	  	            	   T1.SYS_NM,
+				   		   T1.TYPE, 
+				   		   T1.DB_NM,
+				   		   T1.IP,
+			           	   T1.PORT,
+				   		   T1.USER_ID,
+			           	   T1.USER_PW,
+			               T1.LT_WK_DTTI,
+				   		   (SELECT S1.USER_NM 
+				      		  FROM webadmin.TB_MT_CO_USER S1
+				     		 WHERE S1.USER_ID= T1.LT_WK_PRSN ) AS LT_WK_PRSN
+			      	  FROM webadmin.tb_mt_co_svrinfo T1
+			     	 WHERE T1.SYS_NM LIKE #{sys_nm}
+			       	   AND T1.TYPE LIKE #{type}
+			       	   AND T1.IP LIKE #{ip}
+					  ) T2 
+         ]]>
+	</select>
+	<!-- SERVER 전체 건수 조회 -->
+	<select id="selectSERVERTotalCount"  resultType="int">
+	  <![CDATA[
+  	            SELECT COUNT(*) AS TOTAL_COUNT
+				  FROM webadmin.tb_mt_co_svrinfo T1
+				 WHERE T1.SYS_NM LIKE #{sys_nm}
+			       AND T1.TYPE LIKE #{type}
+			       AND T1.IP LIKE #{ip}
+         ]]>
+	</select>
+	<!-- SERVER 상세보기 조회 -->
+	<select id="selectSERVERDetail" resultType="hashmap">
+	  <![CDATA[
+	  	            SELECT T1.SYS_NM,
+				   		   T1.TYPE, 
+				   		   T1.DB_NM,
+				   		   T1.IP,
+			           	   T1.PORT,
+				   		   T1.USER_ID,
+			           	   T1.USER_PW,
+			               T1.LT_WK_DTTI,
+				   		   (SELECT S1.USER_NM 
+				      		  FROM webadmin.TB_MT_CO_USER S1
+				     		 WHERE S1.USER_ID= T1.LT_WK_PRSN ) AS LT_WK_PRSN
+			      	  FROM webadmin.tb_mt_co_svrinfo T1
+			     	 WHERE T1.SYS_NM = #{sys_nm}
+         ]]>
+	</select>
+	<!-- SERVER 관리 등록 START -->
+	<insert id="insertSERVER" parameterType="String">
+	  <![CDATA[
+			INSERT INTO webadmin.tb_mt_co_svrinfo(sys_nm, type, db_nm, ip, port, user_id, user_pw, lt_wk_dtti, 
+            lt_wk_prsn) VALUES ( #{sys_nm}, #{type}, #{db_nm}, #{ip}, #{port},
+	             #{user_id}, #{user_pw}, to_char(now(),'yyyymmddhh24miss'), #{lt_wk_prsn});
+	  ]]>
+	</insert>
+	<!-- SERVER 관리 삭제 START -->
+	<delete id="deleteSERVER" parameterType="hashmap">
+			DELETE FROM webadmin.tb_mt_co_svrinfo 
+		    WHERE SYS_NM = #{sys_nm}
+	</delete>
+	<!-- SERVER 관리 수정 START -->
+	<update id="updateSERVER" parameterType="hashmap">
+	  <![CDATA[
+			UPDATE webadmin.tb_mt_co_svrinfo 
+			    SET 
+			    type=#{type},
+			    PORT=#{port},
+			    IP=#{ip},
+			    user_id = #{user_id},
+			    user_pw = #{user_pw},
+			    LT_WK_DTTI = TO_CHAR(now(),'YYYYMMDDHH24MISS'),
+			    LT_WK_PRSN = #{lt_wk_prsn}
+			WHERE SYS_NM = #{sys_nm}
+	  ]]>
+	</update>
+	<!-- 데이터 쓰기 권한 조회 -->
+	<select id="selectSERVERDupCheck" resultType="int">
+	  <![CDATA[
+			SELECT COUNT(*) AS CNT
+			  FROM webadmin.tb_mt_co_svrinfo T1
+			 WHERE T1.SYS_NM = #{sys_nm}
+			   AND T1.IP = #{ip}
+			   AND T1.PORT = #{port}
+	  ]]>
+	</select>
+	<!-- 데이터 쓰기 권한 조회 -->
+	<select id="selectReadonlyCode" resultType="hashmap">
+	  <![CDATA[
+				select 'Y' as SYS_MNT_CD, '미사용' SYS_MNT_CD_NM
+				union all
+				select 'N' as SYS_MNT_CD, '사용' SYS_MNT_CD_NM
+	  ]]>
+	</select>
+	
+	<select id="selectAllPropertieList" resultType="hashmap">
+	  <![CDATA[
+			select * from webadmin.tb_mt_co_properties order by propertie_key
+	  ]]>
+	</select>
+	
+	<insert id="addPropertie" parameterType="hashmap">
+	  <![CDATA[
+			INSERT INTO webadmin.tb_mt_co_properties 
+				(propertie_key, propertie_value, propertie_description) 
+			VALUES 
+				(#{propertie_key}, #{propertie_value}, #{propertie_description});
+	  ]]>
+	</insert>
+	
+	<update id="updatePropertie" parameterType="hashmap">
+	  <![CDATA[
+			UPDATE webadmin.tb_mt_co_properties SET
+				propertie_value = #{propertie_value}, 
+				propertie_description = #{propertie_description}
+			 WHERE propertie_key = #{propertie_key}
+	  ]]>
+	</update>
+	
+	<delete id="deletePropertie" parameterType="hashmap">
+	  <![CDATA[
+			DELETE FROM webadmin.tb_mt_co_properties 				
+			 WHERE propertie_key = #{propertie_key}
+	  ]]>
+	</delete>
+	<!-- 로그인 이력 관리 검색 리스트 --> 	
+	<select id="selectLoginHistory"  resultType="hashmap">
+	  <![CDATA[
+	  			SELECT * 
+	  			FROM (
+	  	            SELECT ROW_NUMBER() OVER (ORDER BY T1.REG_YM_DD || T1.REG_TIME desc) AS NO, 
+	  	            	TO_CHAR(TO_TIMESTAMP(T1.REG_YM_DD || T1.REG_TIME ,'YYYYMMDDHH24MISS') ,'YYYY-MM-DD HH24:MI:SS') AS REGI_TIMESTAMP, 
+	  	            	T1.REG_YM_DD,
+	  	            	T1.REG_TIME,
+	  	            	T1.USER_ID,
+	  	            	T1.USER_NM,
+	  	            	T1.IP,
+	  	            	T1.LOGIN_GB	   
+					FROM webadmin.tb_mt_CO_LOGININFO T1
+					WHERE 1=1
+						AND TO_CHAR(TO_TIMESTAMP(T1.REG_YM_DD, 'YYYYMMDD') ,'YYYY-MM-DD') BETWEEN #{searchHistoryFromDate} AND #{searchHistoryToDate}
+						AND T1.USER_ID LIKE #{searchUserId}
+						AND T1.IP LIKE #{searchConnIp}
+					]]>
+						<choose>
+							<when test="searchHistoryType == null or searchHistoryType == ''">
+							<![CDATA[ ]]>
+							</when>
+							<otherwise>
+							<![CDATA[
+								  AND T1.LOGIN_GB = #{searchHistoryType}
+								  ]]>
+							</otherwise>
+						</choose>
+					 <![CDATA[
+				) T2 
+				WHERE T2.NO BETWEEN #{start} AND #{end}
+         ]]>
+	</select>
+	<!-- 로그인 이력 전체 건수 조회 -->
+	<select id="selectLoginHistoryTotalCount"  resultType="int">
+	  <![CDATA[
+  	            SELECT COUNT(1) AS TOTAL_COUNT
+				FROM webadmin.tb_mt_CO_LOGININFO T1
+				WHERE 1=1
+					AND TO_CHAR(TO_TIMESTAMP(T1.REG_YM_DD, 'YYYYMMDD') ,'YYYY-MM-DD') BETWEEN #{searchHistoryFromDate} AND #{searchHistoryToDate}
+					AND T1.USER_ID LIKE #{searchUserId}
+					AND T1.IP LIKE #{searchConnIp}
+				]]>
+					<choose>
+						<when test="searchHistoryType == null or searchHistoryType == ''">
+						<![CDATA[ ]]>
+						</when>
+						<otherwise>
+						<![CDATA[
+							  AND T1.LOGIN_GB = #{searchHistoryType}
+							  ]]>
+						</otherwise>
+					</choose>
+				 <![CDATA[
+         ]]>
+	</select>
+	<!-- 이력 관리 검색 리스트 --> 	
+	<select id="selectSettingsHistory"  resultType="hashmap">
+	  <![CDATA[
+	  			SELECT * 
+	  			FROM (
+	  	            SELECT ROW_NUMBER() OVER (ORDER BY T1.HISTORY_DATE desc) AS NO, 
+	  	            	HISTORY_NO,
+	  	            	MENU_ID,
+	  	            	CUD_MODE,
+						USER_ID,
+						IP,
+						DATA_ID,
+						FILE_NAME,
+						TO_CHAR(TO_TIMESTAMP(HISTORY_DATE ,'YYYYMMDDHH24MISS') ,'YYYY-MM-DD HH24:MI:SS') AS HISTORY_DATE, 
+						CASE WHEN MENU_ID = 'pimhistoryreport' THEN '점검보고서 다운로드' 
+						WHEN MENU_ID = 'securitysetting' THEN '암호화정책관리'						 
+						WHEN MENU_ID = 'pimhistoryexcel' THEN '점검수행 이력 엑셀 다운로드'						
+						WHEN MENU_ID = 'pimresultexcel' THEN '점검결과 이력 엑셀 다운로드'												
+						WHEN MENU_ID = 'userPassword' THEN '사용자 비밀번호 수정'	
+						WHEN MENU_ID = 'userAuth' THEN '사용자 메뉴 권한관리'							
+						WHEN MENU_ID = 'pimpolicyexcel' THEN '개인정보 정책 엑셀 다운로드'
+						WHEN MENU_ID = 'yearlystatisticexcel' THEN '개인정보점검결과 연별통계내역 엑셀 다운로드'
+						WHEN MENU_ID = 'monthlystatisticexcel' THEN '개인정보점검결과 월별통계내역 엑셀 다운로드'
+						else (SELECT NAME from webadmin.tb_mt_CO_MENU_INFO WHERE URL = MENU_ID)
+						END AS MENU_NAME
+					FROM webadmin.tb_mt_CV_DATA_HISTORY T1
+					WHERE 1=1
+						AND TO_CHAR(TO_TIMESTAMP(T1.HISTORY_DATE, 'YYYYMMDDHH24MISS') ,'YYYY-MM-DD') BETWEEN #{searchHistoryFromDate} AND #{searchHistoryToDate}						
+						AND T1.USER_ID LIKE #{searchUserId}
+						AND T1.IP LIKE #{searchConnIp}
+						AND (SELECT CASE WHEN MENU_ID = 'pimhistoryreport' THEN '점검보고서 다운로드' 
+						WHEN MENU_ID = 'securitysetting' THEN '암호화정책관리'						 
+						WHEN MENU_ID = 'pimhistoryexcel' THEN '점검수행 이력 엑셀 다운로드'						
+						WHEN MENU_ID = 'pimresultexcel' THEN '점검결과 이력 엑셀 다운로드'												
+						WHEN MENU_ID = 'userPassword' THEN '사용자 비밀번호 수정'	
+						WHEN MENU_ID = 'userAuth' THEN '사용자 메뉴 권한관리'							
+						WHEN MENU_ID = 'pimpolicyexcel' THEN '개인정보 정책 엑셀 다운로드'
+						WHEN MENU_ID = 'yearlystatisticexcel' THEN '개인정보점검결과 연별통계내역 엑셀 다운로드'
+						WHEN MENU_ID = 'monthlystatisticexcel' THEN '개인정보점검결과 월별통계내역 엑셀 다운로드'
+						ELSE (SELECT NAME from webadmin.tb_mt_CO_MENU_INFO WHERE URL = MENU_ID)
+						END AS MENU_NAME ) like #{searchMenuName}
+					]]>
+						<choose>
+							<when test="searchHistoryMode == null or searchHistoryMode == ''">
+							<![CDATA[ ]]>
+							</when>
+							<otherwise>
+							<![CDATA[
+								  AND T1.CUD_MODE = #{searchHistoryMode}
+								  ]]>
+							</otherwise>
+						</choose>
+					 <![CDATA[
+				) T2 
+				WHERE T2.NO BETWEEN #{start} AND #{end}
+         ]]>
+	</select>
+	<!-- 이력 전체 건수 조회 -->
+	<select id="selectSettingsHistoryTotalCount"  resultType="int">
+	  <![CDATA[
+  	            SELECT COUNT(1) AS TOTAL_COUNT
+				FROM webadmin.tb_mt_CV_DATA_HISTORY T1
+				WHERE 1=1
+					AND TO_CHAR(TO_TIMESTAMP(T1.HISTORY_DATE, 'YYYYMMDDHH24MISS') ,'YYYY-MM-DD') BETWEEN #{searchHistoryFromDate} AND #{searchHistoryToDate}
+					AND (SELECT CASE WHEN MENU_ID = 'pimhistoryreport' THEN '점검보고서 다운로드' 
+						WHEN MENU_ID = 'securitysetting' THEN '암호화정책관리'						 
+						WHEN MENU_ID = 'pimhistoryexcel' THEN '점검수행 이력 엑셀 다운로드'						
+						WHEN MENU_ID = 'pimresultexcel' THEN '점검결과 이력 엑셀 다운로드'												
+						WHEN MENU_ID = 'userPassword' THEN '사용자 비밀번호 수정'	
+						WHEN MENU_ID = 'userAuth' THEN '사용자 메뉴 권한관리'							
+						WHEN MENU_ID = 'pimpolicyexcel' THEN '개인정보 정책 엑셀 다운로드'
+						WHEN MENU_ID = 'yearlystatisticexcel' THEN '개인정보점검결과 연별통계내역 엑셀 다운로드'
+						WHEN MENU_ID = 'monthlystatisticexcel' THEN '개인정보점검결과 월별통계내역 엑셀 다운로드'
+						ELSE (SELECT NAME from webadmin.tb_mt_CO_MENU_INFO WHERE URL = MENU_ID)
+						END AS MENU_NAME ) LIKE #{searchMenuName}
+					AND T1.USER_ID LIKE #{searchUserId}
+					AND T1.IP LIKE #{searchConnIp}
+					]]>
+						<choose>
+							<when test="searchHistoryMode == null or searchHistoryMode == ''">
+							<![CDATA[ ]]>
+							</when>
+							<otherwise>
+							<![CDATA[
+								  AND T1.CUD_MODE = #{searchHistoryMode}
+								  ]]>
+							</otherwise>
+						</choose>
+					 <![CDATA[
+         ]]>
+	</select>
+	<!-- 이력 관리 상세 보기 --> 	
+	<select id="selectSettingsHistoryDetail" resultType="hashmap">
+	  <![CDATA[
+	  			SELECT HISTORY_NO, MENU_ID, CUD_MODE, USER_ID, IP, DATA_ID, HISTORY_DATE, FILE_NAME, DATA_CONTENTS
+	  			FROM webadmin.tb_mt_CV_DATA_HISTORY T1
+	  			WHERE HISTORY_NO = TO_NUMBER(#{historyNo},'9999999999')
+         ]]>
+	</select>
+</mapper>

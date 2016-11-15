@@ -6,7 +6,10 @@ var zephyros = {};
 zephyros.checkAjaxDialogResult = function(dialog, result){
 	if (result.result == 'SUCCESS'){		
 		zephyros.showDialog(dialog_info,  result.msg);
-		dialog.dialog("close");
+		
+		if(dialog != null) {
+			dialog.dialog("close");
+		}
 	}else {
 		zephyros.showDialog(dialog_info,  result.msg);
 	}

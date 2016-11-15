@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dxmig.common.LicenseProcess;
-
 public class StatusManagerWrap {
 	private static StatusManagerWrap instance;
 	
@@ -81,22 +79,7 @@ public class StatusManagerWrap {
 		statusMap.put("usedMemoryPercent", String.valueOf(memUsedPer));
 		statusMap.put("availableMemoryPercent", String.valueOf(memAvailPer));
 		statusMap.put("thread", String.valueOf(ThreadManager.getThreadCount()));
-		
-		String licenseEndDate = LicenseProcess.getInstance().getLicenseEndDate();
-		if (!("00000000".equals(licenseEndDate))) {
-			Calendar cal = Calendar.getInstance();
-			try {
-				cal.setTimeInMillis(new SimpleDateFormat("yyyyMMdd").parse(licenseEndDate).getTime());
-				licenseEndDate = cal.get(Calendar.YEAR) + "-" + 
-						((cal.get(Calendar.MONTH) + 1) < 10 ? "0" + (cal.get(Calendar.MONTH) + 1) : "" + (cal.get(Calendar.MONTH) + 1)) + "-" +
-						(cal.get(Calendar.DAY_OF_MONTH) < 10 ? "0" + cal.get(Calendar.DAY_OF_MONTH) : "" + cal.get(Calendar.DAY_OF_MONTH));
-				
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-		}
-		statusMap.put("licenseEndDate", licenseEndDate);
-		
+
 		//short dbmsCount = LicenseProcess.getInstance().getDbmsCount();;
 		short dbmsCount = 0;
 		statusMap.put("dbmsCount", String.valueOf(dbmsCount));

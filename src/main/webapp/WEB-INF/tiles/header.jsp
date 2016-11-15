@@ -98,7 +98,15 @@
     		top: 4px;
     		font-weight: bold;
     		text-shadow: 1px 1px 0 #fff;
-  		}       
+  		}
+  		
+  		input[readonly] {
+  		    pointer-events: none;  
+  		    background-color:#ebebe4;  		    
+  		}
+  		input[readonly].default-cursor {
+    		cursor: default;  		
+    	}
     </style>
 
     <script>

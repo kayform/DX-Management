@@ -38,19 +38,19 @@
 						<tr>
 							<td>
 								<label>서버명  </label>
-								<input type="text" id="sys_nm" name="sys_nm" value="${sys_nm}" class="input-mini" style="width: 200px;"/>
+								<input type="text" id="searchSysNm" name="searchSysNm" value="${sys_nm}" class="input-mini" style="width: 200px;"/>
 							</td>
 							<td>
 								<label>유형  </label>
-								<select id="type" name="type" style="width: 250px;"  selected="selected">			
+								<select id="searchType" name="searchType" style="width: 250px;">
 									<c:forEach var="item" items="${serverTypeList}">
-										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd}</option>
+										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd_nm}</option>
 									</c:forEach>
 								</select>
 							</td>
 							<td>
 								<label>아이피  </label>
-								<input type="text" id="ip" name="ip" value="${ip}" class="input-mini" style="width: 200px;"/>
+								<input type="text" id="searchIp" name="searchIp" value="${ip}" class="input-mini" style="width: 200px;"/>
 							</td>
 						</tr>
 					</table>
@@ -84,13 +84,13 @@
 											<!-- 사용자(1) 일 경우 본인 정보 조회, 수정권한 부여 및 타 사용자 조회 기능 부여-->
 											<c:choose>
 												<c:when test="${sessionScope.userAuth == '3' or sessionScope.userAuth == '2'}">
-													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:aclModal('V', '${item.user_id}');"><span class="mif-search"></span></button>
-													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:aclModal('V', '${item.user_id}');"><span class="mif-pencil"></span></button>
-													<button id="deleteBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:aclModal('V', '${item.user_id}');"><span class="mif-cancel"></span></button>
+													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="mif-search"></span></button>
+													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('U', '${item.sys_nm}');"><span class="mif-pencil"></span></button>
+													<button id="deleteBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:deleteServer('${item.sys_nm}');"><span class="mif-cancel"></span></button>
 												</c:when>
 												<c:when test="${sessionScope.userAuth == '1'}">
-													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:aclModal('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
-													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:aclModal('V', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
+													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
+													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('U', '${item.sys_nm}');"><span class="icon mif-pencil"></span></button>
 												</c:when>
 												<c:otherwise>
 													관리권한 없음.
@@ -114,63 +114,73 @@
 
 <script>
 	
-function showServerForm(mode) {
+function showServerForm(mode, sys_nm) {
 	zephyros.loading.show();
 	var url = '/serverForm?mode='+mode;
+	var width = 840;
+	var height = 420;
+	var title = "서버등록/수정";
+	var button = null;
 	
+	if (mode == "V") {
+		button =  {
+			    "확인": function() {
+			    	dialog_serverForm.dialog("close");
+			      $("#dialog_serverForm").empty();
+			    }};
+	}else{
+		button =  {
+			    "저장" : function() {
+			    	if (zephyros.isFormValidate('serverForm')){
+			    		zephyros.loading.show();
+
+						var url = '/serverProcess';
+
+						var formData = $("#serverForm").serialize();				
+
+						zephyros.callAjax({
+							url : url,
+							type : 'post',
+							data : formData,
+							success : function(data, status, xhr) {
+								zephyros.loading.hide();
+								zephyros.checkAjaxDialogResult(dialog_serverForm, data);
+							}
+						});		
+			    	}
+
+			    },
+			    "취소": function() {
+			    	dialog_serverForm.dialog("close");
+			      $("#dialog_serverForm").empty();
+			    }};
+	}
+	    
 	dialog_serverForm = $("#dialog_serverForm").dialog({
 		  autoOpen: false,
-		  height: 420,
-		  width: 840,
+		  height: height,
+		  width: width,
 		  modal: true,
-		  title: "서버등록/수정",
+		  title: title,
 		  resizable: false,
-		  buttons: {
-		    "저장" : function() {
-		    	if (zephyros.isFormValidate('serverForm')){
-		    		zephyros.loading.show();
-
-					var url = '/serverProcess';
-
-					var formData = $("#serverForm").serialize();				
-
-					zephyros.callAjax({
-						url : url,
-						type : 'post',
-						data : formData,
-						success : function(data, status, xhr) {
-							zephyros.loading.hide();
-							zephyros.checkAjaxDialogResult(dialog_serverForm, data);
-						}
-					});		
-		    	}
-
-		    },
-		    "취소": function() {
-		    	dialog_serverForm.dialog("close");
-		      $("#dialog_serverForm").empty();
-		    }
-		  },
+		  buttons: button,
 		  close: function() {
-		    //form[0].reset();
-		    //allFields.removeClass("ui-state-error");
 			$("#dialog_serverForm").empty();
 		  }
 		});
+
 	
 	var data = null;
 	
 	if (mode != 'I'){
 		data = {
-			sys_nm : $('#sys_nm').val(),
-			type : $('#type').val(),
-			ip : $('#ip').val()
+			sys_nm : sys_nm
 		}
 	}
  	zephyros.callAjax({
 		url : url,
 		type : 'post',
-		data : null,
+		data : data,
 		success : function(data, status, xhr) {
 			zephyros.loading.hide();
 			zephyros.showDialog(dialog_serverForm, data);
@@ -182,11 +192,6 @@ $("#regSvrBtn").on("click", function() {
 	showServerForm('I');
 });
 
-$("#viewBtn").on("click", function() {
-	showServerForm('V');
-});
-
-
 $("#selBtn").on("click", function() {
 	zephyros.loading.show();
 	var url = '/server';
@@ -195,16 +200,31 @@ $("#selBtn").on("click", function() {
 		url : url,
 		type : 'post',
 		data : {
-			sys_nm : $('#sys_nm').val(),
-			type : $('#type').val(),
-			ip : $('#ip').val()
+			sys_nm : $('#searchSysNm').val(),
+			type : $('#searchType').val(),
+			ip : $('#searchIp').val()
 		},
 		success : function(data, status, xhr) {
 			zephyros.loading.hide();
-			zephyros.showDialog(dialog_serverForm, data);
 		}
 	}); 
 });
 
-
+function deleteServer(sys_nm) {
+	zephyros.loading.show();
+	var url = '/serverProcess';
+	
+ 	zephyros.callAjax({
+		url : url,
+		type : 'post',
+		data : {
+			mode : "D",
+			sys_nm : sys_nm
+		},
+		success : function(data, status, xhr) {
+			zephyros.loading.hide();
+			zephyros.checkAjaxDialogResult(null, data);
+		}
+	}); 
+}
 </script>

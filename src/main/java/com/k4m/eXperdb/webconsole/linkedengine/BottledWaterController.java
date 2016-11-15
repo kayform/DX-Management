@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.dxmig.db.DBCPPoolManager;
+
+
 import com.k4m.eXperdb.webconsole.common.Globals;
+import com.k4m.eXperdb.webconsole.db.DBCPPoolManager;
 
 
 @Controller

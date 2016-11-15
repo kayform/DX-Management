@@ -28,27 +28,25 @@
 					<th scope="row">서버명 *</th>
 					<td >
 						<div class="input-mini text">					
-						<c:if test="${mode =='I' }">
+						<c:if test="${mode !='V' }">
 							<input type="text" id="sys_nm" name="sys_nm" value="${serverInfoList.sys_nm}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",dupCheck" data-validate-hint="ID는 필수이고, 다른 ID와 중복될 수 없습니다." data-validate-hint-position="top" >							
-						</c:if>	
-						<c:if test="${mode =='U'}">
-							<input type="text" id="sys_nm" name="sys_nm" readonly="readonly" value="${serverInfoList.sys_nm}" style="width:80%;">
-							<button id="passwordBtn" class="button mif-key" type="button"></button>						
 						</c:if>	
 						<c:if test="${mode =='V'}">
 							${serverInfoList.sys_nm}
 						</c:if>		
-						<input type="hidden" id="mode" value="${mode}"/>
 						</div>
 					</td>					
 					<th scope="row">유형 *</th>					
 					<td>
-						<c:if test="${mode !='V' }">
+						<c:if test="${mode =='I' }">
 								<select id="type" name="type" style="width: 250px;" onchange="javascript:refreshElement()">			
 									<c:forEach var="item" items="${serverTypeList}">
-										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd}</option>
+										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd_nm}</option>
 									</c:forEach>
 								</select>							
+						</c:if>
+						<c:if test="${mode =='U' }">
+							<input type="text" id="type" name="type" value="${serverInfoList.type}" style="width:80%;" >
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${serverInfoList.type}
@@ -82,7 +80,7 @@
 								<input class="input-mini text" type="text" id="user_id" name="user_id"  value="${serverInfoList.user_id}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 							</c:if>
 							<c:if test="${mode =='V' }">
-								********
+								${serverInfoList.user_id}
 							</c:if>
 						</td>									
 						<th scope="row">패스워드 *</th>
@@ -191,15 +189,22 @@ function selected(target, value) {
 };
 
 function refreshElement() {
-	alert($('#type option:selected').text());
-	/*
-	if ($('#type').val() == 'POSTGRESQL' || $('#type').val() == 'CLOUDERA-MANAGER'){
+	var value = null;
+	
+	if ( $('#mode').val() == 'I') {
+		value = $('#type').val();
+	}else {
+		value = '${serverInfoList.type}';
+	}
+		
+	//var value = $('#type').val();
+	if (value == 'POSTGRESQL' || value == 'CLOUDERA-MANAGER'){
 		//$("#userInfoTr").css("display","");
 		$("#userInfoTr").prop("disabled",false);  
 		$("#user_id").prop("readonly",false);
 		$("#user_pw").prop("readonly",false);
 		
-		if ($('#type').val() == 'POSTGRESQL') {
+		if (value == 'POSTGRESQL') {
 			$("#dbNmTr").prop("disabled",false);  
 			$("#db_nm").prop("readonly",false);
 		}else{
@@ -216,6 +221,11 @@ function refreshElement() {
 		$("#user_pw").val("");
 		$("#db_nm").val("");
 		//$("#userInfoTr").css("display","none");
-	}*/
+	}
+	
+	if ( $('#mode').val() == 'U') {
+		$("#sys_nm").prop("readonly",true);
+		$("#type").prop("readonly",true);
+	}
 };
 </script>

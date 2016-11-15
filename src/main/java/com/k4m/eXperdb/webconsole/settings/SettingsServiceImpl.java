@@ -242,8 +242,14 @@ public class SettingsServiceImpl implements SettingsService {
 	}
 
 	@Override
-	public List<Map<String, Object>> selectSERVERDetail(Map<String, Object> param) {
-		return settingsDAO.selectSERVERDetail(param);
+	public Map<String, Object> selectSERVERDetail(Map<String, Object> param) {
+		List<Map<String, Object>> serverDetailList = settingsDAO.selectSERVERDetail(param);
+		Map<String, Object> serverDetailMap = new HashMap<String, Object>();
+		if (serverDetailList.size() > 0) {
+			serverDetailMap = serverDetailList.get(0);
+		}
+		
+		return serverDetailMap;		
 	}
 
 	@Override
@@ -298,55 +304,4 @@ public class SettingsServiceImpl implements SettingsService {
 		}
 		return threadList;
 	}
-
-	@Override
-	public int getLoginHistoryTotalCount(Map<String, Object> param) {
-		return settingsDAO.getLoginHistoryTotalCount(param);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Map<String, Object>> getLoginHistoryList(Map<String, Object> param) {
-		Map<String , Object> searchParams = (Map<String , Object>) param.get("SEARCH_PARAM");
-		
-		int pageSize = Integer.parseInt((String) param.get("PAGE_SIZE"));
-		int currentPage = Integer.parseInt((String) param.get("CURRENT_PAGE"));
-		
-		int start = (currentPage * pageSize) - (pageSize - 1);
-		int end = (currentPage * pageSize);
-		
-		searchParams.put("start", start);
-		searchParams.put("end", end);
-		
-		return settingsDAO.getLoginHistoryList(searchParams);
-	}
-
-	@Override
-	public int getSettingsHistoryTotalCount(Map<String, Object> param) {
-		return settingsDAO.getSettingsHistoryTotalCount(param);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Map<String, Object>> getSettingsHistoryList(Map<String, Object> param) {
-		Map<String , Object> searchParams = (Map<String , Object>) param.get("SEARCH_PARAM");
-		
-		int pageSize = Integer.parseInt((String) param.get("PAGE_SIZE"));
-		int currentPage = Integer.parseInt((String) param.get("CURRENT_PAGE"));
-		
-		int start = (currentPage * pageSize) - (pageSize - 1);
-		int end = (currentPage * pageSize);
-		
-		searchParams.put("start", start);
-		searchParams.put("end", end);
-		
-		return settingsDAO.getSettingsHistoryList(searchParams);
-	}
-
-	@Override
-	public List<Map<String, Object>> getSettingsHistoryDetail(Map<String, Object> param) {
-		return settingsDAO.getSettingsHistoryDetail(param);
-	}	
-
-	
 }

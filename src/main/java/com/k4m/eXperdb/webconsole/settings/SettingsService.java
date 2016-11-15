@@ -45,21 +45,11 @@ public interface SettingsService {
 
 	int deleteSERVER(HashMap<String, String> param); // SERVER 삭제
 
-	List<Map<String, Object>> selectSERVERDetail(Map<String, Object> param); // SERVER 상제 조회
+	Map<String, Object> selectSERVERDetail(Map<String, Object> param); // SERVER 상제 조회
 
 	int updateSERVER(HashMap<String, String> param); // SERVER 수정
 	
 	int selectSERVERDupCheck(HashMap<String, String> param);
 		
 	List<Map<String, Object>> getWebConsoleThreadList() throws Exception;
-
-	int getLoginHistoryTotalCount(Map<String, Object> param); // 로그인 히스토리 리스트 전체 카운트
-	
-	List<Map<String, Object>> getLoginHistoryList(Map<String, Object> param); // 로그인 히스토리 리스트
-
-	int getSettingsHistoryTotalCount(Map<String, Object> param); // 이력 관리 총 갯수 조회
-
-	List<Map<String, Object>> getSettingsHistoryList(Map<String, Object> param); // 이력 관리 리스트
-
-	List<Map<String, Object>> getSettingsHistoryDetail(Map<String, Object> param); // 이력 관리 상세 보기
 }

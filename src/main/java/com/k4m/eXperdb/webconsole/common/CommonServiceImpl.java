@@ -24,4 +24,9 @@ public class CommonServiceImpl implements CommonService {
 		Map<String, Object> param = new HashMap<String, Object>();
 		return commonDAO.selectAllMenuList(param);
 	}
+	
+	@Override
+	public String getQuery(String queryId , Object sqlParam) {
+		return commonDAO.getQuery(queryId, sqlParam);
+	}
 }

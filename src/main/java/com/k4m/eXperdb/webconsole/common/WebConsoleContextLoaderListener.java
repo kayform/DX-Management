@@ -6,17 +6,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-//import com.k4m.eXperdb.webconsole.util.ResourceMonitorProcess;
-//import com.k4m.eXperdb.webconsole.util.StatusManagerWrap;
-
-
-
-
-
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.dxmig.db.DBCPPoolManager;
-import com.dxmig.db.datastructure.ConfigInfo;
 import com.k4m.eXperdb.webconsole.settings.SettingsService;
 
 public class WebConsoleContextLoaderListener implements ServletContextListener {

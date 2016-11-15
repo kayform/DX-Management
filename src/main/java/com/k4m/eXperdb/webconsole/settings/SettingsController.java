@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.ParameterMapping;
+import org.apache.ibatis.session.SqlSession;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,14 +22,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.dxmig.db.DBCPPoolManager;
-import com.dxmig.db.datastructure.ConfigInfo;
-import com.dxmig.svr.socket.client.ClientAdapter;
+import com.k4m.eXperdb.webconsole.common.CommonDAO;
 import com.k4m.eXperdb.webconsole.common.CommonService;
+import com.k4m.eXperdb.webconsole.common.CommonServiceImpl;
 import com.k4m.eXperdb.webconsole.common.DataHistoryService;
+import com.k4m.eXperdb.webconsole.common.ExtractMybatisQuery;
 import com.k4m.eXperdb.webconsole.common.Globals;
 import com.k4m.eXperdb.webconsole.common.SHA256;
 import com.k4m.eXperdb.webconsole.common.StrUtil;
+import com.k4m.eXperdb.webconsole.db.ConfigInfo;
+import com.k4m.eXperdb.webconsole.db.DBCPPoolManager;
+import com.k4m.eXperdb.webconsole.db.DataAdapter;
+import com.k4m.eXperdb.webconsole.db.DataTable;
 import com.k4m.eXperdb.webconsole.security.CustomUserDetails;
 import com.k4m.eXperdb.webconsole.util.DateUtils;
 import com.k4m.eXperdb.webconsole.util.SecureManager;
@@ -317,9 +324,9 @@ public class SettingsController {
 	}
 	
 	@RequestMapping(value = "/server")
-	public ModelAndView dbms(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "sys_nm", defaultValue = "") String sys_nm,
-			@RequestParam(value = "type", defaultValue = "") String type, 
-			@RequestParam(value = "ip", defaultValue = "") String ip, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
+	public ModelAndView dbms(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSysNm", defaultValue = "") String sys_nm,
+			@RequestParam(value = "searchType", defaultValue = "") String type, 
+			@RequestParam(value = "searchIp", defaultValue = "") String ip, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		try {
 			// 리스트 네이게이션 개수
@@ -335,17 +342,23 @@ public class SettingsController {
 			param.put("sys_nm", (sys_nm == null || sys_nm.equals("")) ? "%" : "%" + sys_nm + "%");
 			param.put("type", (type == null || type.equals("")) ? "%" : "%" + type + "%");			
 			param.put("ip", (ip == null || ip.equals("")) ? "%" : "%" + ip + "%");
-			
+			/*
 			Map<String , Object> requestMap = new HashMap<String, Object>();
 			requestMap.put("SEARCH_PARAM", param);
 			requestMap.put("PAGE_SIZE", Integer.toString(countPerList));
 			requestMap.put("CURRENT_PAGE", Integer.toString(currentPage));
 			
 			int totalCount = settingsService.selectSERVERTotalCount(param); // 데이터 전체 건수 조회
+			*/
 //			List<Map<String, Object>> serverList = settingsService.selectSERVER(requestMap); // 데이터 리스트 조회
-			List<Map<String, Object>> serverList = settingsService.selectSERVER(requestMap); // 데이터 리스트 조회
+			List<Map<String, Object>> serverList = settingsService.selectSERVER(param); // 데이터 리스트 조회
 
 			List<Map<String,Object>> serverTypeList = commonService.selectSystemCode("R0001");
+			Map<String, Object> totalParamMap = new HashMap<String, Object>();
+			totalParamMap.put("sys_mnt_cd", "%");
+			totalParamMap.put("sys_mnt_cd_nm", "전체");
+			serverTypeList.add(0, totalParamMap);
+			
 			mav.addObject("serverTypeList", serverTypeList);
 			/*
 			PagingUtil pageUtil = new PagingUtil(currentPage, countPerPage, totalCount, countPerList);
@@ -404,7 +417,7 @@ public class SettingsController {
 	@RequestMapping(value = "/serverForm")
 	public ModelAndView dbmsForm(Model model, HttpSession session, HttpServletRequest request,
 			@RequestParam(value = "mode", defaultValue = "") String mode,
-			@RequestParam(value = "sys_nm", defaultValue = "") String systemName,
+			@RequestParam(value = "sys_nm", defaultValue = "") String sys_nm,
 			@RequestParam(value = "type", defaultValue = "") String type,
 			@RequestParam(value = "ip", defaultValue = "") String ip) throws Exception {
 		ModelAndView mav = new ModelAndView();
@@ -415,14 +428,12 @@ public class SettingsController {
 		
 		if(!Globals.MODE_DATA_INSERT.equals(mode)) {
 			param = new HashMap<String, Object>();
-			param.put("searchSystemName", systemName);
-			param.put("type", type);
-			param.put("ip", ip);
+			param.put("sys_nm", sys_nm);
 			
-			List<Map<String, Object>> serverInfoList = settingsService.selectSERVERDetail(param); // 데이터 전체 건수 조회
+			Map<String, Object> serverInfoList = settingsService.selectSERVERDetail(param); // 데이터 전체 건수 조회
 			
 			if(serverInfoList.size() > 0) {
-				mav.addObject("serverInfo", serverInfoList);
+				mav.addObject("serverInfoList", serverInfoList);
 				/*
 				mav.addObject("systemName", list.get(0).get("sys_nm").toString());
 				mav.addObject("type", list.get(0).get("type").toString());
@@ -489,6 +500,22 @@ public class SettingsController {
 		return resMap;
 	}
 	
+	public static String getQuery(SqlSession sqlSession, String queryId , Object sqlParam){
+		BoundSql boundSql = sqlSession.getConfiguration().getMappedStatement(queryId).getSqlSource().getBoundSql(sqlParam);
+		String query1 = boundSql.getSql();
+		Object paramObj = boundSql.getParameterObject();
+		
+		if(paramObj != null){              // 파라미터가 아무것도 없을 경우
+			List<ParameterMapping> paramMapping = boundSql.getParameterMappings();
+			for(ParameterMapping mapping : paramMapping){
+				String propValue = mapping.getProperty();       
+				query1=query1.replaceFirst("\\?", "#{"+propValue+"}");
+			}
+		}
+		return query1; 
+	}
+
+	
 	@RequestMapping(value = "/serverProcess")
 	@ResponseBody
 	public Map<String, Object> serverProcess(Model model, HttpSession session, HttpServletRequest request, 
@@ -542,13 +569,31 @@ public class SettingsController {
 		            configInfo.DB_TYPE = "POG";	   
 		    		String rtn = "";
 		    		try {
-		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 5);
+		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 5);		    			
+		    			
+		    			tempMap.put("usename", user_id);
+		    			String sql = commonService.getQuery("pginfo-mapper.selectUserSuperPrivs", null);
+		    			
+		    			DataAdapter da = DataAdapter.getInstance(sys_nm);
+		    			List<Object> binds = new ArrayList<Object>();
+		    			binds.add(user_id);
+		    			DataTable dt = da.Fill(sql, binds);
+		    			
+		    			if (dt.getRows().size() == 1) {
+		    				boolean usesuper = (boolean)dt.getRows().get(0).get("USESUPER");
+		    				if ( usesuper == false) {
+		    					throw new Exception("입력된 유저는 슈퍼유저가 아닙니다. 슈퍼유저만 등록가능합니다.");
+		    				}
+		    			}else{
+		    				throw new Exception("입력된 유저의 슈퍼권한정보 추출이 실패하였습니다.");
+		    			}
+		    			
 		    		} catch (Exception e) {		    			
 		    			Globals.logger.error(e.getMessage(), e);
 		    			
-		    			rtn = e.getMessage();
+		    			rtn = "DB 접속테스트가 아래의 이유로 실패했습니다.\n" + e.getMessage();
 		    			resMap.put("msg", rtn);
-						resMap.put("result", "FAIL");
+						resMap.put("result", "ERROR");
 						
 						if (DBCPPoolManager.ContaintPool(sys_nm)){
 							DBCPPoolManager.shutdownDriver(sys_nm);
@@ -603,7 +648,10 @@ public class SettingsController {
 		} catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);
 			resMap.put("result", "ERROR");
-			resMap.put("msg", e.getMessage());
+			
+			if (resMap.get("msg") == null) {
+				resMap.put("msg", e.getMessage());
+			}			
 		}
 		return resMap;
 	}

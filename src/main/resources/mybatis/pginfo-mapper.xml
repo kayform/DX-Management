@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pginfo-mapper">
+	<!-- postgresql user 슈퍼권한 확인 --> 	
+	<select id="selectUserSuperPrivs"  resultType="hashmap">
+	  <![CDATA[
+		   select usesuper from pg_user
+ 			where usename = #{user_id};
+         ]]>
+	</select>
+</mapper>
