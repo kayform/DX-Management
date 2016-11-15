@@ -170,6 +170,8 @@
 	</definition>
 	<definition name="databaseList" template="/jsp/linkedengine/databaseList.jsp">
 	</definition>
+	<definition name="tableList" template="/jsp/linkedengine/tableList.jsp">
+	</definition>
 	
 	
 	
