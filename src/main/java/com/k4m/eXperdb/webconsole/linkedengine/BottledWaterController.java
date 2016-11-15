@@ -132,7 +132,7 @@ public class BottledWaterController {
 			
 			//database 명 조회
 			while (listRS.next()) {
-				dbName = listRS.getString(1); 
+				dbName = listRS.getString(1);  
 				Globals.logger.debug(" database명  "+dbName+" 에 대한 연계정보 조회" );
 
 				extensionCheckQuery = "select * from dblink('dbname="+ dbName +"', 'select count(*) from pg_extension where extname in (''bottledwater'', ''bwcontrol'')') as t1(count bigint)";
