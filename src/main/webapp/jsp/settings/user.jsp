@@ -7,7 +7,6 @@
         <div class="flex-grid no-responsive-future" style="height: 100%;">
             <div class="row" style="height: 100%">
                 <div class="cell size-x200" id="cell-sidebar" style="background-color: #71b1d1; height: 100%">
-                <!--  form 태그가 앞에 들어가면서 색깔이 없어짐 !! 뭐가 문제지? style에서 충돌 발생? -->
                 </div>            
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
                     <h1 class="text-light">사용자 관리</h1>  디버그 정보 : userId=${sessionScope.userId}  userAuth=${sessionScope.userAuth} 
@@ -26,7 +25,7 @@
                             <td class="sortable-column">소속</td>
                             <td class="sortable-column">사용자명</td>
                             <td class="sortable-column">휴대폰번호</td>
-                            <td style="width: 150px">관리</td>
+                            <td style="width: 200px">관리</td>
                         </tr>
                         </thead>
                         <tbody>
@@ -52,6 +51,7 @@
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('D', '${item.user_id}');"><span class="icon mif-cancel"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:manageUserAuth('${item.user_id}');"><span class="icon mif-tools"></span></button>
 												</c:when>
 												<c:when test="${sessionScope.userAuth == '1'}">
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
@@ -79,6 +79,7 @@
 <form id="userListForm" name="userListForm" method="post" >
 	<input type="hidden" id="searchUserName" name="searchUserName"> 
 </form>
+
 
 
 
@@ -113,7 +114,6 @@
     	//CRUD에 따른 dialog_profile 오프젝트 설정
     	if (mode == 'U') {
     		titleTxt = '사용자 수정';
-    		successTxt = '사용자가 수정되었습니다.';
 
     		dialog_profile = $("#dialog_profile").dialog({
            		title: titleTxt,
@@ -150,7 +150,6 @@
     	}
     	else if (mode == 'I') {
     		titleTxt = '사용자 등록';
-    		successTxt = '사용자가 등록되었습니다.';
 
     		dialog_profile = $("#dialog_profile").dialog({
            		title: titleTxt,
@@ -206,7 +205,6 @@
     	}
     	else if (mode == 'D') {
     		titleTxt = '사용자 삭제';
-    		successTxt = '사용자가 삭제되었습니다.';
 
     		dialog_profile = $("#dialog_profile").dialog({
            		title: titleTxt,
@@ -214,26 +212,26 @@
               	width: 400,
     	    	buttons: {
     	    		"삭제": function() {
-   	    				//var url = '/userProcess?mode='+mode;
    	    				var url = '/userProcess?mode='+mode+"&userId=" + userId;
-    	    			zephyros.callAjax({
+   	    				zephyros.callAjax({
     	    				url : url,
     	    				type : 'post',
     	    				data : null,
     	    				success : function(data, status, xhr) {
     	    					zephyros.loading.hide();
-    	  						dialog_profile.dialog("close");
-    	  						//zephyros.checkAjaxDialogResult(dialog_info,  data)
-    	  						zephyros.showDialog(dialog_info,  successTxt)
+    	  						dialog_profile.dialog("close"); 
+    	  						zephyros.checkAjaxDialogResult(dialog_info,  data)
     	    				}
     	    			});
     	    	  	},
     	    	  	"취소": function() {
+    					zephyros.loading.hide();
     	    	  		dialog_profile.dialog("close");
     	    	  	    $("#dialog_profile").empty();
     	    	  	}
     	    	},
     			close: function() {
+					zephyros.loading.hide();
     				$("#dialog_profile").empty();
     	    	}
             });   
@@ -261,5 +259,57 @@
     		alert("잘못된 값이 입력되었습니다. 모드는 D, I, U, V 중에 하나여야합니다.");
     	}
     }
+    
+    
+    //화면에서 사용자 권한관리 버튼을 클릭하면 사용자 권한관리를 위한 화면을 modal로 출력한다.
+    function manageUserAuth(userId) {
+    	
+    	zephyros.loading.show();
+    	var url = '';
+    	var success = null;
+    	var error = null;
+
+    	var titleTxt = '';
+    	var successTxt = '';
+    	var heightVal = 570;
+      	var widthVal = 1250;
+
+		url = '/userAuthForm?userId=' + userId;
+		
+		dialog_userAuth = $("#dialog_userAuth").dialog({
+	 		autoOpen: false,
+	 		height: 650,
+	 		width: 1250,
+	 		modal: true,
+	 		title: "메뉴 권한",
+	 		resizable: false,
+	    	buttons: {
+	    		"저장": function() {
+					saveAuth();
+    	  		},
+	    	  	"닫기": function() {
+						zephyros.loading.hide();
+						dialog_userAuth.dialog("close");
+	    	  	    $("#dialog_userAuth").empty();
+	    	  	}
+	    	},
+			close: function() {
+				zephyros.loading.hide();
+				$("#dialog_userAuth").empty();
+	    	}
+        });       	
+		
+		zephyros.callAjax({
+    		url : url,
+    		type : 'post',
+    		data : null,
+    		success : function(data, status, xhr) {
+    			zephyros.loading.show();
+    			zephyros.showDialog(dialog_userAuth, data);
+    		}
+    	});
+     	
+    }
+    
 
 </script>
