@@ -79,125 +79,109 @@ public class BottledWaterController {
 	public ModelAndView databaseList(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "searchSysNm", defaultValue = "") String searchSysNm) throws Exception {
 		
-		Globals.logger.debug("============== in the databaseList function ");
-		
-		
 		List<Map<String, Object>> databaseList = null;		
 		HashMap<String, String> param = new HashMap<String, String>();
 	
-		param.put("searchSysNm", (searchSysNm == null || "".equals(searchSysNm)) ? "%" : "%" + searchSysNm + "%");
-		
 		try{
-			
-			//TODO 데이터소스풀이 생성되면 해당 데이터소스 및 서비스 풀 사용하게 구현 변경해야함. 현재는 임시 메소드 에서 반환하는 값 사용 remarked by manimany
-//			databaseList = bottledWaterService.selectServerList(param);		
 			databaseList = selectDatabaseList(searchSysNm);
 		}catch (Exception e){
 			Globals.logger.error(e.getMessage(), e);
 		}
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("databaseList", databaseList);
-		//mav.addObject("searchServerType", searchServerType);
-		
+		mav.addObject("searchSysNm", searchSysNm);
 		mav.setViewName("databaseList");
 		return mav;
 	}
 	
+	
 	/**
-	 * 아이피/아이디/패스워드를 이용한 다이나믹 데이터 소스 구현 이전까지 임시 사용
+	 * 데이터베이스 연계 정보 조회
 	 * @param param
 	 * @return
 	 * @throws Exception
 	 */
 	private List<Map<String, Object>> selectDatabaseList(String searchSysNm) throws Exception {
 		
-		Globals.logger.debug("============== in the databaseList function searchSysNm==="+searchSysNm);
-
-		
 		List<Map<String, Object>> databaseList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> databaseInfo = null;
 
-//		databaseList.clear();
-		
-		String url = "jdbc:postgresql://58.229.240.89:5432/mobiusdb";
-	    String usr = "mobius";  
-	    String pwd = "mobius";
-	    
-	    //전체 database 조회 쿼리
+	    //전체 database 명 조회 쿼리
 	    String databaseListQuery = "SELECT datname FROM pg_database where datistemplate not in ('t') order by datname";
 	    
 	    Connection conn = null;
-	    try {
-//	    	conn = DriverManager.getConnection(url, usr, pwd);
-	    	conn = DBCPPoolManager.getConnection(searchSysNm);
-	    } catch(Exception e) {
-	    	Globals.logger.error(e.getMessage(), e);
-	    }
 		Statement listST = null;
 		ResultSet listRS = null;
+
+		Statement extensionCheckST = null;
+		ResultSet extensionCheckRS = null;
+		String extensionCheckQuery = null;
+
+		Statement st = null;
+		ResultSet rs = null;
+		String databaseQuery = null;
+
 		
 	    try {
-			listST = conn.createStatement();
+	    	conn = DBCPPoolManager.getConnection(searchSysNm);
+
+	    	listST = conn.createStatement();
 			listRS = listST.executeQuery(databaseListQuery);
 
-			Statement st = conn.createStatement();
-			ResultSet rs = null;
-			String databaseQuery = null;
 			String dbName = null;
-
+			
+			//database 명 조회
 			while (listRS.next()) {
-				Globals.logger.debug("============ listRS.getString(1) 데이터베이스명 ======="+listRS.getString(1));
 				dbName = listRS.getString(1);
+				Globals.logger.debug(" database명  "+dbName+" 에 대한 연계정보 조회" );
 
-				databaseQuery = "select database_name, pg_get_status_ingest, connect_name , count "
-								+" from dblink('dbname="+listRS.getString(1) +"'," 
-								+" 'select a.database_name, b.pg_get_status_ingest, a.connect_name , ex.count"
-								+" from kafka_con_config  as a," 
-								+" (select pg_get_status_ingest()) as b,"
-								+" (select count(*) from pg_extension where extname in (''bottledwater'', ''bwcontrol'')) as ex')" 
-								+" as t1(database_name varchar(100), pg_get_status_ingest varchar(100), connect_name  varchar(100), count bigint)";
-				try{
+				extensionCheckQuery = "select * from dblink('dbname="+ dbName +"', 'select count(*) from pg_extension where extname in (''bottledwater'', ''bwcontrol'')') as t1(count bigint)";
+				extensionCheckST = conn.createStatement();
+				extensionCheckRS = extensionCheckST.executeQuery(extensionCheckQuery);
+
+				//익스텐션 확장자가 설치되어 있다면...
+				if(extensionCheckRS.next() && extensionCheckRS.getInt(1) == 2) {
+					databaseQuery = "select database_name, pg_get_status_ingest, connect_name"
+									+" from dblink('dbname="+dbName+"'," 
+									+" 'select t2.database_name, pg_get_status_ingest ,  t2.connect_name"
+									+" from pg_get_status_ingest() pg_get_status_ingest left outer join"
+									+" (select database_name, connect_name"
+									+" from kafka_con_config) t2 on 1=1')"
+									+" as t1(database_name varchar(100), pg_get_status_ingest varchar(100), connect_name  varchar(100))";
+					
+					//Globals.logger.debug("database 연계상태 조회 쿼리 = "+databaseQuery);
+
+					st = conn.createStatement();
 					rs =  st.executeQuery(databaseQuery);
 					databaseInfo = new HashMap<String, Object>();
+					//kafka_con_config 테이블에 데이터베이스명이 없는 경우가 있어 dbName 으로 데이터베이스명 셋팅
 					while (rs.next()) {
-						Globals.logger.debug("============ rs.getString(1) 데이터베이스명 ======="+rs.getString(1));
-						Globals.logger.debug("============ rs.getString(2) 연계상태 ======="+rs.getString(2));
-						Globals.logger.debug("============ rs.getString(3) 커넥션 이름 ======="+rs.getString(3));
-						Globals.logger.debug("============ rs.getString(4) 익스텐션 숫자 ======="+rs.getString(4));
-						databaseInfo.put("database_name", rs.getString(1));
+						databaseInfo.put("database_name", dbName);
 						databaseInfo.put("pg_get_status_ingest", rs.getString(2));
 						databaseInfo.put("connect_name", rs.getString(3));
-						databaseInfo.put("count", rs.getString(4));
 					}
 					databaseList.add(databaseInfo);
-					
-				} catch(SQLException e){
-					Globals.logger.debug("============ e.getSQLState() ======="+e.getSQLState()+"==========");
-					
-					//테이블이 없을 경우 42P01 반환, function이 없을 경우 42883 반환
-					if(e.getSQLState().equals("42P01") || e.getSQLState().equals("42883") ) {
-						Globals.logger.info(dbName+"은 extension이 설치되지 않았습니다.");
-					}
-					else {
-						throw e;
-					}
-				} finally{
-			    	if(rs !=  null) rs.close();
-			    	if(st !=  null) st.close();
+
+				} else{
+					Globals.logger.debug("database "+dbName+"에는 확장 extension이 설치되어 있지 않습니다.");
 				}
 			}
 			
+		} catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
 	    } catch (Exception e) {
 	    	Globals.logger.error(e.getMessage(), e);
 	    } finally{
+	    	if(extensionCheckRS !=  null) extensionCheckRS.close();
+	    	if(extensionCheckST !=  null) extensionCheckST.close();
+	    	if(rs !=  null) rs.close();
+	    	if(st !=  null) st.close();
 	    	if(listRS !=  null) listRS.close();
-	    	if(listST !=  null) listRS.close();
-	    	if(conn !=  null) listRS.close();
+	    	if(listST !=  null) listST.close();
+	    	if(conn !=  null) conn.close();
 	    }
-	    
-		Globals.logger.debug("============ databaseList.size() ======="+databaseList.size()+"==========");
-		
-		
+		Globals.logger.debug("database 연계정보 조회 갯수 = "+databaseList.size());
 		return databaseList;
 	}	
 	
