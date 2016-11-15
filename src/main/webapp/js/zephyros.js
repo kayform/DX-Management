@@ -8,7 +8,7 @@ zephyros.checkAjaxDialogResult = function(dialog, result){
 		zephyros.showDialog(dialog_info,  result.msg);
 		dialog.dialog("close");
 	}else {
-		alert(result.msg);
+		zephyros.showDialog(dialog_info,  result.msg);
 	}
 }
 
