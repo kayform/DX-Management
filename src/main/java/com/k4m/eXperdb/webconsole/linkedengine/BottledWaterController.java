@@ -94,7 +94,78 @@ public class BottledWaterController {
 		return mav;
 	}
 	
+	/**
+	 * 연계 테이블 목록 조회
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param systemName
+	 * @param databaseName
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/tableList")   
+	public ModelAndView tableList(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "systemName", defaultValue = "") String systemName,
+			@RequestParam(value = "databaseName", defaultValue = "") String databaseName) throws Exception {
+		
+		List<Map<String, Object>> tableList = null;		
+		HashMap<String, String> param = new HashMap<String, String>();
+
+		param.put("systemName", systemName);
+		param.put("databaseName", databaseName);
+
+		
+		try{
+			tableList = selectTableList(param);
+		}catch (Exception e){
+			Globals.logger.error(e.getMessage(), e);
+		}
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("tableList", tableList);
+		mav.addObject("systemName", systemName);
+		mav.setViewName("tableList");
+		return mav;
+	}
 	
+	/**
+	 * 프로세스 재기동 또는 중지
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param systemName
+	 * @param databaseName
+	 * @param command
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/runProcess")   
+	public Map<String, Object> runProcess(Model model, HttpSession session, HttpServletRequest request,
+			@RequestParam(value = "systemName", defaultValue = "") String systemName,
+			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
+			@RequestParam(value = "command", defaultValue = "") String command) throws Exception {
+		
+		Map<String, String> param = new HashMap<String, String>();
+		Map<String, Object> resMap  = new HashMap<String, Object>();
+
+		param.put("systemName", systemName);
+		param.put("databaseName", databaseName);
+		param.put("command", command);
+	
+		try{
+			resMap = runProcess(param);
+		}catch (Exception e){
+			Globals.logger.error(e.getMessage(), e);
+		}
+		
+		Globals.logger.debug("파라미터(systemName="+systemName+", databaseName="+databaseName+", command="+command+")에 대한 결과 메시지 ="+resMap.get("msg"));
+		
+		return resMap;
+	}
+	
+	
+	
+
 	/**
 	 * 데이터베이스 연계 정보 조회
 	 * @param param
@@ -185,6 +256,131 @@ public class BottledWaterController {
 		return databaseList;
 	}	
 	
+	
+	
+
+	/**
+	 * 데이터베이스 연계 테이블 목록 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	private List<Map<String, Object>> selectTableList(Map<String, String> param) throws Exception {
+		
+		List<Map<String, Object>> tableList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> tableInfo = null;
+
+
+	    
+	    Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+
+		String tableQuery = "select table_schema, table_name from dblink('dbname="+ param.get("databaseName") +"', 'select table_schema, table_name from tbl_mapps') as t1(table_schema varchar(100), table_name varchar(100))";
+		
+	    try {
+
+	    	conn = DBCPPoolManager.getConnection(param.get("systemName"));
+	    	st = conn.createStatement();
+			rs = st.executeQuery(tableQuery);
+				
+			tableInfo = new HashMap<String, Object>();
+
+			//database 명 조회
+			while (rs.next()) {
+				tableInfo = new HashMap<String, Object>();
+				tableInfo.put("table_schema", rs.getString(1));
+				tableInfo.put("table_name", rs.getString(2));
+				tableList.add(tableInfo);
+			}
+			
+			
+		} catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
+	    } catch (Exception e) {
+	    	Globals.logger.error(e.getMessage(), e);
+	    } finally{
+	    	if(rs !=  null) rs.close();
+	    	if(st !=  null) st.close();
+	    	if(conn !=  null) conn.close();
+	    }
+		Globals.logger.debug("연계테이블 목록 조회문 = "+tableQuery);
+		Globals.logger.debug("database 연계 테이블 갯수 = "+tableList.size());
+		return tableList;
+	}	
+	
+	
+	/**
+	 * 파라미터 조회조건에 해당하는 연계엔진의 재기동 또는 중지
+	 * @param param
+	 * @return
+	 */
+	private Map<String, Object> runProcess(Map<String, String> param)  throws Exception {
+		Map<String, Object> resMap  = new HashMap<String, Object>();
+
+	    
+	    Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+
+		//해당 시스템, 데이터베이스의 프로세스를 재기동 또는 중단 쿼리
+	    String commandQuery = null;
+		String returnMessage = "";
+
+		
+		if(param.get("command") != null && param.get("command").equals("RUN") ){
+		    //전체 database 명 조회 쿼리
+		    commandQuery = "select * from dblink('dbname="+ param.get("databaseName") +"', 'select pg_resume_ingest()') as t1(result varchar(100))";
+		    returnMessage = "프로세스 기동을 성공했습니다.";
+			
+		}
+		else if(param.get("command") != null && param.get("command").equals("STOP") ){
+		    //전체 database 명 조회 쿼리
+		    commandQuery = "select * from dblink('dbname="+ param.get("databaseName") +"', 'select pg_suspend_ingest()') as t1(result varchar(100))";
+		    returnMessage = "프로세스 중지를 성공했습니다.";
+		}
+		else{
+			//Globals.logger.error("param.get(command)==="+param.get("command")); 
+		}
+		
+		
+	    try {
+	    	conn = DBCPPoolManager.getConnection(param.get("systemName"));
+	    	st = conn.createStatement();
+			rs = st.executeQuery(commandQuery);
+			if(rs.next() && rs.getString(1).equals("Success(0)")){
+				
+			}
+			else{
+				returnMessage = "프로세스 기동 또는 중지가 실패했습니다. 결과값 = "+rs.getString(1);
+				resMap.put("result", "FAIL");
+			}
+
+	    } catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
+			returnMessage = e.getMessage();
+			resMap.put("msg", returnMessage);
+			resMap.put("result", "FAIL");			
+			throw e;
+	    } catch (Exception e) {
+	    	Globals.logger.error(e.getMessage(), e);
+	    	returnMessage = e.getMessage();
+			resMap.put("msg", returnMessage);
+			resMap.put("result", "FAIL");
+	    	throw e;
+	    } finally{
+	    	if(rs !=  null) rs.close();
+	    	if(st !=  null) st.close();
+	    	if(conn !=  null) conn.close();
+	    }
+	    
+	
+		resMap.put("msg", returnMessage);
+		resMap.put("result", "SUCCESS");
+		return resMap;
+	}
 	
 	
 
