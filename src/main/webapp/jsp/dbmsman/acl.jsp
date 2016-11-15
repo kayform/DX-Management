@@ -40,7 +40,7 @@
 										<td>${item.port}</td>
 										<td>${item.db_nm}</td>
 										<td>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:aclModal('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:aclModal('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
 										</td>
 									</tr>
 								</c:forEach>
@@ -147,11 +147,10 @@ function aclModal(mode, serverId) {
 	var html = '';
 	if (mode == 'V') {		
 		var jsonData;
- 		
  		var table = $('#acllisttab').DataTable();
+		table.clear().draw();
 		table.destroy();
-		$('#acllisttab tbody').empty();
- 
+		
 		$.ajax({
             'contentType': 'application/json',
             'dataType': 'json',
@@ -162,7 +161,7 @@ function aclModal(mode, serverId) {
 
 	 	 		table = $('#acllisttab').DataTable({
 		 	        fixedHeader: true,
-/* 	 	 			retrieve: true, */
+	 	 			retrieve: true,
 	 	 			scrollY: 300,
 	 	 			bscrollCollapse: false,
 	 	 			paging: false,
@@ -205,7 +204,8 @@ function aclModal(mode, serverId) {
 				                   }
 				               ],
 				   select: {
-				        style: 'os',
+//				        style: 'os',
+				        style: 'single',
 				        selector: 'td:not(:last-child)' // no row selection on last column
 				    },
 				   buttons: [
@@ -220,7 +220,6 @@ function aclModal(mode, serverId) {
 	 	 		
 	 	 		//table.column( 8 ).visible( false );
 
-	 	 	     		
 		 	 	$('#removeBtn').click( function () {
 		 	         table.row('.selected').remove().draw( false );
 		 	    });
@@ -239,22 +238,17 @@ function aclModal(mode, serverId) {
 		var dTable = $('#acllisttab').DataTable();		
 		var seq = dTable.row('.selected').data().Seq;
 		dTable.row('.selected').remove().draw( false );
- 		$.ajax({
+   		$.ajax({
 				url : '/aclDelete?seq=' + seq,
 			    type: 'POST',
 				data: null,
 				success : function(data, status, xhr) {
-					zephyros.alert({
-						contents : successTxt,
-						close : function() {
-							window.location.href ='/acl';
-						}
-					});
 				}, error: function (e) { 
 					ajaxErrorHandler(e);
 				}
 			});
-	} else if (mode == 'S') {		
+ 	} else if (mode == 'S') {		
+	 	zephyros.loading.show();
 		var head = [],
 	    i = 0,
 	    tableObj = {myrows: []};
@@ -265,22 +259,17 @@ function aclModal(mode, serverId) {
 		
 		var strData = JSON.stringify(tableObj);
 		
-		$.ajax({
-				url : '/aclProcess?serverId=' + serverId + '&aclArray=' + strData,
-			    type: 'POST',
-//					data: JSON.stringify(tableObj),
-				data: strData,
-				success : function(data, status, xhr) {
-					zephyros.alert({
-						contents : successTxt,
-						close : function() {
-							window.location.href ='/acl';
-						}
-					});
-				}, error: function (e) { 
-					ajaxErrorHandler(e);
-				}
-			});
+		zephyros.callAjax({
+			url : '/aclProcess?serverId=' + serverId + '&aclArray=' + strData,
+			type : 'post',
+			data : strData,
+			success : function(data, status, xhr) {
+				zephyros.checkAjaxDialogResult(dialog_profile, data);
+			 	zephyros.loading.hide();
+			}
+		});	
+		
+		
 	} else {
 		$.ajax({
 			url : url,
