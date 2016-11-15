@@ -204,22 +204,34 @@ function refreshElement() {
 		$("#user_id").prop("readonly",false);
 		$("#user_pw").prop("readonly",false);
 		
+		$("#user_id").attr("data-validate-func", "required");
+		$("#user_pw").attr("data-validate-func", "required");
+		
 		if (value == 'POSTGRESQL') {
 			$("#dbNmTr").prop("disabled",false);  
 			$("#db_nm").prop("readonly",false);
+			$("#db_nm").attr("data-validate-func", "required");
 		}else{
 			$("#dbNmTr").prop("disabled",true);  
 			$("#db_nm").prop("readonly",true);
+			$("#user_pw").removeAttr("data-validate-func");
 		}
 	}else{
 		$("#userInfoTr").prop("disabled",true);
 		$("#user_id").prop("readonly",true);
+		$("#user_id").prop("disabled",true);
 		$("#user_pw").prop("readonly",true);
+		$("#user_pw").prop("user_pw",true);
 		$("#dbNmTr").prop("disabled",true);  
 		$("#db_nm").prop("readonly",true);
+		$("#db_nm").prop("disabled",true);
 		$("#user_id").val("");
 		$("#user_pw").val("");
 		$("#db_nm").val("");
+		
+		$("#user_id").removeAttr("data-validate-func");
+		$("#user_pw").removeAttr("data-validate-func");
+		$("#db_nm").removeAttr("data-validate-func");
 		//$("#userInfoTr").css("display","none");
 	}
 	
