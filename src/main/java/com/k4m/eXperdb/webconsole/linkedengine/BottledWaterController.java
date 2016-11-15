@@ -107,13 +107,15 @@ public class BottledWaterController {
 	@RequestMapping(value = "/tableList")   
 	public ModelAndView tableList(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "systemName", defaultValue = "") String systemName,
-			@RequestParam(value = "databaseName", defaultValue = "") String databaseName) throws Exception {
+			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
+			@RequestParam(value = "connectName", defaultValue = "") String connectName) throws Exception {
 		
 		List<Map<String, Object>> tableList = null;		
 		HashMap<String, String> param = new HashMap<String, String>();
 
 		param.put("systemName", systemName);
 		param.put("databaseName", databaseName);
+		param.put("connectName", connectName);
 
 		
 		try{
@@ -123,7 +125,7 @@ public class BottledWaterController {
 		}
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("tableList", tableList);
-		mav.addObject("systemName", systemName);
+		mav.addObject("connectName", connectName);
 		mav.setViewName("tableList");
 		return mav;
 	}

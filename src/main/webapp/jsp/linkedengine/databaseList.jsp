@@ -29,7 +29,7 @@
 							<td>${item.pg_get_status_ingest}</td>
 							<td>${item.connect_name}</td>
 							<td>
-								<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:tableList('${searchSysNm}','${item.database_name}');"><span class="icon mif-search"></span></button>
+								<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:tableList('${searchSysNm}','${item.database_name}','${item.connect_name}');"><span class="icon mif-search"></span></button>
 							</td>
 							<td>
 								<c:choose>
@@ -58,7 +58,7 @@
 </div> 
 
 <script>    
-	function tableList(systemName, databaseName) {
+	function tableList(systemName, databaseName, connectName) {
     	zephyros.loading.show();
     	
     	var url = '';
@@ -67,9 +67,9 @@
     	var titleTxt = '';
     	var successTxt = '';
     	var heightVal = 650;
-      	var widthVal = 1250;
+      	var widthVal = 700;
 
-		url = '/tableList?systemName='+systemName+'&databaseName=' + databaseName;
+		url = '/tableList?systemName='+systemName+'&databaseName=' + databaseName+'&connectName=' + connectName;
 		
    		titleTxt = '연계 Table 리스트';
    		dialog_tableList = $("#dialog_tableList").dialog({

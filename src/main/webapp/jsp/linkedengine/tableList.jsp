@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div class="cell auto-size padding20 bg-white" id="cell-content">
+    <p>Kafka Connection : <input type="text" id="connectName" name="connectName" readonly="readonly" value="${connectName}" style="width:30%;">
     <p>* 연계 테이블 리스트
     <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
         <thead>
