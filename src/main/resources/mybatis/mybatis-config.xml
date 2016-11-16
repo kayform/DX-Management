@@ -20,8 +20,8 @@
 		<!-- 서버관리 및 기타셋팅 -->
 		<mapper resource="mybatis/settings-mapper.xml"/>
 		
-		<!-- bottledwater 셋팅 -->
-		<mapper resource="mybatis/bottledwater-mapper.xml"/>
+		<!-- 연계엔진관리 셋팅 -->
+		<mapper resource="mybatis/linkedengine-mapper.xml"/>
 		
 		<!-- pg 관련 쿼리 셋팅 -->
 		<mapper resource="mybatis/pginfo-mapper.xml"/>
