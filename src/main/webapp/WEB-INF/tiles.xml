@@ -174,7 +174,7 @@
 	</definition>
 	
 	
-	<!-- bottledwater 관리 -->
+	<!-- kafka 관리 -->
 	<definition name="kafka" extends="base.definition">
 		<put-attribute name="content" value="/jsp/linkedengine/kafka.jsp" />
 	</definition>
