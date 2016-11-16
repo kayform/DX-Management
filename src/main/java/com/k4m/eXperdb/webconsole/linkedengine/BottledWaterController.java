@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -144,6 +145,7 @@ public class BottledWaterController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/runProcess")   
+	@ResponseBody
 	public Map<String, Object> runProcess(Model model, HttpSession session, HttpServletRequest request,
 			@RequestParam(value = "systemName", defaultValue = "") String systemName,
 			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,

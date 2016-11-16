@@ -220,7 +220,7 @@
     	    				success : function(data, status, xhr) {
     	    					zephyros.loading.hide();
     	  						dialog_profile.dialog("close"); 
-    	  						zephyros.checkAjaxDialogResult(dialog_info,  data)
+    	  						zephyros.checkAjaxDialogResult(dialog_profile,  data)
     	    				}
     	    			});
     	    	  	},
