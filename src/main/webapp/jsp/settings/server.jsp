@@ -55,8 +55,7 @@
 						</tr>
 					</table>
 					</div>							
-                    <table id='serverTbl' class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
-                        
+                    <table id='serverTbl' class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">                        
                         <thead>
                         <tr>
                             <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
@@ -66,43 +65,6 @@
                             <td style="width: 150px">관리</td>
                         </tr>
                         </thead>
-                        <!-- 
-                        <tbody>
-						<c:choose>
-							<c:when test="${serverList.size() < 1}">
-								<tr>
-									<td colspan="6" style="text-align: center;">No Data.</td>
-								</tr>
-							</c:when>
-							<c:otherwise>
-								<c:forEach items="${serverList}" var="item">
-									<tr>
-										<td>${item.sys_nm}</td>
-										<td>${item.ip}</td>
-										<td>${item.port}</td>
-										<td>${item.type}</td>
-										<td id="serverMngBtnTd" name="serverMngBtnTd">
-											<c:choose>
-												<c:when test="${sessionScope.userAuth == '3' or sessionScope.userAuth == '2'}">
-													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="mif-search"></span></button>
-													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('U', '${item.sys_nm}');"><span class="mif-pencil"></span></button>
-													<button id="deleteBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:deleteServer('${item.sys_nm}');"><span class="mif-cancel"></span></button>
-												</c:when>
-												<c:when test="${sessionScope.userAuth == '1'}">
-													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
-													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('U', '${item.sys_nm}');"><span class="icon mif-pencil"></span></button>
-												</c:when>
-												<c:otherwise>
-													관리권한 없음.
-												</c:otherwise>
-											</c:choose>
-										</td>
-									</tr>
-								</c:forEach>
-							</c:otherwise>
-						</c:choose>
-                        </tbody>
-                         -->
                     </table>
                 </div> 
             </div>

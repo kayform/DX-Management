@@ -614,7 +614,7 @@ public class SettingsController {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
 				msg = "서버정보가 삭제되었습니다.";
-				rowCount = settingsService.deleteSERVER(param);				
+				rowCount = settingsService.deleteSERVER(param);
 			} else {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
