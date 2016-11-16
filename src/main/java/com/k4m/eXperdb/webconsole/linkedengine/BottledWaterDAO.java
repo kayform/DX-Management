@@ -25,7 +25,7 @@ public class BottledWaterDAO {
 	 * @return
 	 */
 	public List<Map<String,Object>> selectServerList(HashMap<String, String> param) {
-		List<Map<String,Object>> list = sqlSession.selectList("bottledwater-mapper.selectServerList", param);
+		List<Map<String,Object>> list = sqlSession.selectList("linkedengine-mapper.selectServerList", param);
 		return list;
 	}
 
