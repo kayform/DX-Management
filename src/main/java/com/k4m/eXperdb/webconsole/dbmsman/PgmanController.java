@@ -322,6 +322,7 @@ public class PgmanController {
 		    String query1 = "SELECT pg_file_unlink('pg_hba.conf.bak');";
 		    String query2 = "SELECT pg_file_write('pg_hba.conf.tmp', '" + buffer + "', false);";
 		    String query3 = "SELECT pg_file_rename('pg_hba.conf.tmp', 'pg_hba.conf', 'pg_hba.conf.bak');";
+		    String query4 = "SELECT pg_reload_conf();";
 
 //	    	conn = DriverManager.getConnection(url, usr, pwd);
 	    	conn = DBCPPoolManager.getConnection(serverId);
@@ -331,11 +332,10 @@ public class PgmanController {
 			conn.setAutoCommit(false); 
 			rs = st.executeQuery(query2);
 			rs = st.executeQuery(query3);
+			rs = st.executeQuery(query4);
 			conn.commit();       
 			resMap.put("result", "SUCCESS");
 			resMap.put("msg", "저장되었습니다.");
-//			resMap.put("result", "FAIL");
-//			resMap.put("msg", "저장에 실패하였습니다.");
 	    } catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);
 			resMap.put("result", "FAIL");
