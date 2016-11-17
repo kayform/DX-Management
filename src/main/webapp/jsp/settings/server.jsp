@@ -24,7 +24,7 @@
                     <hr class="thin bg-grayLighter">								
                     <!--  검색 조건 -->
 					<div class="filter-bar">
-							<button id="selBtn" name="selBtn" class="button primary"><span class="mif-search"></span>조회</button>
+							<button id="selBtn" name="selBtn" class="button primary" onclick="javascript:reloadServerTable()"><span class="mif-search"></span>조회</button>
                     		<button id="regSvrBtn" name="regSvrBtn" class="button primary"><span class="mif-plus"></span>등록</button>  		
 					</div>					
                     <hr class="thin bg-grayLighter">                    							
@@ -55,7 +55,7 @@
 						</tr>
 					</table>
 					</div>							
-                    <table id='serverTbl' class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
+                    <table id='serverTbl' class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">                        
                         <thead>
                         <tr>
                             <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
@@ -65,43 +65,6 @@
                             <td style="width: 150px">관리</td>
                         </tr>
                         </thead>
-                        <tbody>
-						<c:choose>
-							<c:when test="${serverList.size() < 1}">
-								<tr>
-									<td colspan="6" style="text-align: center;">No Data.</td>
-								</tr>
-							</c:when>
-							<c:otherwise>
-								<c:forEach items="${serverList}" var="item">
-									<tr>
-										<td>${item.sys_nm}</td>
-										<td>${item.ip}</td>
-										<td>${item.port}</td>
-										<td>${item.type}</td>
-										<td>
-											<!-- 슈퍼유저(3), 관리자(2)일 경우 조회, 수정 및 삭제 권한부여-->
-											<!-- 사용자(1) 일 경우 본인 정보 조회, 수정권한 부여 및 타 사용자 조회 기능 부여-->
-											<c:choose>
-												<c:when test="${sessionScope.userAuth == '3' or sessionScope.userAuth == '2'}">
-													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="mif-search"></span></button>
-													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('U', '${item.sys_nm}');"><span class="mif-pencil"></span></button>
-													<button id="deleteBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:deleteServer('${item.sys_nm}');"><span class="mif-cancel"></span></button>
-												</c:when>
-												<c:when test="${sessionScope.userAuth == '1'}">
-													<button id="viewBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
-													<button id="modifyBtn" style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('U', '${item.sys_nm}');"><span class="icon mif-pencil"></span></button>
-												</c:when>
-												<c:otherwise>
-													관리권한 없음.
-												</c:otherwise>
-											</c:choose>
-										</td>
-									</tr>
-								</c:forEach>
-							</c:otherwise>
-						</c:choose>
-                        </tbody>
                     </table>
                 </div> 
             </div>
@@ -113,7 +76,55 @@
 </div> 
 
 <script>
+$(document).ready(function() {
+	var auth = '${sessionScope.userAuth}';
+	var columns = null;
+	if (auth == 1) {
+		columns =  [
+		        	              { data: 'sys_nm' },
+		        	              { data: 'ip'},
+		        	              { data: 'port' },
+		        	              { data: 'type' },
+		        	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button>"}
+		        	          ];
+	}else {
+		columns =  [
+ 	              { data: 'sys_nm' },
+ 	              { data: 'ip'},
+ 	              { data: 'port' },
+ 	              { data: 'type' },
+ 	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button><button id=\"deleteBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-cancel\"></span></button>"}
+ 	          ];
+	}
+	table = $("#serverTbl").DataTable({		   
+	    bDestroy: true,
+	    paging : true,
+	    /*"bJQueryUI": true,*/
+		ajax: {
+			url : '/serverList',
+			type : 'post',
+			data : function(d) {
+				d.searchSysNm = $('#searchSysNm').val(),
+				d.searchType = $('#searchType').val(),
+				d.searchIp = $('#searchIp').val()
+			},
+			dataSrc : ""
+		},
+	    columns: columns
+	});
 	
+	$('#serverTbl tbody').on('click', 'button', function() {
+		var data = table.row( $(this).parents('tr') ).data();
+		if ($(this)[0].id == "viewBtn"){
+			showServerForm('V', data.sys_nm);
+		}else if ($(this)[0].id == "modifyBtn") {
+			showServerForm('U', data.sys_nm);
+		}else if ($(this)[0].id == "deleteBtn") {
+			deleteServer(data.sys_nm);
+		}				
+	});
+});
+
 function showServerForm(mode, sys_nm) {
 	zephyros.loading.show();
 	var url = '/serverForm?mode='+mode;
@@ -145,6 +156,7 @@ function showServerForm(mode, sys_nm) {
 							success : function(data, status, xhr) {
 								zephyros.loading.hide();
 								zephyros.checkAjaxDialogResult(dialog_serverForm, data);
+								reloadServerTable();
 							}
 						});		
 			    	}
@@ -192,24 +204,6 @@ $("#regSvrBtn").on("click", function() {
 	showServerForm('I');
 });
 
-$("#selBtn").on("click", function() {
-	zephyros.loading.show();
-	var url = '/server';
-	
- 	zephyros.callAjax({
-		url : url,
-		type : 'post',
-		data : {
-			sys_nm : $('#searchSysNm').val(),
-			type : $('#searchType').val(),
-			ip : $('#searchIp').val()
-		},
-		success : function(data, status, xhr) {
-			zephyros.loading.hide();
-		}
-	}); 
-});
-
 function deleteServer(sys_nm) {
 	zephyros.loading.show();
 	var url = '/serverProcess';
@@ -224,7 +218,14 @@ function deleteServer(sys_nm) {
 		success : function(data, status, xhr) {
 			zephyros.loading.hide();
 			zephyros.checkAjaxDialogResult(null, data);
+			reloadServerTable();
 		}
 	}); 
 }
+
+function reloadServerTable() {
+	zephyros.loading.show();
+	table.ajax.reload();
+	zephyros.loading.hide();
+};
 </script>

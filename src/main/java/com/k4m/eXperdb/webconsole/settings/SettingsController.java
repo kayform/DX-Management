@@ -13,6 +13,7 @@ import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.session.SqlSession;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -380,6 +381,74 @@ public class SettingsController {
 		}
 		return mav;
 	}
+	/**
+	 * 서버관리 : 서버리스트 return
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param sys_nm
+	 * @param type
+	 * @param ip
+	 * @param currentPage
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/serverList")
+	@ResponseBody
+	public List<Map<String, Object>> getServerList(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSysNm", defaultValue = "") String sys_nm,
+	//public String getServerList(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSysNm", defaultValue = "") String sys_nm,
+			@RequestParam(value = "searchType", defaultValue = "") String type, 
+			@RequestParam(value = "searchIp", defaultValue = "") String ip, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
+		List<Map<String, Object>> serverList = new ArrayList<Map<String, Object>>();
+		try {
+			// 리스트 네이게이션 개수
+			int countPerPage = 5;
+			// 리스트 개수
+			int countPerList = 10;
+			
+			if (currentPage < 1) {
+				currentPage = 1;
+			}
+			
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("sys_nm", (sys_nm == null || sys_nm.equals("")) ? "%" : "%" + sys_nm + "%");
+			param.put("type", (type == null || type.equals("")) ? "%" : "%" + type + "%");			
+			param.put("ip", (ip == null || ip.equals("")) ? "%" : "%" + ip + "%");
+			
+			serverList = settingsService.selectSERVER(param); // 데이터 리스트 조회
+			/*
+			for(Map<String, Object> map : serverList) {
+				map.put("mng", "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" onclick=\"javascript:showServerForm('V', '${item.sys_nm}');\"><span class=\"mif-search\"></span></button>");
+			}
+			*/
+		} catch (Exception e) {
+			Globals.logger.error(e.getMessage(), e);
+			throw e;
+		}
+		//return listmap_to_json_string(serverList);
+		return serverList;
+	}
+	
+	public String listmap_to_json_string(List<Map<String, Object>> list)
+	{       
+	    JSONArray json_arr=new JSONArray();
+	    
+	    for (Map<String, Object> map : list) {
+	        JSONObject json_obj=new JSONObject();
+	        for (Map.Entry<String, Object> entry : map.entrySet()) {
+	            String key = entry.getKey();
+	            Object value = entry.getValue();
+	            try {
+	                json_obj.put(key,value);
+	            } catch (Exception e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+	            }                           
+	        }
+	        json_arr.add(json_obj);
+	    }
+	    return json_arr.toString();
+	}
 	
 	/**
 	 * 사용자 등록시 입력한 사용자 ID에 대해 중복값을 체크
@@ -545,7 +614,7 @@ public class SettingsController {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
 				msg = "서버정보가 삭제되었습니다.";
-				rowCount = settingsService.deleteSERVER(param);				
+				rowCount = settingsService.deleteSERVER(param);
 			} else {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
@@ -559,14 +628,25 @@ public class SettingsController {
 				case "POSTGRESQL":
 		    		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		    		Map<String, Object> tempMap  = new HashMap<String, Object>();
+		    		
+		    		tempMap.put("sys_nm", sys_nm);					
+					Map<String, Object> serverInfoMap = settingsService.selectSERVERDetail(tempMap); // 데이터 전체 건수 조회
+					tempMap.clear();
+					
 					ConfigInfo configInfo = new ConfigInfo();
 		       		configInfo.SERVERIP = ip;
-		            configInfo.USERID = user_id;
-		            configInfo.DB_PW = user_pw;
+		            configInfo.USERID = user_id;		            
 		            configInfo.PORT = port;
 		            configInfo.DBNAME = db_nm;
 		            configInfo.SCHEMA_NAME = user_id;
-		            configInfo.DB_TYPE = "POG";	   
+		            configInfo.DB_TYPE = "POG";	  
+		            
+		            if (serverInfoMap.get("user_pw").toString().equals(user_pw)){
+		            	user_pw = SecureManager.decrypt(user_pw);
+		            }
+		            
+		            configInfo.DB_PW = user_pw;
+		            
 		    		String rtn = "";
 		    		try {
 		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 5);		    			

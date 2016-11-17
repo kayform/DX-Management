@@ -120,7 +120,8 @@
 	    		data : null,
 	    		success : function(data, status, xhr) {
 	    			zephyros.loading.show();
-	    			zephyros.checkAjaxDialogResult(dialog_info,  data);
+	    			zephyros.checkAjaxDialogResult(null,  data);
+	    			zephyros.loading.hide();
 	    		}
 	    	});
 		}
