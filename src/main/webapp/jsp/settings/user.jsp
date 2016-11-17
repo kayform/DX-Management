@@ -9,7 +9,7 @@
                 <div class="cell size-x200" id="cell-sidebar" style="background-color: #71b1d1; height: 100%">
                 </div>            
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
-                    <h1 class="text-light">사용자 관리</h1>  디버그 정보 : userId=${sessionScope.userId}  userAuth=${sessionScope.userAuth} 
+                    <h1 class="text-light">사용자 관리</h1> 
                     <h5 class="sub-alt-header">* 사용자 정보 및 메뉴별 접근 권한을 관리합니다.</h5>
                     <hr class="thin bg-grayLighter">
                     사용자명 <input type="text"  id="searchUserNameText" name="searchUserNameText"> 
@@ -51,7 +51,9 @@
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('D', '${item.user_id}');"><span class="icon mif-cancel"></span></button>
+													<c:if test="${item.auth_dv == '사용자'}">
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:manageUserAuth('${item.user_id}');"><span class="icon mif-tools"></span></button>
+													</c:if>
 												</c:when>
 												<c:when test="${sessionScope.userAuth == '1'}">
 													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
