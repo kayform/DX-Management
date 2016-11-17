@@ -179,6 +179,15 @@
 		<put-attribute name="content" value="/jsp/linkedengine/kafka.jsp" />
 	</definition>
 	
+	<!-- kafka connect 관리 -->
+	<definition name="kafkaconnect" extends="base.definition">
+		<put-attribute name="content" value="/jsp/linkedengine/kafkaConnect.jsp" />
+	</definition>
+	<definition name="kafkaConnectorConfigListForm" template="/jsp/linkedengine/kafkaConnectorConfigListForm.jsp">
+	</definition>
+	<definition name="kafkaConnectorConfigForm" template="/jsp/linkedengine/kafkaConnectorConfigForm.jsp">
+	</definition>
+	
 	
 	
 </tiles-definitions>
