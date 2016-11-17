@@ -25,5 +25,16 @@
           ]]>
 	</select>
 		
+	<!-- kafka connect 서버 목록조회 -->
+	<select id="selectKafkaConnectServerList" resultType="hashmap">
+		  <![CDATA[
+			select * 
+			from webadmin.tb_mt_co_svrinfo
+			where type =  ('KAFKA-CONNECT')
+			and sys_nm like #{sys_nm}
+            order by sys_nm desc
+          ]]>
+	</select>
+		
 
 </mapper>
