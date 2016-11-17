@@ -1,83 +1,204 @@
 package com.k4m.eXperdb.webconsole.test;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
-import com.k4m.eXperdb.webconsole.common.Globals;
+import com.k4m.eXperdb.webconsole.linkedengine.RequestRestAPI;
 
 public class RestTemplateTest {
 
 	@Test
-	public void test() {
+	public void kafkaConnectorConfigListTest() {
 
-		//커넥트 명 반환
-		//String url = makeRestURL("58.229.253.142", 8083, "", "");
-		//String[] results = null;
-
-		//해당 커넥터의 상태값 반환
-		//String url = makeRestURL("58.229.253.142", 8083, "work1", "status");
 		
-		//해당 커넥터의 설정 값 반환
-		String url = makeRestURL("58.229.253.142", 8083, "work1", "config");
+		List<Map<String, Object>> configList = new ArrayList<Map<String, Object>>();		
+		Map<String, Object> connectorConfig = null;
+		Map<String, Object> connectorStatus = null;
 
-		String results = null;		
-		
+		ResponseEntity<String> responseEntity = null;
+		RequestRestAPI requestRestAPI  = new RequestRestAPI();
+
+		String ip  ="58.229.253.142";
+		int port = 8083;
+		String configJob = "config";
+		String statusJob = "status";
+
+		String url = null;
 		try {
-			results = requestRestAPI(url);
+			
+			
+			url = requestRestAPI.makeRestURL(ip, port, "", "");
+			System.out.println(url+" REST API 호출");
+
+			//데이터베이스에서 조회된 값으로 REST URL을 만들고, 해당 URL로 조회 요청을 하고 커넥터 목록을 반환받는다.
+			responseEntity = requestRestAPI.requestRestAPI(url);
+			String jsonString = responseEntity.getBody();
+			
+			if(responseEntity!= null && responseEntity.getStatusCode().value() == 200 ){
+				JSONParser jsonParser = new JSONParser();
+				JSONArray objects =(JSONArray) jsonParser.parse(jsonString);
+				
+				for(int i = 0 ; i < objects.size() ; i++){
+					connectorConfig = new HashMap<String, Object>();
+					connectorStatus = new HashMap<String, Object>();
+					System.out.println(url+" 의 "+i+"번째 커넥터명 : "+objects.get(i).toString());
+					connectorConfig = getKafkaConnectorConfig(ip, port, objects.get(i).toString(), configJob);
+					connectorStatus = getKafkaConnectorConfig(ip, port, objects.get(i).toString(), statusJob);
+					
+					System.out.println("=========="+((JSONObject)connectorStatus.get("connector")).get("state"));
+					
+					connectorConfig.put("status", ((JSONObject)connectorStatus.get("connector")).get("state"));
+					
+					configList.add(connectorConfig);
+				}
+			}
+			else{
+			}			
+
+			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	
 			
 	}
 	
-	private String requestRestAPI(String url) throws Exception {
-
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+	/**
+	 * 입력받은 아이피, 포트, 커넥터명, 잡에 대한 REST 응답을 맵(JSONObject 타입)으로 반환
+	 * @param ip
+	 * @param port
+	 * @param connectorName
+	 * @param job
+	 * @return
+	 * @throws Exception
+	 */
+	private Map<String, Object> getKafkaConnectorConfig(String ip, int port, String connectorName, String job) throws Exception {
 		
-		RestTemplate restTemplate = new RestTemplate();
+		JSONObject configJsonObjectMap = null;
+		String jsonString = null;
+		String url = null;
 		
-		// Add the String message converter
-		restTemplate.getMessageConverters().add(new MappingJacksonHttpMessageConverter() );
-		String results = null;
+		ResponseEntity<String> responseEntity = null;
+		RequestRestAPI requestRestAPI  = new RequestRestAPI();
 		
 		try {
-			ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class );
-			results = responseEntity.getBody();
-		} catch (Exception e) {
-			System.out.println(url+" REST API 접속에서 예외가 발생했습니다.");
-			throw new Exception("REST API 접속에서 예외가 발생했습니다.", e);
-		}
-		System.out.println(url+" REST API 호출 결과 = "+ results.toString());
-		return results;
+			url = requestRestAPI.makeRestURL(ip, port, connectorName, job);
+			System.out.println(url+" REST API 호출");
 
+			//데이터베이스에서 조회된 값으로 REST URL을 만들고, 해당 URL로 조회 요청을 하고 결과값을 반환 받는다.
+			responseEntity = requestRestAPI.requestRestAPI(url);
+			jsonString = responseEntity.getBody();
+			System.out.println("호출결과 =="+jsonString);
+			
+			if(responseEntity!= null && responseEntity.getStatusCode().value() == 200 ){
+
+				JSONParser jsonParser = new JSONParser();
+
+				configJsonObjectMap =(JSONObject) jsonParser.parse(jsonString);
+
+				//System.out.println(configJsonObjectMap.getClass().getName());
+				
+				Iterator<?> iter=configJsonObjectMap.entrySet().iterator();
+				while(iter.hasNext()){
+					Map.Entry entry=(Map.Entry)iter.next();
+					System.out.println(connectorName+" 커넥터 설정 정보 키:"+String.valueOf(entry.getKey())+", 값:"+ String.valueOf(entry.getValue()));
+				}
+			}
+			else{
+				//응답 코드가 200이 아닌 경우 에러 처리
+				System.out.println(url+" REST API 접속에서 예외가 발생했습니다.");
+				throw new Exception(url+" REST API 접속에서 예외가 발생했습니다. 응답 코드가 적절하지 않습니다.");
+			}
+
+			
+		} catch (HttpClientErrorException e) {
+			System.out.println(url+" REST API 접속에서 예외가 발생했습니다.");
+			System.out.println(e);
+			throw e;
+		}catch (ResourceAccessException e) {
+			System.out.println(url+" REST API 접속에서 예외가 발생했습니다.");
+			System.out.println(e);
+			throw e;
+		} catch (Exception e) {
+			throw e;
+		}
+		
+		return configJsonObjectMap;
 	}
 	
-	private String makeRestURL(String ip, int port, String connectorName, String job){
-		String returnURL = null;
+	
+	
+	
+	/**
+	 * 입력받은 아이피, 포트에 등록된 커넥터 갯수 반환
+	 * @param ip
+	 * @param port
+	 * @param connectorName
+	 * @param job
+	 * @return
+	 * @throws Exception
+	 */
+	private int countConnector(String ip, int port) throws Exception {
 
+		int intReturn = 0;
+		String jsonString = null;
+		String url = null;
+
+		ResponseEntity<String> responseEntity = null;
+		RequestRestAPI requestRestAPI  = new RequestRestAPI();
 		
-		if(connectorName != null && connectorName.length() > 0 && job != null && job.length() > 0){
-			returnURL =  "http://"+ip+":"+port+"/connectors/"+connectorName+"/"+job;
+		try {
+			url = requestRestAPI.makeRestURL(ip, port, "", "");
+			System.out.println(url+" REST API 호출");
+
+			//데이터베이스에서 조회된 값으로 REST URL을 만들고, 해당 URL로 조회 요청을 하고 결과값을 반환 받는다.
+			responseEntity = requestRestAPI.requestRestAPI(url);
+			jsonString = responseEntity.getBody();
+			
+			
+			if(responseEntity!= null && responseEntity.getStatusCode().value() == 200 ){
+				JSONParser jsonParser = new JSONParser();
+
+				JSONArray objects =(JSONArray) jsonParser.parse(jsonString);
+				intReturn= objects.size();
+				
+				for(int i = 0 ; i < objects.size() ; i++){
+					System.out.println(url+" 의 "+i+"번째 커넥터명 : "+objects.get(i).toString());
+				}
+			}
+			else{
+				intReturn = 0;
+			}
+
+			
+		} catch (HttpClientErrorException e) {
+			//접속 예외가 발생하면 커넥터의 갯수가 0으로 반환
+			intReturn = 0;
+			System.out.println(url+" REST API 접속에서 예외가 발생했습니다.");
+			System.out.println(e);
+		}catch (ResourceAccessException e) {
+			//접속 예외가 발생하면 커넥터의 갯수가 0으로 반환
+			intReturn = 0;
+			System.out.println(url+" REST API 접속에서 예외가 발생했습니다.");
+			System.out.println(e);
+		} catch (Exception e) {
+			throw e;
 		}
-		else {
-			returnURL =  "http://"+ip+":"+port+"/connectors";	
-		}
-		
-		System.out.println("REST API URL = "+returnURL);
-		return returnURL;
+		return intReturn;
 	}
+
+	
 
 	
 }
