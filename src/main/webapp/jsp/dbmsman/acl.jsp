@@ -13,6 +13,7 @@
                 </div>
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
                     <h1 class="text-light">PostgreSQL Access Control<span class="mif-pin place-right"></span></h1>
+                    <h5 class="sub-alt-header">* 사용자, 데이터베이스, 호스트별 접근 설정을 관리합니다.</h5>
                     <hr class="thin bg-grayLighter">
                     <hr class="thin bg-grayLighter">
                     <!-- <table id="serverListtab" class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false" data-page-length='5' class="hover" cellspacing="0" width="100%"> -->
@@ -232,33 +233,9 @@ function aclModal(mode, serverId) {
 
 	var html = '';
 	if (mode == 'V') {		
-		var jsonData;
-		
+		zephyros.loading.show();
 		table.ajax.reload();
-/*  	var table = $('#acllisttab').DataTable();
-		table.clear().draw();
-		table.destroy(); */
-		
-/* 		$.ajax({
-            'contentType': 'application/json',
-            'dataType': 'json',
-            'url': '/aclSearch?serverId=' + serverId,
-            'type': 'POST',
-			success : function(data, status, xhr) {
-				jsonData = data;
-
-
-		 	 	
-		 	 	
-		 	 	
-			}, error: function (e) { 
-				ajaxErrorHandler(e);
-			},
-			complete : function(xhr, status) {
-				// double click 방지 해제
-				// $(':button', form).attr('disabled', false).removeClass('disabled');
-			}
-		}); */
+		zephyros.loading.hide();
 	} else if (mode == 'D') {
 		successTxt = '접근권한이 삭제되었습니다.';
 		var dTable = $('#acllisttab').DataTable();		
