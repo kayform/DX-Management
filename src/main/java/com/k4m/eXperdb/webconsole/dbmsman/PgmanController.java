@@ -37,34 +37,6 @@ import com.k4m.eXperdb.webconsole.common.pgHbaConfigLine;
 import com.k4m.eXperdb.webconsole.db.DBCPPoolManager;
 import com.k4m.eXperdb.webconsole.util.DateUtils;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -131,26 +103,26 @@ public class PgmanController {
 	@RequestMapping(value = "/aclForm")
 	public ModelAndView aclForm(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "mode", defaultValue = "") String mode,		
-			@RequestParam(value = "seq", defaultValue = "") String seq) throws Exception {		
+			@RequestParam(value = "seq", defaultValue = "") String seq,
+			@RequestParam(value = "set", defaultValue = "") String set,
+			@RequestParam(value = "type", defaultValue = "") String type,
+			@RequestParam(value = "database", defaultValue = "") String database,
+			@RequestParam(value = "user", defaultValue = "") String user,
+			@RequestParam(value = "ip", defaultValue = "") String ip,
+			@RequestParam(value = "method", defaultValue = "") String method,
+			@RequestParam(value = "option", defaultValue = "") String option) throws Exception {		
 		ModelAndView mav = new ModelAndView();
-		pgHbaConfigLine config = null;
 		Map<String, Object> aclInfo = new HashMap<String, Object>();
 		
 		if (mode.equals(Globals.MODE_DATA_UPDATE)) {
-			for(int j = 0; j < hba.size(); j++){
-				config = hba.get(j);
-				if(config.getItemNumber() == Integer.parseInt(seq)){
-					break;
-				}
-			}
 			aclInfo.put("Seq", seq);
-			aclInfo.put("Set", config.isComment() ? 0 : 1);
-			aclInfo.put("Type", config.getConnectType());
-			aclInfo.put("Database", config.getDatabase());
-			aclInfo.put("User", config.getUser());
-			aclInfo.put("Ip", config.getIpaddress());
-			aclInfo.put("Method", config.getMethod());
-			aclInfo.put("Option", config.getOption());
+			aclInfo.put("Set", set);
+			aclInfo.put("Type", type);
+			aclInfo.put("Database", database);
+			aclInfo.put("User", user);
+			aclInfo.put("Ip", ip);
+			aclInfo.put("Method", method);
+			aclInfo.put("Option", option);
 			aclInfo.put("Changed", "");
 			mav.addObject("aclInfo", aclInfo);
 		}
@@ -194,14 +166,9 @@ public class PgmanController {
 	    
 	    // -- 1
 	    Connection conn = null;
-	    try {
-//	    	conn = DriverManager.getConnection(url, usr, pwd);
-	    	conn = DBCPPoolManager.getConnection(serverId);
-		    System.out.println(conn);
-	    } catch(Exception e) {
-		    System.out.println(conn);
-	    }
+
 		try {
+			conn = DBCPPoolManager.getConnection(serverId);
 			st = conn.createStatement();
 			rs = st.executeQuery("SELECT * from pg_catalog.pg_read_file('pg_hba.conf')");
 			
