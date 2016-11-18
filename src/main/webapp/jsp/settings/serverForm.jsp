@@ -66,7 +66,7 @@
 					<th scope="row">포트 *</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-mini text" type="text" id="port" name="port"  value="${serverInfoList.port}" style="width:80%;" data-validate-func="required,min,max" data-validate-arg=",1,65535" data-validate-hint="이 필드는 필수이며, 값은 1~65535이여야 합니다." data-validate-hint-position="top">
+							<input class="input-mini text" type="text" id="port" name="port"  value="${serverInfoList.port}" style="width:80%;" data-validate-func="required,number,custom" data-validate-arg=",,portCheck" data-validate-hint="이 필드는 필수이며, 값은 1~65535이여야 합니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${serverInfoList.port}
@@ -140,7 +140,7 @@ dupCheck = function(value) {
 			port: $('#port').val()
 		}, 
 		success : function(data, status, xhr) {
-			if (data.isDuplicate == 'true') {
+			if (data.isDuplicate == true) {
 				dupCheck = false;
 			} else {
 				dupCheck = true;		
@@ -149,6 +149,16 @@ dupCheck = function(value) {
 	}); 
 	return dupCheck;
 };
+
+portCheck = function(value) {
+	if (value < 1) {
+		return false;
+	}else if ( value > 65535) {
+		return false;
+	}else {
+		return true;
+	}
+}
 
 serverConnCheck = function(value) {
 	var dupCheck = false;
@@ -214,6 +224,7 @@ function refreshElement() {
 		}else{
 			$("#dbNmTr").prop("disabled",true);  
 			$("#db_nm").prop("readonly",true);
+			$("#db_nm").removeAttr("data-validate-func");
 			$("#user_pw").removeAttr("data-validate-func");
 		}
 	}else{

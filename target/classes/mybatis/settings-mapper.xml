@@ -86,11 +86,13 @@
 	<!-- 데이터 쓰기 권한 조회 -->
 	<select id="selectSERVERDupCheck" resultType="int">
 	  <![CDATA[
-			SELECT COUNT(*) AS CNT
+		SELECT COUNT(*) FROM webadmin.tb_mt_co_svrinfo T1
+		WHERE T1.SYS_NM = #{sys_nm}
+		  OR EXISTS (SELECT 1 AS CNT
 			  FROM webadmin.tb_mt_co_svrinfo T1
 			 WHERE T1.SYS_NM = #{sys_nm}
 			   AND T1.IP = #{ip}
-			   AND T1.PORT = #{port}
+			   AND T1.PORT = #{port})	
 	  ]]>
 	</select>
 	<!-- 데이터 쓰기 권한 조회 -->
