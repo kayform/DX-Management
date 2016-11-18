@@ -13,7 +13,7 @@
                     <h5 class="sub-alt-header">* BottledWater을 관리합니다.</h5>
                     <hr class="thin bg-grayLighter">
                     <p>* PostgreSQL 서버 리스트
-                    <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
+                    <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
                         <thead>
                         <tr>
                             <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
