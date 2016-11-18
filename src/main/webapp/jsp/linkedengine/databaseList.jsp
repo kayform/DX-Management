@@ -120,7 +120,8 @@
 	    		data : null,
 	    		success : function(data, status, xhr) {
 	    			zephyros.loading.show();
-	    			zephyros.checkAjaxDialogResult(null,  data);
+//	    			zephyros.checkAjaxDialogResult(dialog_databaseList,  data);
+	    			reload(systemName);
 	    			zephyros.loading.hide();
 	    		}
 	    	});
@@ -130,7 +131,37 @@
     	}
     }
     
-    
+    function reload(systemName){
+		var url = '/databaseList?searchSysNm='+systemName;
+		
+   		titleTxt = 'DB 리스트';
+   		dialog_databaseList = $("#dialog_databaseList").dialog({
+          	title: titleTxt,
+           	height: 650,
+            width: 1200,
+   	    	buttons: {
+   	    	  	"닫기": function() {
+ 						zephyros.loading.hide();
+ 						dialog_databaseList.dialog("close");
+   	    	  	    $("#dialog_databaseList").empty();
+   	    	  	}
+   	    	},
+   			close: function() {
+				zephyros.loading.hide();
+   				$("#dialog_databaseList").empty();
+   	    	}
+           });   
+   		
+     	zephyros.callAjax({
+    		url : url,
+    		type : 'post',
+    		data : null,
+    		success : function(data, status, xhr) {
+    			zephyros.loading.show();
+    			zephyros.showDialog(dialog_databaseList, data);
+    		}
+    	});
+    }
     
 
 </script>
