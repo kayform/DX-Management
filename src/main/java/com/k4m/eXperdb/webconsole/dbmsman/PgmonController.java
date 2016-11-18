@@ -35,38 +35,48 @@ public class PgmonController {
 	@Autowired
 	private CommonService pgmonService;
 	
-	private List<Map<String, Object>> getServerList(Map<String, Object> param) {
-		List<Map<String, Object>> serverList = settingsService.selectSERVER(param); // 데이터 리스트 조회
+	private List<Map<String, Object>> getServerList(String sys_nm, String ip) {
+		List<Map<String, Object>> serverList = new ArrayList<Map<String, Object>>();
+		
 		try{
+			
+			Map<String, Object> param = new HashMap<String, Object>();
+			param.put("sys_nm", (sys_nm == null || sys_nm.equals("")) ? "%" : "%" + sys_nm + "%");
+			param.put("type", "POSTGRESQL");			
+			param.put("ip", (ip == null || ip.equals("")) ? "%" : "%" + ip + "%");
+			
+			serverList = settingsService.selectSERVER(param); // 데이터 리스트 조회
+			
+			for(Map<String, Object> map : serverList) {
+				String sys_nm_map = (String) map.get("sys_nm");
+				Connection conn = null;
+				
+				try{
+					if (DBCPPoolManager.ContaintPool(sys_nm_map)){
+						conn = DBCPPoolManager.getConnection(sys_nm_map);
 					
-		for(Map<String, Object> map : serverList) {
-			String sys_nm_map = (String) map.get("sys_nm");
-			Connection conn = null;
-			try{
-				if (DBCPPoolManager.ContaintPool(sys_nm_map)){
-					conn = DBCPPoolManager.getConnection(sys_nm_map);
-					
-					if (!conn.isClosed()) {
-						map.put("status", "Running");
+						if (!conn.isClosed()) {
+							map.put("status", "Running");
+						}else{
+							map.put("status", "Stopped");
+						}
 					}else{
-						map.put("status", "Stopped");
+						map.put("status", "DB Password is invalid.");
+					}								
+				}catch(Exception e){
+					Globals.logger.error(e.getMessage(), e);
+				}finally{
+					if (conn != null) {
+						conn.close();
 					}
-				}else{
-					map.put("status", "DB Password is invalid.");
-				}								
-			}catch(Exception e){
-				Globals.logger.error(e.getMessage(), e);
-			}finally{
-				if (conn != null) {
-					conn.close();
-				}
-			}				
-		}
+				}				
+			}
 		}catch(Exception e){
 			Globals.logger.error(e.getMessage(), e);
 		}
 		return serverList;
 	}
+	
 	@RequestMapping(value = "/pgmonitoring")
 	public ModelAndView dbms(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSysNm", defaultValue = "") String sys_nm,
 			@RequestParam(value = "searchIp", defaultValue = "") String ip, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
@@ -80,14 +90,8 @@ public class PgmonController {
 			if (currentPage < 1) {
 				currentPage = 1;
 			}
-			
-			Map<String, Object> param = new HashMap<String, Object>();
-			param.put("sys_nm", (sys_nm == null || sys_nm.equals("")) ? "%" : "%" + sys_nm + "%");
-			param.put("type", "POSTGRESQL");			
-			param.put("ip", (ip == null || ip.equals("")) ? "%" : "%" + ip + "%");
-
-			
-			mav.addObject("serverList", getServerList(param));
+						
+			mav.addObject("serverList", getServerList(sys_nm, ip));
 			mav.setViewName("pgmonitoring");
 		} catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);
@@ -110,13 +114,8 @@ public class PgmonController {
 			if (currentPage < 1) {
 				currentPage = 1;
 			}
-			
-			Map<String, Object> param = new HashMap<String, Object>();
-			param.put("sys_nm", (sys_nm == null || sys_nm.equals("")) ? "%" : "%" + sys_nm + "%");
-			param.put("type", "POSTGRESQL");			
-			param.put("ip", (ip == null || ip.equals("")) ? "%" : "%" + ip + "%");
 
-			serverList = getServerList(param); // 데이터 리스트 조회
+			serverList = getServerList(sys_nm, ip); // 데이터 리스트 조회
 
 		} catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);

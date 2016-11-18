@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="pginfo-mapper">
+<mapper namespace="pgmon-mapper">
 	<!-- pg 모니터링 서버 instance_id 값 가져오기 --> 	
 	<select id="selectGenerateInstanceId"  resultType="int">
 	  <![CDATA[
@@ -12,7 +12,7 @@
 	<!-- pg 모니터링 대상 서버 정보 등록 --> 	
 	<insert id="insertPgSvrInfo"  parameterType="hashmap">
 	  <![CDATA[
-      INSERT INTO TB_INSTANCE_INFO 
+      INSERT INTO pgmon.TB_INSTANCE_INFO 
       (INSTANCE_ID
       ,SERVER_IP
       ,SERVICE_PORT
@@ -33,7 +33,7 @@
       ,#{service_port}
       ,#{dbms_type}
       ,#{conn_user_id}
-      ,encode('#{conn_user_pwd}'::bytea,'base64')
+      ,encode(#{conn_user_pwd}::bytea,'base64')
       ,#{collect_yn}
       ,#{collect_period_sec}
       ,#{conn_db_name}
@@ -44,10 +44,32 @@
       ,'N');
          ]]>
 	</insert>
-	<!-- pg 모니터링 메타 정보 입력--> 	
-	<insert id="insertPgSvrInfo"  parameterType="hashmap">
+	<!-- pg 모니터링 대상 서버 정보  수정 --> 	
+	<update id="updatePgSvrInfo"  parameterType="hashmap">
 	  <![CDATA[
-      INSERT INTO TB_HCHK_THRD_LIST
+      UPDATE pgmon.TB_INSTANCE_INFO 
+      SET 
+      SERVER_IP = #{server_ip}
+      ,SERVICE_PORT = #{service_port}
+      ,CONN_USER_ID = #{conn_user_id}
+      ,CONN_USER_PWD = encode(#{conn_user_pwd}::bytea,'base64')
+      ,CONN_DB_NAME = #{conn_db_name}
+      ,LAST_MOD_DT = NOW()
+      ,CONN_SCHEMA_NAME = #{conn_user_id}
+      WHERE CONN_NAME = #{conn_name};
+         ]]>
+	</update>	
+	<!-- pg 모니터링 대상 서버 정보  수정 --> 	
+	<delete id="deletePgSvrInfo"  parameterType="hashmap">
+	  <![CDATA[
+      DELETE FROM pgmon.TB_INSTANCE_INFO 
+      WHERE CONN_NAME = #{conn_name};
+         ]]>
+	</delete>		
+	<!-- pg 모니터링 메타 정보 입력--> 	
+	<insert id="insertPgmonTbHchkInfo"  parameterType="hashmap">
+	  <![CDATA[
+      INSERT INTO pgmon.TB_HCHK_THRD_LIST
         ( INSTANCE_ID 
           ,HCHK_NAME 
           ,UNIT 
@@ -60,17 +82,23 @@
         ( SELECT #{instance_id} 
           , HCHK_NAME 
           , UNIT 
-          , IS_HIGHER
-          
+          , IS_HIGHER          
           , WARNING_THRESHOLD 
           , CRITICAL_THRESHOLD 
           , FIXED_THRESHOLD 
           , '{1}' 
           , NOW()
-          FROM TB_HCHK_THRD_LIST
+          FROM pgmon.TB_HCHK_THRD_LIST
           WHERE INSTANCE_ID = -1
-            AND HCHK_NAME NOT IN ( SELECT HCHK_NAME FROM TB_HCHK_THRD_LIST WHERE INSTANCE_ID = {0}) 
+            AND HCHK_NAME NOT IN ( SELECT HCHK_NAME FROM pgmon.TB_HCHK_THRD_LIST WHERE INSTANCE_ID = #{instance_id}) 
         )
          ]]>
 	</insert>	
+	<!-- pg 모니터링 대상 서버 정보  수정 --> 	
+	<delete id="deletePgmonTbHchkInfo"  parameterType="hashmap">
+	  <![CDATA[
+      DELETE FROM pgmon.TB_HCHK_THRD_LIST 
+      WHERE instance_id = (SELECT instance_id FROM pgmon.TB_INSTANCE_INFO WHERE CONN_NAME = #{conn_name});
+         ]]>
+	</delete>		
 </mapper>
