@@ -29,15 +29,15 @@
 							<td>${item.pg_get_status_ingest}</td>
 							<td>${item.connect_name}</td>
 							<td>
-								<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:tableList('${searchSysNm}','${item.database_name}','${item.connect_name}');"><span class="icon mif-search"></span></button>
+								<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:tableList('${searchSysNm}','${item.database_name}','${item.connect_name}');"><span class="icon mif-search"></span></button>
 							</td>
 							<td>
 								<c:choose>
 									<c:when test="${item.pg_get_status_ingest == 'Process stopped(0)'}">
-										<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','RUN');"><span class="icon mif-play"></span></button>
+										<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','RUN');"><span class="icon mif-play"></span></button>
 									</c:when>
 									<c:when test="${item.pg_get_status_ingest == 'Process is running(0)'}">
-										<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','STOP');"><span class="icon mif-stop"></span></button>
+										<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','STOP');"><span class="icon mif-stop"></span></button>
 									</c:when>
 									<c:otherwise>
 										프로세스상태 오류

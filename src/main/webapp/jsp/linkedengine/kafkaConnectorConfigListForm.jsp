@@ -28,7 +28,7 @@
 							<td>${item.get("hdfs.url")}</td>
 							<td>${item.get("status")}</td>
 							<td>
-								<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:showConnectConfigForm('${item.get('connector.class')}', '${item.get('flush.size')}','${item.get('hadoop.conf.dir')}','${item.get('topics')}','${item.get('tasks.max')}','${item.get('hdfs.url')}','${item.get('name')}','${item.get('rotate.interval.ms')}');"><span class="icon mif-search"></span></button>
+								<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showConnectConfigForm('${item.get('connector.class')}', '${item.get('flush.size')}','${item.get('hadoop.conf.dir')}','${item.get('topics')}','${item.get('tasks.max')}','${item.get('hdfs.url')}','${item.get('name')}','${item.get('rotate.interval.ms')}');"><span class="icon mif-search"></span></button>
 							</td>
 						</tr>
 					</c:forEach>

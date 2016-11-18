@@ -19,7 +19,7 @@
                     <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
                         <thead>
                         <tr>
-                            <td class="sortable-column sort-asc" style="width: 120px">서버명</td>
+                            <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
                             <td class="sortable-column">CONNECT 수</td>
                             <td class="sortable-column">상태</td>
                             <td style="width: 200px">관리</td>
@@ -39,10 +39,10 @@
 										<td>${item.count_connect > 0 ? item.count_connect : "오류" }</td>
 										<td>${item.count_connect > 0 ? "Running" : "Stop" }</td>
 										<td>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
 											<c:choose>
 												<c:when test="${item.count_connect > 0 }">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:showConnectListForm('${item.ip}','${item.port}');"><span class="icon mif-list"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showConnectListForm('${item.ip}','${item.port}');"><span class="icon mif-list"></span></button>
 												</c:when>
 												<c:otherwise>
 													

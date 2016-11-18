@@ -48,17 +48,17 @@
 											<!-- 사용자(1) 일 경우 본인 정보 조회, 수정권한 부여 및 타 사용자 조회 기능 부여. 현재는 메뉴권한에서 사용자관리 권한 없음.-->
 											<c:choose>
 												<c:when test="${sessionScope.userAuth == '3' || sessionScope.userAuth == '2' }">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('D', '${item.user_id}');"><span class="icon mif-cancel"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:profile('D', '${item.user_id}');"><span class="icon mif-cancel"></span></button>
 													<c:if test="${item.auth_dv == '사용자'}">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:manageUserAuth('${item.user_id}');"><span class="icon mif-tools"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:manageUserAuth('${item.user_id}');"><span class="icon mif-tools"></span></button>
 													</c:if>
 												</c:when>
 												<c:when test="${sessionScope.userAuth == '1'}">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
 													<c:if test="${sessionScope.userId == item.user_id}">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
 													</c:if>
 												</c:when>
 												<c:otherwise>
