@@ -84,7 +84,7 @@ $(document).ready(function() {
 	              { data: 'blg' },
 	              { data: 'user_nm' },
 	              { data: 'hpnm_no' },
- 	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button><button id=\"deleteBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-cancel\"></span></button>"}
+ 	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button><button id=\"deleteBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-cancel\"></span></button><button style=\"margin:0;height:20px;width:50px;\" class=\"button\" onclick=\"javascript:manageUserAuth('${item.user_id}');\"><span class=\"icon mif-tools\"></span></button>"}
  	          ];
 	}
 	table = $("#userTbl").DataTable({		   

@@ -1,6 +1,28 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+    <style>
+        @media screen and (max-width: 640px) {
+            .countdown {
+                font-size: 1rem !important;
+            }
+        }
+    </style>
+    <div class="page-content">
+        <div class="flex-grid no-responsive-future" style="height: 100%;">
+            <div class="row" style="height: 100%">
+                <div class="cell auto-size padding20 bg-lightBlue fg-white align-center" id="cell-content">
+	                <br/>
+	                <br/>
+	                <br/>
+	                <br/>	
+                	<h1 style="font-size: 4.5rem; line-height: 1" class="text-shadow metro-title text-light"><p/><p/>Welcome to eXperdb Manager</h1>                    
+                </div> 
+            </div>
+        </div>
+    </div> 
+ </div>
+<!-- 
     <div class="page-content">
         <div class="flex-grid no-responsive-future" style="height: 100%;">
             <div class="row" style="height: 100%">
@@ -112,3 +134,4 @@
     	zephyros.loading.show();
     });
     </script>
+     -->
