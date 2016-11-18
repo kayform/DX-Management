@@ -106,6 +106,7 @@ public class DBCPPoolManager {
 	        connectionPool.setTestOnBorrow(true);
 	        connectionPool.setTestOnReturn(true);
 	        connectionPool.setTestWhileIdle(true);
+	        connectionPool.setMinIdle(maxActive);	
 	        connectionPool.setMaxTotal(maxActive);		        
 	        connectionPool.setMaxWaitMillis(300000);  //사용할 커넥션이 없을 때 무한 대기
 	        connectionPool.setMinEvictableIdleTimeMillis(30 * 1000);

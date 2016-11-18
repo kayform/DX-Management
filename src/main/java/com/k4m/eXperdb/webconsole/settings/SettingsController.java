@@ -79,6 +79,31 @@ public class SettingsController {
 	}
 
 	/**
+	 * 사용자 ID와 Mode(CRU)를 입력받아 입력받은 사용자에 대한 정보를 리턴
+	 * 페이지에서 해당 Mode에 따라 각각에 맞는 화면을 출력
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param user_id
+	 * @param mode
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/userDetail")
+	@ResponseBody
+	public Map<String, Object> userDetail(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "userId", defaultValue = "") String userId,
+			@RequestParam(value = "mode", defaultValue = "") String mode) throws Exception {		
+		Map<String, Object> userInfo = new HashMap<String, Object>();
+		if (!(userId == null || userId.equals(""))) {			
+			HashMap<String, String> param = new HashMap<String, String>();
+			param.put("user_id", userId);
+			userInfo = settingsService.selectUser(param);
+		} 
+		return userInfo;
+	}
+	
+	/**
 	 * 사용자정보와 Mode(CUD)를 입력받아 사용자 정보를 DB에 저장, 수정, 삭제
 	 * 
 	 * data history 기능 사용자 요구사항에 의거 제거 edited by manimany  

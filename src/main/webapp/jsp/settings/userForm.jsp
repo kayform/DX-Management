@@ -300,7 +300,7 @@ function existsFilePgmonCheck(value) {
 };
 
 function existsFileEdgeDbCheck(value) {			
-	return zephyros.existsFile(value, "edgedb-admin-console.exe");
+	return zephyros.existsFile(value, "experDB-admin-console.exe");
 };
 
 function checkPassword(value) {

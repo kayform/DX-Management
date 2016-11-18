@@ -14,12 +14,16 @@ public class PgmonDAO {
 	@Autowired 
 	private SqlSession sqlSession;
 	
+	public int selectPgSvrList(HashMap<String, String> param) {
+		int insertRow = 0;
+		sqlSession.insert("pgmon-mapper.insertPgSvrInfo", param);
+		insertRow = sqlSession.insert("user-mapper.insertUser", param);
+		return insertRow;
+	}
+	
 	public int insertPgSvrInfo(HashMap<String, String> param) {
 		int insertRow = 0;
-		sqlSession.delete("user-mapper.deleteUserAuthAll", param);
-		//사용자 등록시 무조건적으로 대쉬보드메뉴는 등록시킴
-		param.put("menu_id", "DSB000");
-		sqlSession.insert("user-mapper.insertUserAuth", param);
+		sqlSession.insert("pgmon-mapper.insertPgSvrInfo", param);
 		insertRow = sqlSession.insert("user-mapper.insertUser", param);
 		return insertRow;
 	}
