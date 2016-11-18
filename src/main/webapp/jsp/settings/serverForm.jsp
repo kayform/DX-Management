@@ -28,8 +28,11 @@
 					<th scope="row">서버명 *</th>
 					<td >
 						<div class="input-mini text">					
-						<c:if test="${mode !='V' }">
+						<c:if test="${mode =='I' }">
 							<input type="text" id="sys_nm" name="sys_nm" value="${serverInfoList.sys_nm}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",dupCheck" data-validate-hint="ID는 필수이고, 다른 ID와 중복될 수 없습니다." data-validate-hint-position="top" >							
+						</c:if>	
+						<c:if test="${mode =='U' }">
+							<input type="text" id="sys_nm" name="sys_nm" value="${serverInfoList.sys_nm}" style="width:80%;">							
 						</c:if>	
 						<c:if test="${mode =='V'}">
 							${serverInfoList.sys_nm}
