@@ -339,7 +339,7 @@ public class SettingsController {
 		param.put("auth_dv", (searchAuthDivision == null || "".equals(searchAuthDivision)) ? "%" : "%" + searchAuthDivision + "%");
 		param.put("use_yn", (searchUseYn == null || "".equals(searchUseYn)) ? "%" : "%" + searchUseYn + "%");
 		param.put("user_nm", (searchUserName == null || "".equals(searchUserName)) ? "%" : "%" + searchUserName + "%");
-		
+		param.put("user_id", "%");
 		
 		try{
 			userList = settingsService.selectUserList(param);		
@@ -357,6 +357,45 @@ public class SettingsController {
 
 		mav.setViewName("user");
 		return mav;
+	}
+
+	/**
+	 * 서버관리 > 사용자관리 메뉴에서 사용하는 사용자 목록 조회
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param searchAuthDivision
+	 * @param searchUseYn
+	 * @param searchUserName
+	 * @return
+	 * @throws Exception
+	 * @author manimany
+	 */
+	//TODO searchAuthDivision 및 searchUseYn 사용여부 확인 및 제거할지 결정 !! user-mapper.xml에는 조건값에 포함되어 있음. remarked by manimany
+	@RequestMapping(value = "/userList")   
+	@ResponseBody
+	public List<Map<String, Object>> user(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "searchAuthDivision", defaultValue = "") String searchAuthDivision, 
+			@RequestParam(value = "searchUseYn", defaultValue = "") String searchUseYn,			
+			@RequestParam(value = "searchUserId", defaultValue = "") String searchUserId,
+			@RequestParam(value = "ownUserId", defaultValue = "") String ownUserId,
+			@RequestParam(value = "searchUserName", defaultValue = "") String searchUserName) throws Exception {
+		List<Map<String, Object>> userList = null;		
+		HashMap<String, String> param = new HashMap<String, String>();
+	
+		param.put("auth_dv", (searchAuthDivision == null || "".equals(searchAuthDivision)) ? "%" : "%" + searchAuthDivision + "%");
+		param.put("use_yn", (searchUseYn == null || "".equals(searchUseYn)) ? "%" : "%" + searchUseYn + "%");
+		param.put("user_nm", (searchUserName == null || "".equals(searchUserName)) ? "%" : "%" + searchUserName + "%");
+		param.put("user_id", (searchUserId == null || "".equals(searchUserId)) ? "%" : "%" + searchUserId + "%");
+		param.put("ownUserId", ownUserId);
+		
+		try{
+			userList = settingsService.selectUserList(param);		
+		}catch (Exception e){
+			Globals.logger.error(e.getMessage(), e);
+		}
+
+		return userList;
 	}
 	
 	@RequestMapping(value = "/server")

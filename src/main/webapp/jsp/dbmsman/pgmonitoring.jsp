@@ -66,7 +66,8 @@
 							</td>
 						</tr>
 					</table>
-					</div>							
+					</div>
+					<hr class="thin bg-grayLighter"> 
                     <table id='serverTbl' class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">                        
                         <thead>
                         <tr>

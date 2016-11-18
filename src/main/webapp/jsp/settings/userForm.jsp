@@ -26,13 +26,12 @@
 			<tbody>				
 				<tr>
 					<th scope="row">사용자 아이디 *</th>
-					<td >
-						<div class="input-control text">					
+					<td >				
 						<c:if test="${mode =='I' }">
-							<input type="text" id="userId" name="userId" value="${userInfo.user_id}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",dupCheck" data-validate-hint="ID는 필수이고, 다른 ID와 중복될 수 없습니다." data-validate-hint-position="top" >							
+							<input class="input-mini text" type="text" id="userId" name="userId" value="${userInfo.user_id}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",dupCheck" data-validate-hint="ID는 필수이고, 다른 ID와 중복될 수 없습니다." data-validate-hint-position="top" >							
 						</c:if>	
 						<c:if test="${mode =='U'}">
-							<input type="text" id="userId" name="userId" readonly="readonly" value="${userInfo.user_id}" style="width:80%;">
+							<input class="input-mini text" type="text" id="userId" name="userId" readonly="readonly" value="${userInfo.user_id}" style="width:80%;">
 							<button id="passwordBtn" class="button mif-key" type="button"></button>
 							<!-- 
 							<div class="pagination pagination-small pull-right" style="margin: 1px 4px 0px 0px;">
@@ -45,13 +44,11 @@
 						<c:if test="${mode =='V'}">
 							${userInfo.user_id}
 						</c:if>		
-						<input type="hidden" id="mode" value="${mode}"/>
-						</div>
 					</td>					
 					<th scope="row">사용자명 *</th>					
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="userName" name="userName"  value="${userInfo.user_nm}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",charCheck" data-validate-hint="이 필드는 필수이며, 특수문자를 입력할수 없습니다." data-validate-hint-position="top">
+							<input class="input-mini text" type="text" id="userName" name="userName"  value="${userInfo.user_nm}" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",charCheck" data-validate-hint="이 필드는 필수이며, 특수문자를 입력할수 없습니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.user_nm}
@@ -62,11 +59,11 @@
 					<tr>
 						<th scope="row">패스워드 *</th>
 						<td>			
-							<input class="input-control text" type="password" id="password1" name="password1"  value="" style="width:80%;">
+							<input class="input-mini text" type="password" id="password1" name="password1"  value="" style="width:80%;">
 						</td>
 						<th scope="row">패스워드확인 *</th>
 						<td>
-							<input class="input-control text" type="password" id="password2" name="password2"  value="" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",checkPassword" data-validate-hint="패스워드가 비워있거나, 맞지 않습니다." data-validate-hint-position="top">							
+							<input class="input-mini text" type="password" id="password2" name="password2"  value="" style="width:80%;" data-validate-func="required, custom" data-validate-arg=",checkPassword" data-validate-hint="패스워드가 비워있거나, 맞지 않습니다." data-validate-hint-position="top">							
 						</td>					
 					</tr>
 				</c:if>		
@@ -74,7 +71,7 @@
 					<th scope="row">소속 *</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="blg" name="blg"  value="${userInfo.blg}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
+							<input class="input-mini text" type="text" id="blg" name="blg"  value="${userInfo.blg}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.blg}
@@ -83,7 +80,7 @@
 					<th scope="row">부서 *</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="department" name="department"  value="${userInfo.dept}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
+							<input class="input-mini text" type="text" id="department" name="department"  value="${userInfo.dept}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.dept}
@@ -94,7 +91,7 @@
 					<th scope="row">직급 *</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="jgd" name="jgd"  value="${userInfo.jgd}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
+							<input class="input-mini text" type="text" id="jgd" name="jgd"  value="${userInfo.jgd}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.jgd}
@@ -103,7 +100,7 @@
 					<th scope="row">담당업무</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="cg_biz_def" name="cg_biz_def"  value="${userInfo.cg_biz_def}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
+							<input class="input-mini text" type="text" id="cg_biz_def" name="cg_biz_def"  value="${userInfo.cg_biz_def}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.cg_biz_def}
@@ -115,7 +112,7 @@
 					<th scope="row">휴대폰번호</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="phoneNo" name="phoneNo"  value="${userInfo.hpnm_no}" style="width:80%;">
+							<input class="input-mini text" type="text" id="phoneNo" name="phoneNo"  value="${userInfo.hpnm_no}" style="width:80%;">
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.hpnm_no}
@@ -153,7 +150,7 @@
 					<th scope="row">사용자만료일</th>
 					<td>			
 						<c:if test="${mode !='V' }"> 
-								<input type="input-control text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;" readonly="true"/>
+								<input class="input-mini text" type="input-control text"  id="userExpired"   name="userExpired" value="${userInfo.user_expd}" style="width:80%;" readonly="true"/>
 						</c:if>
 						<c:if test="${mode =='V' }">
 							${userInfo.user_expd}
@@ -176,25 +173,25 @@
 					<th scope="row">PG 모니터링 경로</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="pg_mon_client_path" name="pg_mon_client_path" value="${userInfo.pg_mon_client_path}" style="width:80%;" data-validate-func="custom" data-validate-arg="existsFilePgmonCheck" data-validate-hint="파일 경로가 유효하지 않습니다." data-validate-hint-position="top">	
+							<input class="input-mini text" type="text" id="pg_mon_client_path" name="pg_mon_client_path" value="${userInfo.pg_mon_client_path}" style="width:80%;" data-validate-func="custom" data-validate-arg="existsFilePgmonCheck" data-validate-hint="파일 경로가 유효하지 않습니다." data-validate-hint-position="top">	
 						</c:if>
 						<c:if test="${mode =='V' }">
-							${userInfo.pg_mon_client_path}
+							<input class="input-mini text" type="text" id="pg_mon_client_path" name="pg_mon_client_path" value="${userInfo.pg_mon_client_path}" style="width:80%;" readonly="true">
 						</c:if>
 					</td>	
 					<th scope="row">암호화 관리 경로</th>
 					<td>
 						<c:if test="${mode !='V' }">
-							<input class="input-control text" type="text" id="enc_mng_path" name="enc_mng_path" value="${userInfo.enc_mng_path}" style="width:80%;" data-validate-func="custom" data-validate-arg="existsFileEdgeDbCheck" data-validate-hint="파일 경로가 유효하지 않습니다." data-validate-hint-position="top">
+							<input class="input-mini text" type="text" id="enc_mng_path" name="enc_mng_path" value="${userInfo.enc_mng_path}" style="width:80%;" data-validate-func="custom" data-validate-arg="existsFileEdgeDbCheck" data-validate-hint="파일 경로가 유효하지 않습니다." data-validate-hint-position="top">
 						</c:if>
 						<c:if test="${mode =='V' }">
-							${userInfo.enc_mng_path}
+							<input class="input-mini text" type="text" id="enc_mng_path" name="enc_mng_path" value="${userInfo.enc_mng_path}" style="width:80%;" readonly="true">
 						</c:if>
 					</td>								
 				</tr>			
 			</tbody>
 		</table>
-		<label style="text-align: right; font-weight: bold;">* 필수입력항목</label>    
+		<label class="place-right" style="text-align: right; font-weight: bold;">* 필수입력항목</label>    
         </form>
 		<div id="dialog_password">
   			<form>

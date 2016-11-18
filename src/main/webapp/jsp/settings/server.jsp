@@ -22,18 +22,14 @@
                     <h1 class="text-light">서버 관리<span class="mif-drive-eta place-right"></span></h1>
                     <h5 class="sub-alt-header">* 관리대상 서버를 등록/수정합니다.</h5>
                     <hr class="thin bg-grayLighter">								
-                    <!--  검색 조건 -->
-					<div class="filter-bar">
-							<button id="selBtn" name="selBtn" class="button primary" onclick="javascript:reloadServerTable()"><span class="mif-search"></span>조회</button>
-                    		<button id="regSvrBtn" name="regSvrBtn" class="button primary"><span class="mif-plus"></span>등록</button>  		
-					</div>					
-                    <hr class="thin bg-grayLighter">                    							
+                    <!--  검색 조건 -->		                             							
 					<div style="padding-left: 10px;">
-					<table style="width: 60%;" class="table">
+					<table style="width: 100%;" class="table">
 						<colgroup>
-							<col width="33%">
-							<col width="33%">
-							<col width="33%">
+							<col width="20%">
+							<col width="20%">
+							<col width="20%">
+							<col width="40%">
 						</colgroup>
 						<tr>
 							<td>
@@ -52,9 +48,16 @@
 								<label>아이피  </label>
 								<input type="text" id="searchIp" name="searchIp" value="${ip}" class="input-mini" style="width: 200px;"/>
 							</td>
+							<td>
+							<div class="filter-bar">
+								<button id="regSvrBtn" name="regSvrBtn" class="button primary place-right no-margin-left margin5"><span class="mif-plus"></span>등록</button>
+								<button id="selBtn" name="selBtn" class="button primary place-right no-margin-left margin5" onclick="javascript:reloadServerTable()"><span class="mif-search"></span>조회</button>
+							</div>			
+							</td>
 						</tr>
 					</table>
-					</div>							
+					</div>	
+					<hr class="thin bg-grayLighter">           						
                     <table id='serverTbl' class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">                        
                         <thead>
                         <tr>
