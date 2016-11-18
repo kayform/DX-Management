@@ -169,7 +169,7 @@ public class KafkaConnectController {
 		Iterator<?> iter=paramMap.entrySet().iterator();
 		while(iter.hasNext()){
 			Map.Entry entry=(Map.Entry)iter.next();
-			System.out.println(" 커넥터 설정 정보 키:"+String.valueOf(entry.getKey())+", 값:"+ String.valueOf(entry.getValue()));
+			Globals.logger.debug(" 커넥터 설정 정보 키:"+String.valueOf(entry.getKey())+", 값:"+ String.valueOf(entry.getValue()));
 		}
 		
 		ModelAndView mav = new ModelAndView();
