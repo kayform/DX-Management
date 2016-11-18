@@ -80,6 +80,7 @@ dialog_info = $("#dialog_info").dialog({
 	  modal: true,
 	  title: "메시지",
 	  resizable: false,
+	  width:'auto',
 	  buttons: {
 	  "확인" : function() {		  
 		  $("#dialog_info").dialog("close");

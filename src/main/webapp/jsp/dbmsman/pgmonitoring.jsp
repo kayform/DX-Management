@@ -23,17 +23,18 @@
                     <h5 class="sub-alt-header">* PostgreSQL 서버를  모니터링/암호화관리 합니다.</h5>
                     <hr class="thin bg-grayLighter">	
                     <div>
-                            <button id="pgmonBtn" name="pgmonBtn" class="button primary"><span class="mif-display"></span>모니터링</button>
+                            <button id="pgmonBtn" name="pgmonBtn" class="button primary" onclick="javascript:runProgram('M')"><span class="mif-display"></span>모니터링</button>
+                            <button id="encBtn" name="encBtn" class="button primary" onclick="javascript:runProgram('E')"><span class="mif-display"></span>암호화관리</button>
                     </div>
                     <hr class="thin bg-grayLighter">								
                     <!--  검색 조건 -->			                							
 					<div style="padding-left: 10px;">
 					<table style="width: 100%;" class="table">
 						<colgroup>
-							<col width="25%">
-							<col width="25%">
-							<col width="25%">
-							<col width="25%">
+							<col width="20%">
+							<col width="20%">
+							<col width="30%">
+							<col width="30%">
 						</colgroup>
 						<tr>
 							<td>
@@ -46,21 +47,21 @@
 							</td>
 							<td>
 								<label>RereshTime  </label>
-								<select id="refreshTime" name="refreshTime" style="width: 250px;">
+								<select id="refreshTime" name="refreshTime" style="width: 250px;" onchange="javascript:refresh()">
 									<!-- 
 									<c:forEach var="item" items="${serverTypeList}">
 										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd_nm}</option>
 									</c:forEach>
 									 -->
 									 <option value="0">없음</option>
-									 <option value="10">10</option>
-									 <option value="30">30</option>
-									 <option value="60">60</option>
+									 <option value="10000">10</option>
+									 <option value="30000">30</option>
+									 <option value="60000">60</option>
 								</select>
 							</td>
 							<td>
 								<div class="filter-bar">
-									<button id="selBtn" name="selBtn" class="button primary place-right-align" onclick="javascript:reloadServerTable()"><span class="mif-search"></span>조회</button>
+									<button id="selBtn" name="selBtn" class="button primary place-right" onclick="javascript:reloadServerTable()"><span class="mif-search"></span>조회</button>
 								</div>		
 							</td>
 						</tr>
@@ -186,35 +187,40 @@ function runProgram(type) {
 		url : url,
 		type : 'post',
 		data : {
-			user_id : '${sessionScope.userId}'
+			userId : '${sessionScope.userId}'
 		},
 		success : function(data, status, xhr) {
 			zephyros.loading.hide();
-			
-			
-			if (type == "M"){
-				if (zephyros.existsFile(value, "DX.MonPostgres.exe")){
-					zephyros.runProgram(data.pg_mon_client_path);
-				}else{
-					zephyros.showDialog(dialog_info, "모니터링 파일 경로가 유효하지 않습니다.");
-				}
-				
+			var value = null;
+			var fileName = null;
+			if (type == "M") {
+				value = data.pg_mon_client_path;
+				fileName = "DX.MonPostgres.exe";
 			}else {
-				if (zephyros.existsFile(value, "experDB-admin-console.exe")){
-					zephyros.runProgram(data.enc_mng_path);					
-				}else{
-					zephyros.showDialog(dialog_info, "암호화 파일 경로가 유효하지 않습니다.");
-				}				
+				value = data.enc_mng_path;
+				fileName = "experDB-admin-console.exe";
+			}
+			
+			if (zephyros.existsFile(value, fileName)){
+				zephyros.runProgram(value);
+			}else {
+				if (value == null || value == "") {
+					zephyros.showDialog(dialog_info, "실행파일 경로가 미설정되어 있습니다.\nprofile에서 경로를 추가하세요.");
+				}else {
+					zephyros.showDialog(dialog_info, "실행파일 경로가 유효하지 않습니다.");	
+				}
 			}
 		}
 	}); 
- 	
-	if (type == "M"){
-		zephyros.runProgram();
-	}else {
-		zephyros.runProgram();
-	}
-
-	zephyros.loading.hide();
 };
+
+var timerId = null;
+function refresh() {
+	var refreshTime = $("#refreshTime").val();
+	if (refreshTime == 0 && timerId != null) {
+		clearInterval(timerId);
+	}else if(refreshTime > 0) {
+		timerId = setInterval("reloadServerTable()", refreshTime);		
+	}
+}
 </script>

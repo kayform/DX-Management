@@ -54,7 +54,10 @@ zephyros.showDatePicker = function(id, date){
 	});
 }
 
-zephyros.showDialog = function(dialog, content){	
+zephyros.showDialog = function(dialog, content){
+	if (dialog.name == "dialog_info") {
+		content = content.replace(/(\r\n|\n|\r)/gm, "<br>");
+	}
 	$("#" + dialog[0].id).empty(); 
 	$("#" + dialog[0].id).append(content);
 	dialog.dialog('open');

@@ -98,6 +98,7 @@ public class SettingsController {
 		if (!(userId == null || userId.equals(""))) {			
 			HashMap<String, String> param = new HashMap<String, String>();
 			param.put("user_id", userId);
+			param.put("mode", "V");
 			userInfo = settingsService.selectUser(param);
 		} 
 		return userInfo;
