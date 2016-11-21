@@ -54,7 +54,10 @@ zephyros.showDatePicker = function(id, date){
 	});
 }
 
-zephyros.showDialog = function(dialog, content){	
+zephyros.showDialog = function(dialog, content){
+	if (dialog.name == "dialog_info") {
+		content = content.replace(/(\r\n|\n|\r)/gm, "<br>");
+	}
 	$("#" + dialog[0].id).empty(); 
 	$("#" + dialog[0].id).append(content);
 	dialog.dialog('open');
@@ -110,7 +113,14 @@ zephyros.existsFile = function (path, fileName)
 		return true;
 	}
 	
-    var shell = new ActiveXObject("Scripting.FileSystemObject");
+	try{
+	    var shell = new ActiveXObject("Scripting.FileSystemObject");
+	}catch(exception) {
+		var msg = "익스플로러의 ActiveX 관련 설정이 Disable되어 있습니다. 인터넷옵션을 변경하여 주세요.";
+		zephyros.showDialog(dialog_info, msg);
+		throw new error(msg);
+	}
+
     //var replace_path = path.replace(/\\/gi, "\\");
     
     if (!shell.FileExists(path)) {

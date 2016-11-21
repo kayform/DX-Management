@@ -12,12 +12,34 @@
                     <h1 class="text-light">사용자 관리</h1> 
                     <h5 class="sub-alt-header">* 사용자 정보 및 메뉴별 접근 권한을 관리합니다.</h5>
                     <hr class="thin bg-grayLighter">
-                    사용자명 <input type="text"  id="searchUserNameText" name="searchUserNameText"> 
-                    <button class="button primary" type="submit" form="userListForm" id="searchUserBtn" name="searchUserBtn" onclick="javascript:searchUserList('I', '');" ><span class="mif-search"></span>조회</button>
-                    <button class="button primary" onclick="javascript:profile('I', '');"><span class="mif-plus"></span>등록</button>
+					<div style="padding-left: 10px;">
+					<table style="width: 100%;" class="table">
+						<colgroup>
+							<col width="20%">
+							<col width="20%">
+							<col width="60%">
+						</colgroup>
+						<tr>
+							<td>
+								<label>아이디  </label>
+								<input type="text" id="searchUserId" name="searchUserId" value="${searchUserId}" class="input-mini" style="width: 200px;"/>
+							</td>						
+							<td>
+								<label>사용자명  </label>
+								<input type="text" id="searchUserNameText" name="searchUserNameText" value="${searchUserNameText}" class="input-mini" style="width: 200px;"/>
+							</td>
+							<td>
+							<div class="filter-bar">
+							    <button class="button primary place-right no-margin-left margin5" onclick="javascript:profile('I', '');"><span class="mif-plus"></span>등록</button>
+                    			<button class="button primary place-right no-margin-left margin5" id="searchUserBtn" name="searchUserBtn" onclick="javascript:reloadServerTable();" ><span class="mif-search"></span>조회</button>
+							</div>			
+							</td>
+						</tr>
+					</table>
+					</div>	                    
                     <span id="message"></span>
                     <hr class="thin bg-grayLighter">
-                    <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
+                    <table id="userTbl" name="userTbl" class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
                         <thead>
                         <tr>
                             <td class="sortable-column sort-asc" style="width: 120px">사용자 아이디</td>
@@ -28,49 +50,6 @@
                             <td style="width: 200px">관리</td>
                         </tr>
                         </thead>
-                        <tbody>
-						<c:choose>
-							<c:when test="${userList.size() < 1}">
-								<tr>
-									<td colspan="6" style="text-align: center;">No Data.</td>
-								</tr>
-							</c:when>
-							<c:otherwise>
-								<c:forEach items="${userList}" var="item">
-									<tr>
-										<td>${item.user_id}</td>
-										<td>${item.auth_dv}</td>
-										<td>${item.blg}</td>
-										<td>${item.user_nm}</td>
-										<td>${item.hpnm_no}</td>
-										<td>
-											<!-- 슈퍼유저(3), 관리자(2)일 경우 조회, 수정 및 삭제 권한부여-->
-											<!-- 사용자(1) 일 경우 본인 정보 조회, 수정권한 부여 및 타 사용자 조회 기능 부여. 현재는 메뉴권한에서 사용자관리 권한 없음.-->
-											<c:choose>
-												<c:when test="${sessionScope.userAuth == '3' || sessionScope.userAuth == '2' }">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('D', '${item.user_id}');"><span class="icon mif-cancel"></span></button>
-													<c:if test="${item.auth_dv == '사용자'}">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:manageUserAuth('${item.user_id}');"><span class="icon mif-tools"></span></button>
-													</c:if>
-												</c:when>
-												<c:when test="${sessionScope.userAuth == '1'}">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('V', '${item.user_id}');"><span class="icon mif-search"></span></button>
-													<c:if test="${sessionScope.userId == item.user_id}">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:profile('U', '${item.user_id}');"><span class="icon mif-pencil"></span></button>
-													</c:if>
-												</c:when>
-												<c:otherwise>
-													관리권한 없음.
-												</c:otherwise>
-											</c:choose>
-										</td>
-									</tr>
-								</c:forEach>
-							</c:otherwise>
-						</c:choose>
-                        </tbody>
                     </table>
                 </div> 
             </div>
@@ -86,7 +65,64 @@
 
 
 <script>    
+$(document).ready(function() {
+	var auth = '${sessionScope.userAuth}';
+	var columns = null;
+	if (auth == 1) {
+		columns =  [
+		        	              { data: 'user_id' },
+		        	              { data: 'auth_dv'},
+		        	              { data: 'blg' },
+		        	              { data: 'user_nm' },
+		        	              { data: 'hpnm_no' },
+		        	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button>"}
+		        	          ];
+	}else {
+		columns =  [
+  	              { data: 'user_id' },
+	              { data: 'auth_dv'},
+	              { data: 'blg' },
+	              { data: 'user_nm' },
+	              { data: 'hpnm_no' },
+ 	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button><button id=\"deleteBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-cancel\"></span></button><button style=\"margin:0;height:20px;width:50px;\" class=\"button\" onclick=\"javascript:manageUserAuth('${item.user_id}');\"><span class=\"icon mif-tools\"></span></button>"}
+ 	          ];
+	}
+	table = $("#userTbl").DataTable({		   
+	    bDestroy: true,
+	    paging : true,
+	    /*"bJQueryUI": true,*/
+		ajax: {
+			url : '/userList',
+			type : 'post',
+			data : function(d) {
+				d.searchUserName = $('#searchUserNameText').val(),
+				d.searchUserId = $('#searchUserId').val(),
+				d.ownUserId = '${sessionScope.userId}',
+				d.searchAuthDivision = auth
+			},
+			dataSrc : ""
+		},
+	    columns: columns
+	});
+	
+	$('#userTbl tbody').on('click', 'button', function() {
+		var data = table.row( $(this).parents('tr') ).data();
+		if ($(this)[0].id == "viewBtn"){
+			profile('V', data.user_id);
+		}else if ($(this)[0].id == "modifyBtn") {
+			profile('U', data.user_id);
+		}else if ($(this)[0].id == "deleteBtn") {
+			profile('D', data.user_id);
+		}				
+	});
+});
 
+function reloadServerTable() {
+	zephyros.loading.show();
+	table.ajax.reload();
+	zephyros.loading.hide();
+};
+/*
 	function searchUserList() {
 		var searchUserName ='';
 		searchUserName = document.getElementById('searchUserNameText').value;
@@ -99,7 +135,7 @@
     	document.forms["userListForm"].action.value = "user";
     	return true;
     }    
-    
+    */
     function profile(mode, userId) {
     	zephyros.loading.show();
     	var url = '';
@@ -134,6 +170,7 @@
 	    	    					zephyros.loading.hide();
 	    	    					dialog_profile.dialog("close");
 	    	    					zephyros.checkAjaxDialogResult(dialog_profile, data);
+	    	    					reloadServerTable();
 	    	    				}
 	    	    			});
     	    			}
@@ -170,6 +207,7 @@
 	    	    					zephyros.loading.hide();
 	    	    					dialog_profile.dialog("close");
 	    	    					zephyros.checkAjaxDialogResult(dialog_profile, data);
+	    	    					reloadServerTable();
 	    	    				}
 	    	    			});
     	    			}
@@ -222,7 +260,8 @@
     	    				success : function(data, status, xhr) {
     	    					zephyros.loading.hide();
     	  						dialog_profile.dialog("close"); 
-    	  						zephyros.checkAjaxDialogResult(dialog_profile,  data)
+    	  						zephyros.checkAjaxDialogResult(dialog_profile,  data);
+    	  						reloadServerTable();
     	    				}
     	    			});
     	    	  	},

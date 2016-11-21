@@ -11,13 +11,12 @@
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
                     <h1 class="text-light">BottledWater 관리</h1>  
                     <h5 class="sub-alt-header">* BottledWater을 관리합니다.</h5>
-                    <P>디버그 정보 : userId=${sessionScope.userId}  userAuth=${sessionScope.userAuth} 
                     <hr class="thin bg-grayLighter">
                     <p>* PostgreSQL 서버 리스트
-                    <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
+                    <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
                         <thead>
                         <tr>
-                            <td class="sortable-column sort-asc" style="width: 120px">서버명</td>
+                            <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
                             <td class="sortable-column">아이피</td>
                             <td class="sortable-column">포트</td>
                             <td style="width: 50px">관리</td>
@@ -37,7 +36,7 @@
 										<td>${item.ip}</td>
 										<td>${item.port}</td>
 										<td>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:databaseList('${item.sys_nm}');" ><span class="icon mif-search"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:databaseList('${item.sys_nm}');" ><span class="icon mif-search"></span></button>
 										</td>
 										
 									</tr>

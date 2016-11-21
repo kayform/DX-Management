@@ -17,7 +17,7 @@
 				WHERE S2.SYS_GRPCD='C0002'
 				AND S2.SYS_MNT_CD = T1.use_yn )  AS use_yn,
 				T1.cg_biz_def  from webadmin.tb_mt_co_user  T1
-          where auth_dv like #{auth_dv} and use_yn like  #{use_yn}  and user_nm like  #{user_nm}
+          where use_yn like  #{use_yn}  and user_nm like  #{user_nm} and user_id like case when #{auth_dv} = '1' then #{ownUserId} else #{user_id} end            
           order by lt_wk_dtti desc
           ]]>
 	</select>

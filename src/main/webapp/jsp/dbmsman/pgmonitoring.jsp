@@ -20,16 +20,21 @@
                 </div>            
                 <div class="cell auto-size padding20 bg-white" id="cell-content">
                     <h1 class="text-light">서버 관리<span class="mif-drive-eta place-right"></span></h1>
-                    <h5 class="sub-alt-header">* 관리대상 서버를 등록/수정합니다.</h5>
+                    <h5 class="sub-alt-header">* PostgreSQL 서버를  모니터링/암호화관리 합니다.</h5>
+                    <hr class="thin bg-grayLighter">	
+                    <div>
+                            <button id="pgmonBtn" name="pgmonBtn" class="button primary" onclick="javascript:runProgram('M')"><span class="mif-display"></span>모니터링</button>
+                            <button id="encBtn" name="encBtn" class="button primary" onclick="javascript:runProgram('E')"><span class="mif-display"></span>암호화관리</button>
+                    </div>
                     <hr class="thin bg-grayLighter">								
-                    <!--  검색 조건 -->		                             							
+                    <!--  검색 조건 -->			                							
 					<div style="padding-left: 10px;">
 					<table style="width: 100%;" class="table">
 						<colgroup>
 							<col width="20%">
 							<col width="20%">
-							<col width="20%">
-							<col width="40%">
+							<col width="30%">
+							<col width="30%">
 						</colgroup>
 						<tr>
 							<td>
@@ -37,34 +42,39 @@
 								<input type="text" id="searchSysNm" name="searchSysNm" value="${sys_nm}" class="input-mini" style="width: 200px;"/>
 							</td>
 							<td>
-								<label>유형  </label>
-								<select id="searchType" name="searchType" style="width: 250px;">
-									<c:forEach var="item" items="${serverTypeList}">
-										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd_nm}</option>
-									</c:forEach>
-								</select>
-							</td>
-							<td>
 								<label>아이피  </label>
 								<input type="text" id="searchIp" name="searchIp" value="${ip}" class="input-mini" style="width: 200px;"/>
 							</td>
 							<td>
-							<div class="filter-bar">
-								<button id="regSvrBtn" name="regSvrBtn" class="button primary place-right no-margin-left margin5"><span class="mif-plus"></span>등록</button>
-								<button id="selBtn" name="selBtn" class="button primary place-right no-margin-left margin5" onclick="javascript:reloadServerTable()"><span class="mif-search"></span>조회</button>
-							</div>			
+								<label>RereshTime  </label>
+								<select id="refreshTime" name="refreshTime" style="width: 250px;" onchange="javascript:refresh()">
+									<!-- 
+									<c:forEach var="item" items="${serverTypeList}">
+										<option value="${item.sys_mnt_cd}">${item.sys_mnt_cd_nm}</option>
+									</c:forEach>
+									 -->
+									 <option value="0">없음</option>
+									 <option value="10000">10</option>
+									 <option value="30000">30</option>
+									 <option value="60000">60</option>
+								</select>
+							</td>
+							<td>
+								<div class="filter-bar">
+									<button id="selBtn" name="selBtn" class="button primary place-right" onclick="javascript:reloadServerTable()"><span class="mif-search"></span>조회</button>
+								</div>		
 							</td>
 						</tr>
 					</table>
-					</div>	
-					<hr class="thin bg-grayLighter">           						
+					</div>
+					<hr class="thin bg-grayLighter"> 
                     <table id='serverTbl' class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">                        
                         <thead>
                         <tr>
                             <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
                             <td class="column">아이피</td>
                             <td class="column">포트</td>
-                            <td class="sortable-column">유형</td>
+                            <td class="sortable-column">상태</td>
                             <td style="width: 150px">관리</td>
                         </tr>
                         </thead>
@@ -82,33 +92,24 @@
 $(document).ready(function() {
 	var auth = '${sessionScope.userAuth}';
 	var columns = null;
-	if (auth == 1) {
-		columns =  [
-		        	              { data: 'sys_nm' },
-		        	              { data: 'ip'},
-		        	              { data: 'port' },
-		        	              { data: 'type' },
-		        	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button>"}
-		        	          ];
-	}else {
-		columns =  [
- 	              { data: 'sys_nm' },
- 	              { data: 'ip'},
- 	              { data: 'port' },
- 	              { data: 'type' },
- 	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button><button id=\"deleteBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-cancel\"></span></button>"}
- 	          ];
-	}
+	
+	columns =  [
+	              { data: 'sys_nm' },
+	              { data: 'ip'},
+	              { data: 'port' },
+	              { data: 'status' },
+	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button>"}
+	          ];
+	
 	table = $("#serverTbl").DataTable({		   
 	    bDestroy: true,
 	    paging : true,
 	    /*"bJQueryUI": true,*/
 		ajax: {
-			url : '/serverList',
+			url : '/pgmonList',
 			type : 'post',
 			data : function(d) {
 				d.searchSysNm = $('#searchSysNm').val(),
-				d.searchType = $('#searchType').val(),
 				d.searchIp = $('#searchIp').val()
 			},
 			dataSrc : ""
@@ -133,43 +134,14 @@ function showServerForm(mode, sys_nm) {
 	var url = '/serverForm?mode='+mode;
 	var width = 840;
 	var height = 420;
-	var title = "서버등록/수정";
+	var title = "POSTGRESQL 서버정보";
 	var button = null;
 	
-	if (mode == "V") {
-		button =  {
-			    "확인": function() {
-			    	dialog_serverForm.dialog("close");
-			      $("#dialog_serverForm").empty();
-			    }};
-	}else{
-		button =  {
-			    "저장" : function() {
-			    	if (zephyros.isFormValidate('serverForm')){
-			    		zephyros.loading.show();
-
-						var url = '/serverProcess';
-
-						var formData = $("#serverForm").serialize();				
-
-						zephyros.callAjax({
-							url : url,
-							type : 'post',
-							data : formData,
-							success : function(data, status, xhr) {
-								zephyros.loading.hide();
-								zephyros.checkAjaxDialogResult(dialog_serverForm, data);
-								reloadServerTable();
-							}
-						});		
-			    	}
-
-			    },
-			    "취소": function() {
-			    	dialog_serverForm.dialog("close");
-			      $("#dialog_serverForm").empty();
-			    }};
-	}
+	button =  {
+		    "확인": function() {
+		    	dialog_serverForm.dialog("close");
+		      $("#dialog_serverForm").empty();
+		    }};
 	    
 	dialog_serverForm = $("#dialog_serverForm").dialog({
 		  autoOpen: false,
@@ -203,32 +175,53 @@ function showServerForm(mode, sys_nm) {
 	}); 
 }
 
-$("#regSvrBtn").on("click", function() {
-	showServerForm('I');
-});
-
-function deleteServer(sys_nm) {
-	zephyros.loading.show();
-	var url = '/serverProcess';
-	
- 	zephyros.callAjax({
-		url : url,
-		type : 'post',
-		data : {
-			mode : "D",
-			sys_nm : sys_nm
-		},
-		success : function(data, status, xhr) {
-			zephyros.loading.hide();
-			zephyros.checkAjaxDialogResult(null, data);
-			reloadServerTable();
-		}
-	}); 
-}
-
 function reloadServerTable() {
 	zephyros.loading.show();
 	table.ajax.reload();
 	zephyros.loading.hide();
 };
+
+function runProgram(type) {
+	zephyros.loading.show();
+	var url = "/userDetail"
+ 	zephyros.callAjax({
+		url : url,
+		type : 'post',
+		data : {
+			userId : '${sessionScope.userId}'
+		},
+		success : function(data, status, xhr) {
+			zephyros.loading.hide();
+			var value = null;
+			var fileName = null;
+			if (type == "M") {
+				value = data.pg_mon_client_path;
+				fileName = "DX.MonPostgres.exe";
+			}else {
+				value = data.enc_mng_path;
+				fileName = "experDB-admin-console.exe";
+			}
+			
+			if (zephyros.existsFile(value, fileName)){
+				zephyros.runProgram(value);
+			}else {
+				if (value == null || value == "") {
+					zephyros.showDialog(dialog_info, "실행파일 경로가 미설정되어 있습니다.\nprofile에서 경로를 추가하세요.");
+				}else {
+					zephyros.showDialog(dialog_info, "실행파일 경로가 유효하지 않습니다.");	
+				}
+			}
+		}
+	}); 
+};
+
+var timerId = null;
+function refresh() {
+	var refreshTime = $("#refreshTime").val();
+	if (refreshTime == 0 && timerId != null) {
+		clearInterval(timerId);
+	}else if(refreshTime > 0) {
+		timerId = setInterval("reloadServerTable()", refreshTime);		
+	}
+}
 </script>

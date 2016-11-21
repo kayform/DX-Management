@@ -25,7 +25,7 @@
                     <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
                         <thead>
                         <tr>
-                            <td class="sortable-column sort-asc" style="width: 120px">서버명</td>
+                            <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
                             <td class="sortable-column">유형</td>
                             <td class="sortable-column">상태</td>
                             <td style="width: 200px">관리</td>
@@ -45,9 +45,9 @@
 										<td>${item.type}</td>
 										<td>${item.status==1 ? "Running" : "Stop" }</td>
 										<td>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:alert('구현 요함');"><span class="icon mif-pencil"></span></button>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:alert('구현 요함');"><span class="icon mif-cancel"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
+<!-- 											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:alert('구현 요함');"><span class="icon mif-pencil"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:alert('구현 요함');"><span class="icon mif-cancel"></span></button> -->
 										</td>
 									</tr>
 								</c:forEach>

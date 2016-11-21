@@ -17,6 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,10 +32,12 @@ import com.k4m.eXperdb.webconsole.common.ExtractMybatisQuery;
 import com.k4m.eXperdb.webconsole.common.Globals;
 import com.k4m.eXperdb.webconsole.common.SHA256;
 import com.k4m.eXperdb.webconsole.common.StrUtil;
+import com.k4m.eXperdb.webconsole.common.TransactionManager;
 import com.k4m.eXperdb.webconsole.db.ConfigInfo;
 import com.k4m.eXperdb.webconsole.db.DBCPPoolManager;
 import com.k4m.eXperdb.webconsole.db.DataAdapter;
 import com.k4m.eXperdb.webconsole.db.DataTable;
+import com.k4m.eXperdb.webconsole.dbmsman.PgmonService;
 import com.k4m.eXperdb.webconsole.security.CustomUserDetails;
 import com.k4m.eXperdb.webconsole.util.DateUtils;
 import com.k4m.eXperdb.webconsole.util.SecureManager;
@@ -49,6 +52,12 @@ public class SettingsController {
 	private DataHistoryService dataHistoryService;
 	@Autowired
 	private CommonService commonService;
+	@Autowired
+	private PgmonService pgmonService;
+
+	@Autowired 
+	private PlatformTransactionManager platTransactionManager; 
+
 	/**
 	 * 사용자 ID와 Mode(CRU)를 입력받아 입력받은 사용자에 대한 정보를 리턴
 	 * 페이지에서 해당 Mode에 따라 각각에 맞는 화면을 출력
@@ -78,6 +87,32 @@ public class SettingsController {
 		return mav;
 	}
 
+	/**
+	 * 사용자 ID와 Mode(CRU)를 입력받아 입력받은 사용자에 대한 정보를 리턴
+	 * 페이지에서 해당 Mode에 따라 각각에 맞는 화면을 출력
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param user_id
+	 * @param mode
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/userDetail")
+	@ResponseBody
+	public Map<String, Object> userDetail(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "userId", defaultValue = "") String userId,
+			@RequestParam(value = "mode", defaultValue = "") String mode) throws Exception {		
+		Map<String, Object> userInfo = new HashMap<String, Object>();
+		if (!(userId == null || userId.equals(""))) {			
+			HashMap<String, String> param = new HashMap<String, String>();
+			param.put("user_id", userId);
+			param.put("mode", "V");
+			userInfo = settingsService.selectUser(param);
+		} 
+		return userInfo;
+	}
+	
 	/**
 	 * 사용자정보와 Mode(CUD)를 입력받아 사용자 정보를 DB에 저장, 수정, 삭제
 	 * 
@@ -304,7 +339,7 @@ public class SettingsController {
 		param.put("auth_dv", (searchAuthDivision == null || "".equals(searchAuthDivision)) ? "%" : "%" + searchAuthDivision + "%");
 		param.put("use_yn", (searchUseYn == null || "".equals(searchUseYn)) ? "%" : "%" + searchUseYn + "%");
 		param.put("user_nm", (searchUserName == null || "".equals(searchUserName)) ? "%" : "%" + searchUserName + "%");
-		
+		param.put("user_id", "%");
 		
 		try{
 			userList = settingsService.selectUserList(param);		
@@ -322,6 +357,45 @@ public class SettingsController {
 
 		mav.setViewName("user");
 		return mav;
+	}
+
+	/**
+	 * 서버관리 > 사용자관리 메뉴에서 사용하는 사용자 목록 조회
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param searchAuthDivision
+	 * @param searchUseYn
+	 * @param searchUserName
+	 * @return
+	 * @throws Exception
+	 * @author manimany
+	 */
+	//TODO searchAuthDivision 및 searchUseYn 사용여부 확인 및 제거할지 결정 !! user-mapper.xml에는 조건값에 포함되어 있음. remarked by manimany
+	@RequestMapping(value = "/userList")   
+	@ResponseBody
+	public List<Map<String, Object>> user(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "searchAuthDivision", defaultValue = "") String searchAuthDivision, 
+			@RequestParam(value = "searchUseYn", defaultValue = "") String searchUseYn,			
+			@RequestParam(value = "searchUserId", defaultValue = "") String searchUserId,
+			@RequestParam(value = "ownUserId", defaultValue = "") String ownUserId,
+			@RequestParam(value = "searchUserName", defaultValue = "") String searchUserName) throws Exception {
+		List<Map<String, Object>> userList = null;		
+		HashMap<String, String> param = new HashMap<String, String>();
+	
+		param.put("auth_dv", (searchAuthDivision == null || "".equals(searchAuthDivision)) ? "%" : "%" + searchAuthDivision + "%");
+		param.put("use_yn", (searchUseYn == null || "".equals(searchUseYn)) ? "%" : "%" + searchUseYn + "%");
+		param.put("user_nm", (searchUserName == null || "".equals(searchUserName)) ? "%" : "%" + searchUserName + "%");
+		param.put("user_id", (searchUserId == null || "".equals(searchUserId)) ? "%" : "%" + searchUserId + "%");
+		param.put("ownUserId", ownUserId);
+		
+		try{
+			userList = settingsService.selectUserList(param);		
+		}catch (Exception e){
+			Globals.logger.error(e.getMessage(), e);
+		}
+
+		return userList;
 	}
 	
 	@RequestMapping(value = "/server")
@@ -597,7 +671,11 @@ public class SettingsController {
 			@RequestParam(value = "user_id", defaultValue = "") String user_id,
 			@RequestParam(value = "user_pw", defaultValue = "") String user_pw) throws Exception {
 		HashMap<String , String> param = null;
+		Map<String, Object> param2 = new HashMap<String, Object>();
 		Map<String, Object> resMap = new HashMap<String, Object>();
+		
+		TransactionManager transactionManager = new TransactionManager(this.platTransactionManager);
+		
 		try {
 			sys_nm = StrUtil.hasValue(sys_nm);
 			type = StrUtil.hasValue(type);
@@ -609,12 +687,19 @@ public class SettingsController {
 			
 			int rowCount = 0;
 			String msg = "";
+									
+			transactionManager.begin();
 			
 			if(Globals.MODE_DATA_DELETE.equals(mode)) {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
 				msg = "서버정보가 삭제되었습니다.";
 				rowCount = settingsService.deleteSERVER(param);
+				
+				int uptPgSvrRowCnt = 0;
+				param2.put("conn_name", sys_nm);
+				uptPgSvrRowCnt = pgmonService.deletePgmonTbHchkInfo(param2);
+				uptPgSvrRowCnt = pgmonService.deletePgSvrInfo(param2);
 			} else {
 				param = new HashMap<String, String>();
 				param.put("sys_nm", sys_nm);
@@ -627,12 +712,7 @@ public class SettingsController {
 				switch(type){
 				case "POSTGRESQL":
 		    		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-		    		Map<String, Object> tempMap  = new HashMap<String, Object>();
 		    		
-		    		tempMap.put("sys_nm", sys_nm);					
-					Map<String, Object> serverInfoMap = settingsService.selectSERVERDetail(tempMap); // 데이터 전체 건수 조회
-					tempMap.clear();
-					
 					ConfigInfo configInfo = new ConfigInfo();
 		       		configInfo.SERVERIP = ip;
 		            configInfo.USERID = user_id;		            
@@ -641,9 +721,17 @@ public class SettingsController {
 		            configInfo.SCHEMA_NAME = user_id;
 		            configInfo.DB_TYPE = "POG";	  
 		            
-		            if (serverInfoMap.get("user_pw").toString().equals(user_pw)){
-		            	user_pw = SecureManager.decrypt(user_pw);
-		            }
+		    		Map<String, Object> tempMap  = new HashMap<String, Object>();
+		    		
+		    		if(Globals.MODE_DATA_UPDATE.equals(mode)) {
+			    		tempMap.put("sys_nm", sys_nm);					
+						Map<String, Object> serverInfoMap = settingsService.selectSERVERDetail(tempMap); // 데이터 전체 건수 조회
+						tempMap.clear();
+									            
+			            if (serverInfoMap.get("user_pw").toString().equals(user_pw)){
+			            	user_pw = SecureManager.decrypt(user_pw);
+			            }
+		    		}
 		            
 		            configInfo.DB_PW = user_pw;
 		            
@@ -704,14 +792,50 @@ public class SettingsController {
 				
 
 				CustomUserDetails userDetails = (CustomUserDetails) session.getAttribute("userLoginInfo");
-				param.put("lt_wk_prsn", userDetails.getUserid());
-
+				param.put("lt_wk_prsn", userDetails.getUserid());			
+				
 				if(Globals.MODE_DATA_INSERT.equals(mode)) {
 					rowCount = settingsService.insertSERVER(param);
+					
+					param2.clear();
+					param2.put("sequence_name", "pgmon.instance_id");
+					int instance_id = pgmonService.selectGenerateInstanceId(param2);
+					
+					param2.clear();
+					param2.put("instance_id", instance_id);
+					param2.put("server_ip", ip);
+					param2.put("service_port", port);
+					param2.put("dbms_type", "PostgreUnicodeX64");
+					param2.put("conn_user_id", user_id);
+					param2.put("conn_user_pwd", user_pw);
+					param2.put("collect_yn", "Y");
+					param2.put("collect_period_sec", 3);
+					param2.put("conn_db_name", db_nm);
+					param2.put("conn_name", sys_nm);
+					
+					int insPgSvrRowCnt = 0;
+					insPgSvrRowCnt = pgmonService.insertPgSvrInfo(param2);
+					
+					param2.clear();
+					param2.put("instance_id", instance_id);
+					insPgSvrRowCnt = pgmonService.insertPgmonTbHchkInfo(param2);
 					msg = "서버정보가 추가되었습니다.";
 					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 				} else if(Globals.MODE_DATA_UPDATE.equals(mode)) {
 					rowCount = settingsService.updateSERVER(param);
+					
+					param2.clear();
+					param2.put("server_ip", ip);
+					param2.put("service_port", port);
+					param2.put("conn_user_id", user_id);
+					param2.put("conn_user_pwd", user_pw);
+					param2.put("conn_db_name", db_nm);
+					param2.put("conn_name", sys_nm);
+					
+					int uptPgSvrRowCnt = 0;
+					uptPgSvrRowCnt = pgmonService.updatePgSvrInfo(param2);
+					msg = "서버정보가 추가되었습니다.";
+					
 					msg = "서버정보가 수정되었습니다.";
 					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 				}
@@ -725,13 +849,17 @@ public class SettingsController {
 			
 			resMap.put("result", "SUCCESS");
 			resMap.put("msg", msg);
+			
+			transactionManager.commit();
 		} catch (Exception e) {
 			Globals.logger.error(e.getMessage(), e);
 			resMap.put("result", "ERROR");
 			
 			if (resMap.get("msg") == null) {
 				resMap.put("msg", e.getMessage());
-			}			
+			}
+			
+			transactionManager.rollback();
 		}
 		return resMap;
 	}

@@ -188,6 +188,9 @@
 	<definition name="kafkaConnectorConfigForm" template="/jsp/linkedengine/kafkaConnectorConfigForm.jsp">
 	</definition>
 	
-	
+	<!-- postgresql monitoring -->
+	<definition name="pgmonitoring" extends="base.definition">
+		<put-attribute name="content" value="/jsp/dbmsman/pgmonitoring.jsp" />
+	</definition>
 	
 </tiles-definitions>

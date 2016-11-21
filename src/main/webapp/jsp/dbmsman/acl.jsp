@@ -43,7 +43,7 @@
 										<td>${item.port}</td>
 										<td>${item.db_nm}</td>
 										<td>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:aclModal('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:aclModal('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
 										</td>
 									</tr>
 								</c:forEach>
@@ -70,15 +70,15 @@
 						</div>
 						
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
-							<button id="removeBtn" class="button alert" onclick="javascript:aclModal('D',selectServerName.value);"><span class="mif-cross"></span> 삭제</button>
+							<button id="removeBtn" class="button primary" onclick="javascript:aclModal('D',selectServerName.value);"><span class="mif-cross"></span> 삭제</button>
 						</div>
 		
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
- 							<button id="addBtn" class="button success" onclick="javascript:aclModal('U',selectServerName.value);"><span class="mif-pencil"></span> 편집</button>
+ 							<button id="addBtn" class="button primary" onclick="javascript:aclModal('U',selectServerName.value);"><span class="mif-pencil"></span> 편집</button>
 						</div>
 
 						<div class="pagination pagination-small pull-right" style="margin: 0px 5px 10px 0px; float: right; padding:">
- 							<button id="addBtn" class="button success" onclick="javascript:aclModal('I',selectServerName.value);"><span class="mif-plus"></span> 등록</button>
+ 							<button id="addBtn" class="button primary" onclick="javascript:aclModal('I',selectServerName.value);"><span class="mif-plus"></span> 등록</button>
 						</div>
 		
 						<div class="clearfix"></div>

@@ -25,5 +25,8 @@
 		
 		<!-- pg 관련 쿼리 셋팅 -->
 		<mapper resource="mybatis/pginfo-mapper.xml"/>
+		
+		<!-- pgmon 관련 쿼리 셋팅 -->
+		<mapper resource="mybatis/pgmon-mapper.xml"/>
 	</mappers>
 </configuration>

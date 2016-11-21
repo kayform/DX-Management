@@ -29,15 +29,15 @@
 							<td>${item.pg_get_status_ingest}</td>
 							<td>${item.connect_name}</td>
 							<td>
-								<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:tableList('${searchSysNm}','${item.database_name}','${item.connect_name}');"><span class="icon mif-search"></span></button>
+								<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:tableList('${searchSysNm}','${item.database_name}','${item.connect_name}');"><span class="icon mif-search"></span></button>
 							</td>
 							<td>
 								<c:choose>
 									<c:when test="${item.pg_get_status_ingest == 'Process stopped(0)'}">
-										<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','RUN');"><span class="icon mif-play"></span></button>
+										<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','RUN');"><span class="icon mif-play"></span></button>
 									</c:when>
 									<c:when test="${item.pg_get_status_ingest == 'Process is running(0)'}">
-										<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','STOP');"><span class="icon mif-stop"></span></button>
+										<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','STOP');"><span class="icon mif-stop"></span></button>
 									</c:when>
 									<c:otherwise>
 										프로세스상태 오류
@@ -120,7 +120,8 @@
 	    		data : null,
 	    		success : function(data, status, xhr) {
 	    			zephyros.loading.show();
-	    			zephyros.checkAjaxDialogResult(null,  data);
+//	    			zephyros.checkAjaxDialogResult(dialog_databaseList,  data);
+	    			reload(systemName);
 	    			zephyros.loading.hide();
 	    		}
 	    	});
@@ -130,7 +131,37 @@
     	}
     }
     
-    
+    function reload(systemName){
+		var url = '/databaseList?searchSysNm='+systemName;
+		
+   		titleTxt = 'DB 리스트';
+   		dialog_databaseList = $("#dialog_databaseList").dialog({
+          	title: titleTxt,
+           	height: 650,
+            width: 1200,
+   	    	buttons: {
+   	    	  	"닫기": function() {
+ 						zephyros.loading.hide();
+ 						dialog_databaseList.dialog("close");
+   	    	  	    $("#dialog_databaseList").empty();
+   	    	  	}
+   	    	},
+   			close: function() {
+				zephyros.loading.hide();
+   				$("#dialog_databaseList").empty();
+   	    	}
+           });   
+   		
+     	zephyros.callAjax({
+    		url : url,
+    		type : 'post',
+    		data : null,
+    		success : function(data, status, xhr) {
+    			zephyros.loading.show();
+    			zephyros.showDialog(dialog_databaseList, data);
+    		}
+    	});
+    }
     
 
 </script>
