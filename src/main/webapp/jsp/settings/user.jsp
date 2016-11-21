@@ -145,7 +145,7 @@ function reloadServerTable() {
     }    
     */
     function profile(mode, userId) {
-    	zephyros.loading.show();
+    	//zephyros.loading.show();
     	var url = '';
     	var success = null;
     	var error = null;
@@ -294,12 +294,13 @@ function reloadServerTable() {
 			zephyros.showDialog(dialog_profile, "아이디 "+userId+" 사용자를 삭제하시겠습니까?");
 		}
     	else if (mode == 'U' || mode == 'V' || mode == 'I') {
+    		zephyros.loading.show();
 	     	zephyros.callAjax({
 	    		url : url,
 	    		type : 'post',
 	    		data : null,
 	    		success : function(data, status, xhr) {
-	    			zephyros.loading.show();
+	    			zephyros.loading.hide();
 	    			zephyros.showDialog(dialog_profile, data);
 	    		}
 	    	});
@@ -334,12 +335,41 @@ function reloadServerTable() {
 	 		resizable: false,
 	    	buttons: {
 	    		"저장": function() {
+	    			/*
+	    			zephyros.loading.show();
 					saveAuth();
+					zephyros.loading.hide();
+					zephyros.checkAjaxDialogResult(dialog_userAuth, data);
+					*/
+					
+	    			var rowCount = $('#userAuthList tbody tr').length;
+	    			var root = $('#userAuthList tbody tr td input');
+	    			var value = "";
+	    			
+	    			var reqData = "";
+	    			
+	    			for (var i = 0; i < rowCount; i++) {
+	    				if(i!=0) reqData += "&";
+	    				reqData += "mode=" + (root[i].checked ? "I" : "D");
+	    				reqData += "&userId=" + userId;
+	    				reqData += "&menuId=" + root[i].id;
+	    			}
+	    			// console.log(reqData);
+
+					zephyros.callAjax({
+						url : '/userAuthProcess',
+						type : 'post',
+						data : reqData,
+						success : function(data, status, xhr) {
+							zephyros.loading.hide();
+							zephyros.checkAjaxDialogResult(dialog_userAuth, data);
+						}
+					});	
     	  		},
 	    	  	"닫기": function() {
 						zephyros.loading.hide();
 						dialog_userAuth.dialog("close");
-	    	  	    $("#dialog_userAuth").empty();
+	    	  	    	$("#dialog_userAuth").empty();
 	    	  	}
 	    	},
 			close: function() {
@@ -353,7 +383,7 @@ function reloadServerTable() {
     		type : 'post',
     		data : null,
     		success : function(data, status, xhr) {
-    			zephyros.loading.show();
+    			zephyros.loading.hide();
     			zephyros.showDialog(dialog_userAuth, data);
     		}
     	});

@@ -972,14 +972,16 @@ public class SettingsController {
 	
 				rowCount = settingsService.updateUserAuthList(paramList);
 				
-				responseMap.put("resultMessage", "SUCCESS");
+				responseMap.put("result", "SUCCESS");
+				responseMap.put("msg", "메뉴권한 등록이 완료되었습니다.");
 			} else {
 				throw new Exception("잘못된 요청입니다.");
 			}
 		} catch (Exception e) {
 			if (!(e.getMessage().indexOf("duplicate key value violates unique constraint") > -1)) {
 				Globals.logger.error(e.getMessage(), e);
-				responseMap.put("resultMessage", e.getMessage());
+				responseMap.put("result", "ERROR");
+				responseMap.put("msg", e.getMessage());
 			}			
 		}
 		return responseMap;
