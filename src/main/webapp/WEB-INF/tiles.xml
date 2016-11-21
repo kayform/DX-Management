@@ -198,9 +198,7 @@
 	<definition name="cloudera" extends="base.definition">
 		<put-attribute name="content" value="/jsp/linkedengine/cloudera.jsp" />
 	</definition>
-	<definition name="clouderaServicesListForm" template="/jsp/linkedengine/kafkaConnectorConfigListForm.jsp">
-	</definition>
-	<definition name="kafkaConnectorConfigForm" template="/jsp/linkedengine/clouderaServicesListForm.jsp">
+	<definition name="clouderaServicesListForm" template="/jsp/linkedengine/clouderaServicesListForm.jsp">
 	</definition>
 	
 	
