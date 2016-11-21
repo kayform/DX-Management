@@ -4,7 +4,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div class="cell auto-size padding20 bg-white" id="cell-content">
-    <p>* CLOUDERA 서비스 리스트
     <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
         <thead>
         <tr>

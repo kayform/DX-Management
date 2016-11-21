@@ -39,16 +39,16 @@
 										<td>${item.services}</td>
 										<td>${item.servicesCount > 0 ? "Running" : "Stop" }</td>
 										<td>
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showServerForm('V', '${item.sys_nm}');"><span class="icon mif-search"></span></button>
 											<c:choose>
 												<c:when test="${item.servicesCount > 0 }">
-													<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:showClouderaServicesListForm('${item.sys_nm}');"><span class="icon mif-list"></span></button>
+													<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:showClouderaServicesListForm('${item.sys_nm}');"><span class="icon mif-list"></span></button>
 												</c:when>
 												<c:otherwise>
 													
 												</c:otherwise>
 											</c:choose>												
-											<button style="margin:0;height:20px;width:50px;" class="button success" onclick="javascript:openClouderaManager('${item.ip}','${item.port}');"><span class="icon mif-link"></span></button>
+											<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:openClouderaManager('${item.ip}','${item.port}');"><span class="icon mif-link"></span></button>
 										</td>
 									</tr>
 								</c:forEach>
@@ -62,7 +62,7 @@
     </div>
 
     
-<form id="serverListForm" name="serverListForm" method="post" >
+<form id="serverListForm" name="serverListForm" method="post">
 	<input type="hidden" id="searchSystemName" name="searchSystemName"> 
 </form>
 
@@ -83,9 +83,10 @@
 		var searchSystemName ='';
 		searchSystemName = document.getElementById('searchSystemNameText').value;
 
-    	document.getElementById("searchSystemName").value = searchSystemName;
-    	document.forms["serverListForm"].action.value = "cloudera";
-    	return true;
+    	document.getElementById('searchSystemName').value = searchSystemName;
+
+    	document.getElementById('serverListForm').action = 'cloudera';
+    	document.getElementById('serverListForm').submit();
     }
 
 	function openClouderaManager(ip, port){
@@ -98,7 +99,7 @@
 		zephyros.loading.show();
 		var url = '/clouderaServicesListForm?searchSystemName='+searchSystemName;
 		var width = 1000;
-		var height = 800;
+		var height = 560;
 		var title = "CLOUDERA 서비스 리스트";
 		var button = null;
 		
