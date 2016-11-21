@@ -68,7 +68,7 @@ public class ClouderaController {
 				
 				//데이터베이스에서 조회된 값으로 REST URL을 만들고, 해당 URL로 조회 요청을 하고 결과값을 반환 받는다.
 				//TODO 패스워드 디코드 로직 추가
-				clouderaServiceSummary = clouderaServiceSummary((String)serverInfo.get("ip"),(String) serverInfo.get("port"), (String)serverInfo.get("user_id"),SecureManager.decrypt(((String)serverInfo.get("user_pw"))));
+				clouderaServiceSummary = clouderaServiceSummary((String)serverInfo.get("ip"),(String) serverInfo.get("port"), (String)serverInfo.get("user_id"),SecureManager.decrypt(((String)serverInfo.get("user_pw")))); 
 				//clouderaServiceSummary = clouderaServiceSummary((String)serverInfo.get("ip"),(String) serverInfo.get("port"), (String)serverInfo.get("user_id"),"admin");
 				serverInfo.put("services", clouderaServiceSummary.get("services"));
 				serverInfo.put("servicesCount", clouderaServiceSummary.get("servicesCount"));		
