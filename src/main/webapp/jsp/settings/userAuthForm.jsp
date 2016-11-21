@@ -129,7 +129,7 @@
 			}
 		});		
 	} 
-	
+	/*
 	function saveAuth() {
 		var rowCount = $('#userAuthList tbody tr').length;
 		var root = $('#userAuthList tbody tr td input');
@@ -159,4 +159,5 @@
 			}
 		});
 	}
+	*/
 </script>
