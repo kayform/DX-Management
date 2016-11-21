@@ -193,4 +193,16 @@
 		<put-attribute name="content" value="/jsp/dbmsman/pgmonitoring.jsp" />
 	</definition>
 	
+	
+	<!-- cloudera 관리 -->
+	<definition name="cloudera" extends="base.definition">
+		<put-attribute name="content" value="/jsp/linkedengine/cloudera.jsp" />
+	</definition>
+	<definition name="clouderaServicesListForm" template="/jsp/linkedengine/kafkaConnectorConfigListForm.jsp">
+	</definition>
+	<definition name="kafkaConnectorConfigForm" template="/jsp/linkedengine/clouderaServicesListForm.jsp">
+	</definition>
+	
+	
+	
 </tiles-definitions>
