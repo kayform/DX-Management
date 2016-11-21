@@ -675,7 +675,7 @@ public class SettingsController {
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		
 		TransactionManager transactionManager = new TransactionManager(this.platTransactionManager);
-		
+		int maxActiveCnt = 5;
 		try {
 			sys_nm = StrUtil.hasValue(sys_nm);
 			type = StrUtil.hasValue(type);
@@ -736,8 +736,15 @@ public class SettingsController {
 		            configInfo.DB_PW = user_pw;
 		            
 		    		String rtn = "";
+		    		
+		    		ConfigInfo bkConfigInfo = null;
 		    		try {
-		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, 5);		    			
+		    			if (DBCPPoolManager.ContaintPool(sys_nm)) {
+		    				bkConfigInfo = DBCPPoolManager.getConfigInfo(sys_nm);
+		    				DBCPPoolManager.shutdownDriver(sys_nm);
+		    			}
+		    			
+		    			DBCPPoolManager.setupDriver(configInfo, sys_nm, maxActiveCnt);		    			
 		    			
 		    			tempMap.put("usename", user_id);
 		    			String sql = commonService.getQuery("pginfo-mapper.selectUserSuperPrivs", null);
@@ -765,6 +772,10 @@ public class SettingsController {
 						
 						if (DBCPPoolManager.ContaintPool(sys_nm)){
 							DBCPPoolManager.shutdownDriver(sys_nm);
+							
+							if (bkConfigInfo != null) {
+								DBCPPoolManager.setupDriver(bkConfigInfo, sys_nm, maxActiveCnt);
+							}
 						}
 						
 		    			throw new Exception(e.getMessage(), e);

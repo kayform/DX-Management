@@ -84,7 +84,7 @@ $(document).ready(function() {
 	              { data: 'blg' },
 	              { data: 'user_nm' },
 	              { data: 'hpnm_no' },
- 	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button><button id=\"deleteBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-cancel\"></span></button><button style=\"margin:0;height:20px;width:50px;\" class=\"button\" onclick=\"javascript:manageUserAuth('${item.user_id}');\"><span class=\"icon mif-tools\"></span></button>"}
+ 	              { data: 'mng', defaultContent : "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-search\"></span></button><button id=\"modifyBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"\"><span class=\"mif-pencil\"></span></button><button id=\"manageBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\"><span class=\"icon mif-tools\"></span></button><button id=\"deleteBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"mif-cancel\"></span></button>"}
  	          ];
 	}
 	table = $("#userTbl").DataTable({		   
@@ -112,8 +112,16 @@ $(document).ready(function() {
 		}else if ($(this)[0].id == "modifyBtn") {
 			profile('U', data.user_id);
 		}else if ($(this)[0].id == "deleteBtn") {
-			profile('D', data.user_id);
-		}				
+			if (data.user_id == '${sessionScope.userId}') {
+				zephyros.showDialog(dialog_info, "본인 계정은 삭제할 수 없습니다.");				
+			}else if (data.user_id == 'administrator') {
+				zephyros.showDialog(dialog_info, "administrator 계정은 삭제할 수 없습니다.");	
+			}else {
+				profile('D', data.user_id);	
+			}
+		}else if ($(this)[0].id == "manageBtn") {
+			manageUserAuth(data.user_id);
+		}		
 	});
 });
 
