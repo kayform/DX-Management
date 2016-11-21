@@ -1,13 +1,17 @@
 package com.k4m.eXperdb.webconsole.test;
 
-import java.net.URI;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.bouncycastle.util.encoders.Base64;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,160 +22,170 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.apache.commons.codec.binary.Base64;
 
 import com.k4m.eXperdb.webconsole.common.Globals;
 import com.k4m.eXperdb.webconsole.linkedengine.RequestRestAPI;
 
 public class ClouderaRestTemplateTest {
 
-	
-	
-	/*
-	 * 
-HttpClientErrorException: 401 Full authentication is required to access this resource
 
-
-
-
-
-
-
-	 * 
-	 * 
-	 */
-	
-	
-
-
-	
-	
-	
 	
 	@Test
-	public void clouderaServiceListTestsss() {
-
+	public void clouderaServiceSummaryTest() {
 		
-		List<Map<String, Object>> serviceList = new ArrayList<Map<String, Object>>();		
-		Map<String, Object> serviceInfo = null;
+		String ip = "58.229.253.137";
+		String port = "7180";
+		String username = "admin";
+//		String password = "admin";
+		String password = null;
+		String encodeedPassword = "86IIlz0+DRw=";
 
-		ResponseEntity<String> responseEntity = null;
-		RequestRestAPI requestRestAPI  = new RequestRestAPI();
-
-		String ip  ="58.229.253.137";
-		int port = 7180;
-		String url = "http://58.229.253.137:7180/api/v9/clusters/cluster/services";
-		
-		
-		UriComponents uriComponents =
-		        UriComponentsBuilder.newInstance()
-		            .scheme("http").host(ip).port(port).path("/api/v9/clusters/cluster/services").build()
-		            .encode();
-
-		URI uri = uriComponents.toUri();
-		System.out.println("=========="+uri.toString());
-		
-
-            
-
-
-          //  headers = new HttpEntity<>(data, headers);        
-		
-		
-		
+		//서버 해당 커넥터의 상태 정보 조회
 		try {
-			System.out.println(url.toString()+" REST API 호출");
-
-			//데이터베이스에서 조회된 값으로 REST URL을 만들고, 해당 URL로 조회 요청을 하고 커넥터 목록을 반환받는다.
-			responseEntity = requestRestAPI.requestRestAPI(uri);
-			String jsonString = responseEntity.getBody();
-			
-			if(responseEntity!= null && responseEntity.getStatusCode().value() == 200 ){
-				JSONParser jsonParser = new JSONParser();
-				JSONArray objects =(JSONArray) jsonParser.parse(jsonString);
-				
-				for(int i = 0 ; i < objects.size() ; i++){
-					System.out.println(url+" 의 "+i+"번째 커넥터명 : "+objects.get(i).toString());
-				}
-			}
-			else{
-			}			
-
-			
+			Map<String, String> clouderaServiceSummary = clouderaServiceSummary(ip, port, username, password);
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-	
-		
-		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		
-
-		String user ="admin";
-		String password = "admin";
-
-		String plainCreds = user + ":" + password;
-
-		byte[] plainCredsBytes = plainCreds.getBytes();
-
-		byte[] base64Creds= Base64.encode(plainCredsBytes);
-
-		System.out.println("base64Creds===="+new String(base64Creds));
-		
-		String base64StringEncode = new String(base64Creds);
-		
-		byte[] decodedByte = Base64.decode(base64StringEncode);
-		
-		System.out.println("==="+new String(decodedByte)+"===");
-		
-		
-		
-
-		requestHeaders.add("Authorization", "Basic " + base64Creds);
-//		requestHeaders.add("Authorization", "Basic admin:admin");
-
-	       
-/*	   
-	       printf Aladdin:OpenSesame | base64
-	       .. yields a string 'QWxhZGRpbjpPcGVuU2VzYW1l' that is used like so:
-
-	       Authorization: Basic QWxhZGRpbjpPcGVuU2VzYW1l
-
-*/
-	       
-	       
-		RestTemplate restTemplate = new RestTemplate();
-	       
-		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
-	       
-	       
-		// Add the String message converter
-		restTemplate.getMessageConverters().add(new MappingJacksonHttpMessageConverter() );
-//		ResponseEntity<String> responseEntity =null;
-		
-		try {
-			responseEntity = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String.class );
-		}catch (Exception e) {
-			throw e;
 		}
-		Globals.logger.debug(uri+" REST API 응답 상태갑 = "+responseEntity.getStatusCode().toString());
-		Globals.logger.debug(uri+" REST API 응답 헤더 = "+responseEntity.getHeaders().toString());
-		Globals.logger.debug(uri+" REST API 응답 결과 = "+ responseEntity.getBody().toString());
-
-		
-		
-			
 	}
 	
 	
 	
 	
+	//@Test
+	public void clouderaServiceListTest() {
+		
+		String ip = "58.229.253.137";
+		String port = "7180";
+		String username = "admin";
+		String password = "admin";
 
+		//서버 해당 커넥터의 상태 정보 조회
+		try {
+			List<Map<String, Object>> clouderaJsonObjectList = getClouderaServicesList(ip, port, username, password);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * 입력받은 아이피, 포트, 사용자명, 패스워드에 대한 REST 응답을 리스트(JSONArray 타입)으로 반환
+	 * @param ip
+	 * @param port
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws Exception
+	 */
+	private  Map<String, String>  clouderaServiceSummary(String ip, String port, String username, String password) throws Exception {
+		Map<String, String> clouderaServiceSummary =  new HashMap<String, String>();
+		String services = "";
+		int serviceCount = 0;
+		
+		try {
+			List<Map<String, Object>> clouderaJsonObjectList = getClouderaServicesList(ip, port, username, password);
+			serviceCount = clouderaJsonObjectList.size();
+			
+			StringBuffer sb = new StringBuffer();
+			boolean isFirst = true;
+			for (Map<String, Object> tempMap : clouderaJsonObjectList) {
+				if(isFirst){
+					sb.append(tempMap.get("type"));
+					isFirst = false;
+				}
+				else {
+					sb.append(", "+tempMap.get("type"));
+				}
+			}
+			services = sb.toString();
+			System.out.println("조회된 서비스 항목 = "+services);
+			clouderaServiceSummary.put("services", services);
+			clouderaServiceSummary.put("servicesCount", Integer.toString(serviceCount));
+		} catch (Exception e) {
+			throw e;
+		}
+		
+		return clouderaServiceSummary ;
+	}
+	
+	
+	
+	
+	/**
+	 * 입력받은 아이피, 포트, 사용자명, 패스워드에 대한 REST 응답을 리스트(JSONArray 타입)으로 반환
+	 * @param ip
+	 * @param port
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws Exception
+	 */
+	private  List<Map<String, Object>>  getClouderaServicesList(String ip, String port, String username, String password) throws Exception {
+		
+		JSONObject jsonObjectMap = null;
+		JSONArray clouderaJsonObjectArray = null;
+
+		String url = "http://"+ip+":"+port+"/api/v9/clusters/cluster/services";
+		String authString = username + ":" + password;
+		
+		System.out.println("Auth string: " + authString);
+		String authStringEnc = org.apache.commons.codec.binary.Base64.encodeBase64String(authString.getBytes());
+		System.out.println("Base64 encoded auth string: " + authStringEnc);		
+		
+
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+		requestHeaders.add("Authorization", "Basic " + authStringEnc);
+	       
+	       
+		RestTemplate restTemplate = new RestTemplate();
+	       
+		HttpEntity<?> requestEntity = new HttpEntity<Object>(requestHeaders);
+		ResponseEntity<String> responseEntity = null;
+	       
+	       
+		// Add the String message converter
+		restTemplate.getMessageConverters().add(new MappingJacksonHttpMessageConverter() );
+		
+		try {
+			responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class );
+			String jsonString = responseEntity.getBody();
+			System.out.println(url+ "  =========== 호출결과 시작 ===============" );
+			System.out.println(jsonString);
+			System.out.println(url+ "  =========== 호출결과 끝   ===============" );
+			
+			if(responseEntity!= null && responseEntity.getStatusCode().value() == 200 ){
+
+				JSONParser jsonParser = new JSONParser();
+
+				jsonObjectMap =(JSONObject) jsonParser.parse(jsonString);
+				clouderaJsonObjectArray = (JSONArray) jsonObjectMap.get("items");
+				System.out.println(url+ " 등록 서비스 갯수 = "+clouderaJsonObjectArray.size());				
+			}
+			else{
+				//응답 코드가 200이 아닌 경우 에러 처리
+				Globals.logger.info(url+" REST API 접속에서 예외가 발생했습니다. 에러코드 : "+responseEntity.getStatusCode().value());
+				throw new Exception(url+" REST API 접속에서 예외가 발생했습니다. 응답 코드가 적절하지 않습니다." );
+			}
+		} catch (HttpClientErrorException e) {
+			Globals.logger.info(url+" REST API 접속에서 예외가 발생했습니다.");
+			Globals.logger.info(e);
+			throw e;
+		}catch (ResourceAccessException e) {
+			Globals.logger.info(url+" REST API 접속에서 예외가 발생했습니다.");
+			Globals.logger.info(e);
+			throw e;
+		} catch (Exception e) {
+			throw e;
+		}
+		
+		return clouderaJsonObjectArray;
+	}
 	
 }
