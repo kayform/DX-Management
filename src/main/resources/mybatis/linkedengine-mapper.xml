@@ -36,5 +36,27 @@
           ]]>
 	</select>
 		
+	<!-- cloudera 서버 목록조회 -->
+	<select id="selectClouderaServerList" resultType="hashmap">
+		  <![CDATA[
+			select * 
+			from webadmin.tb_mt_co_svrinfo
+			where type =  ('CLOUDERA-MANAGER')
+			and sys_nm like #{sys_nm}
+            order by sys_nm desc
+          ]]>
+	</select>
+		
+	<!-- cloudera 서버 조회 -->
+	<select id="selectClouderaServer" resultType="hashmap">
+		  <![CDATA[
+			select * 
+			from webadmin.tb_mt_co_svrinfo
+			where type =  ('CLOUDERA-MANAGER')
+			and sys_nm = #{sys_nm}
+            order by sys_nm desc
+          ]]>
+	</select>
+		
 
 </mapper>
