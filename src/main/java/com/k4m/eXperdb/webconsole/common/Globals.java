@@ -36,7 +36,7 @@ public class Globals {
 	//한 페이지당 페이징 노출 갯수
 	public final static int PAGING_COUNT_PER_PAGE = 5;
 	
-	//한 페이지당(리스트) 레코드 갯수
+	//한 페이지당(리스트) 레코드 갯수 
 	public final static int PAGING_COUNT_PER_LIST = 10;
 	
 }
