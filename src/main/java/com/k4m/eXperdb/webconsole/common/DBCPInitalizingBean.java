@@ -34,7 +34,9 @@ public class DBCPInitalizingBean implements InitializingBean {
 			requestMap.put("PAGE_SIZE", Integer.toString(1));
 			requestMap.put("CURRENT_PAGE", Integer.toString(totalCount));
 			*/
-			
+			int totalCount = settingsService.selectSERVERTotalCount(param);
+			param.put("start", 0);
+			param.put("end", totalCount);
 			List<Map<String, Object>> serverList = settingsService.selectSERVER(param); // 데이터 리스트 조회
 			
     		Map<String, Object> tempMap  = new HashMap<String, Object>();
