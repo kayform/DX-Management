@@ -15,11 +15,35 @@ public class BottledWaterServiceImpl implements BottledWaterService {
 	private BottledWaterDAO bottledWaterDAO;
 	
 	
-
 	@Override
 	public List<Map<String, Object>> selectServerList(HashMap<String, String> param) throws Exception {		
-		List<Map<String, Object>> serverList = bottledWaterDAO.selectServerList(param);		
-		return serverList;
+		return bottledWaterDAO.selectServerList(param);
+	}
+
+
+	@Override
+	public List<Map<String, Object>> selectDatabaseList(String searchSysNm) throws Exception {
+		return bottledWaterDAO.selectDatabaseList(searchSysNm);		
+	}
+
+
+	@Override
+	public Map<String, Object> runProcess(Map<String, String> param)  throws Exception{
+		return bottledWaterDAO.runProcess(param);
+	}
+
+
+
+	@Override
+	public int selectTableListTotalCount(HashMap<String, String> param)  throws Exception{
+		return bottledWaterDAO.selectTableListTotalCount(param);
+	}
+
+
+
+	@Override
+	public List<Map<String, Object>> selectTableList(HashMap<String, String> param) throws Exception {
+		return bottledWaterDAO.selectTableList(param);		
 	}	
 
 }
