@@ -12,7 +12,6 @@
                     <h1 class="text-light">BottledWater 관리</h1>  
                     <h5 class="sub-alt-header">* BottledWater을 관리합니다.</h5>
                     <hr class="thin bg-grayLighter">
-                    <p>* PostgreSQL 서버 리스트
                     <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
                         <thead>
                         <tr>
