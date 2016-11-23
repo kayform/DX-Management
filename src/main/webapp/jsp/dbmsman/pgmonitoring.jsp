@@ -104,15 +104,15 @@ $(document).ready(function() {
 	table = $("#serverTbl").DataTable({		   
 	    bDestroy: true,
 	    paging : true,
-	    /*"bJQueryUI": true,*/
+	    serverSide : true,
+	    stateSave : true,
 		ajax: {
 			url : '/pgmonList',
 			type : 'post',
 			data : function(d) {
 				d.searchSysNm = $('#searchSysNm').val(),
 				d.searchIp = $('#searchIp').val()
-			},
-			dataSrc : ""
+			}
 		},
 	    columns: columns
 	});
