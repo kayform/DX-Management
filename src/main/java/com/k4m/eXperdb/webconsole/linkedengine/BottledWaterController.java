@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 
+
 import com.k4m.eXperdb.webconsole.common.Globals;
 
 
@@ -32,37 +33,45 @@ public class BottledWaterController {
 	
 	/**
 	 * 
-	 * 연계엔진관리 > BottledWater 서버 목록 조회
+	 * 연계엔진관리 > BottledWater 서버 목록 조회 페이지에서 데이터 없는 형태의 HTML을 생성하고 데이터는 같은 이름의 메소드에서 json 데이터 형태로 반환함
+	 * 
+	 * 
+	 * @param model 
+	 * @param session
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/bottledwater")   
+	public ModelAndView server(Model model, HttpSession session, HttpServletRequest request) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("bottledWater");
+		return mav;
+	}
+	
+	/**
+	 * 
+	 * 연계엔진관리 > BottledWater 서버 목록 조회 페이지에서 데이터 없는 형태의 HTML을 생성하고 데이터는 같은 이름의 메소드에서 json 데이터 형태로 반환함
 	 * 
 	 * searchServerType 파라미터는 현재 사용하지 않으나 향후 요구사항 변경을 대비하여 존치시킴 remarked by manimany
 	 * 
 	 * @param model 
 	 * @param session
 	 * @param request
-	 * @param searchServerType
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/bottledwater")   
-	public ModelAndView server(Model model, HttpSession session, HttpServletRequest request, 
-			@RequestParam(value = "searchServerType", defaultValue = "") String searchServerType) throws Exception {
+	@RequestMapping(value = "/bottledwaterList")  
+	@ResponseBody
+	public List<Map<String, Object>> serverList(Model model, HttpSession session, HttpServletRequest request) throws Exception {
 		List<Map<String, Object>> serverList = null;		
 		HashMap<String, String> param = new HashMap<String, String>();
-	
-		//param.put("type", (searchServerType == null || "".equals(searchServerType)) ? "%" : "%" + searchServerType + "%");
-		
 		try{
 			serverList = bottledWaterService.selectServerList(param);		
 		}catch (Exception e){
 			Globals.logger.error(e.getMessage(), e);
 		}
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("serverList", serverList);
-		//mav.addObject("searchServerType", searchServerType);
-
-		mav.setViewName("bottledWater");
-		
-		return mav;
+		return serverList;
 	}
 	
 	/**
