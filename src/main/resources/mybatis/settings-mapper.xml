@@ -24,7 +24,10 @@
 			     	 WHERE T1.SYS_NM LIKE #{sys_nm}
 			       	   AND T1.TYPE LIKE #{type}
 			       	   AND T1.IP LIKE #{ip}
+			       	 ORDER BY T1.SYS_NM
+			       	 LIMIT #{end}
 					  ) T2 
+					WHERE T2.NO > #{start}
          ]]>
 	</select>
 	<!-- SERVER 전체 건수 조회 -->

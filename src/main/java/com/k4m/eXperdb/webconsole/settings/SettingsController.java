@@ -469,27 +469,37 @@ public class SettingsController {
 	 */
 	@RequestMapping(value = "/serverList")
 	@ResponseBody
-	public List<Map<String, Object>> getServerList(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSysNm", defaultValue = "") String sys_nm,
+	public Map<String, Object> getServerList(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSysNm", defaultValue = "") String sys_nm,
 	//public String getServerList(Model model, HttpSession session, HttpServletRequest request, @RequestParam(value = "searchSysNm", defaultValue = "") String sys_nm,
 			@RequestParam(value = "searchType", defaultValue = "") String type, 
-			@RequestParam(value = "searchIp", defaultValue = "") String ip, @RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
+			@RequestParam(value = "searchIp", defaultValue = "") String ip, 
+			@RequestParam(value = "draw", defaultValue = "1") int draw,
+			@RequestParam(value = "start", defaultValue = "1") int start,
+			@RequestParam(value = "length", defaultValue = "1") int length) throws Exception {
 		List<Map<String, Object>> serverList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try {
 			// 리스트 네이게이션 개수
 			int countPerPage = 5;
 			// 리스트 개수
 			int countPerList = 10;
 			
-			if (currentPage < 1) {
-				currentPage = 1;
-			}
-			
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("sys_nm", (sys_nm == null || sys_nm.equals("")) ? "%" : "%" + sys_nm + "%");
 			param.put("type", (type == null || type.equals("")) ? "%" : "%" + type + "%");			
 			param.put("ip", (ip == null || ip.equals("")) ? "%" : "%" + ip + "%");
-			
+			param.put("start", start);
+			param.put("end", start + length);
+			int totalCount = settingsService.selectSERVERTotalCount(param); // 데이터 전체 건수 조회
 			serverList = settingsService.selectSERVER(param); // 데이터 리스트 조회
+			
+			resultMap.put("draw", draw);
+			//resultMap.put("recordsTotal", totalCount);
+			//resultMap.put("recordsFiltered", totalCount);
+			resultMap.put("iTotalRecords", totalCount);
+			resultMap.put("iTotalDisplayRecords", totalCount);
+			resultMap.put("aaData", serverList);
+			resultMap.put("iDisplayLength", length);
 			/*
 			for(Map<String, Object> map : serverList) {
 				map.put("mng", "<button id=\"viewBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" onclick=\"javascript:showServerForm('V', '${item.sys_nm}');\"><span class=\"mif-search\"></span></button>");
@@ -500,7 +510,7 @@ public class SettingsController {
 			throw e;
 		}
 		//return listmap_to_json_string(serverList);
-		return serverList;
+		return resultMap;
 	}
 	
 	public String listmap_to_json_string(List<Map<String, Object>> list)

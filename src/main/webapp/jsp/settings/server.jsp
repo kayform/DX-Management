@@ -102,16 +102,19 @@ $(document).ready(function() {
 	table = $("#serverTbl").DataTable({		   
 	    bDestroy: true,
 	    paging : true,
+	    serverSide : true,
+	    stateSave : true,
 	    /*"bJQueryUI": true,*/
 		ajax: {
 			url : '/serverList',
 			type : 'post',
+			
 			data : function(d) {
 				d.searchSysNm = $('#searchSysNm').val(),
 				d.searchType = $('#searchType').val(),
-				d.searchIp = $('#searchIp').val()
-			},
-			dataSrc : ""
+				d.searchIp = $('#searchIp').val(),
+				d.currentPage = $('#serverTbl').DataTable().page.info().page + 1
+			}
 		},
 	    columns: columns
 	});
