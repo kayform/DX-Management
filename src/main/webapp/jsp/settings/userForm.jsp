@@ -97,7 +97,7 @@
 							${userInfo.jgd}
 						</c:if>
 					</td>
-					<th scope="row">담당업무</th>
+					<th scope="row">담당업무*</th>
 					<td>
 						<c:if test="${mode !='V' }">
 							<input class="input-mini text" type="text" id="cg_biz_def" name="cg_biz_def"  value="${userInfo.cg_biz_def}" style="width:80%;" data-validate-func="required" data-validate-hint="이 필드는 필수입니다." data-validate-hint-position="top">

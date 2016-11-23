@@ -23,7 +23,7 @@ public class DBCPInitalizingBean implements InitializingBean {
 			 */
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("sys_nm", "%");
-			param.put("type", "%");			
+			param.put("type", "POSTGRESQL");			
 			param.put("ip", "%");
 			
 			/*

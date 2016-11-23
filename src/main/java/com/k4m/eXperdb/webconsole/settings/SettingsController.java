@@ -812,41 +812,45 @@ public class SettingsController {
 					param2.put("sequence_name", "pgmon.instance_id");
 					int instance_id = pgmonService.selectGenerateInstanceId(param2);
 					
-					param2.clear();
-					param2.put("instance_id", instance_id);
-					param2.put("server_ip", ip);
-					param2.put("service_port", port);
-					param2.put("dbms_type", "PostgreUnicodeX64");
-					param2.put("conn_user_id", user_id);
-					param2.put("conn_user_pwd", user_pw);
-					param2.put("collect_yn", "Y");
-					param2.put("collect_period_sec", 3);
-					param2.put("conn_db_name", db_nm);
-					param2.put("conn_name", sys_nm);
-					
-					int insPgSvrRowCnt = 0;
-					insPgSvrRowCnt = pgmonService.insertPgSvrInfo(param2);
-					
-					param2.clear();
-					param2.put("instance_id", instance_id);
-					insPgSvrRowCnt = pgmonService.insertPgmonTbHchkInfo(param2);
+					if (type.equals("POSTGRESQL")){
+						param2.clear();
+						param2.put("instance_id", instance_id);
+						param2.put("server_ip", ip);
+						param2.put("service_port", port);
+						param2.put("dbms_type", "PostgreUnicodeX64");
+						param2.put("conn_user_id", user_id);
+						param2.put("conn_user_pwd", user_pw);
+						param2.put("collect_yn", "Y");
+						param2.put("collect_period_sec", 3);
+						param2.put("conn_db_name", db_nm);
+						param2.put("conn_name", sys_nm);
+						
+						int insPgSvrRowCnt = 0;
+						insPgSvrRowCnt = pgmonService.insertPgSvrInfo(param2);
+						
+						param2.clear();
+						param2.put("instance_id", instance_id);
+						insPgSvrRowCnt = pgmonService.insertPgmonTbHchkInfo(param2);
+					}
+
 					msg = "서버정보가 추가되었습니다.";
 					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 				} else if(Globals.MODE_DATA_UPDATE.equals(mode)) {
 					rowCount = settingsService.updateSERVER(param);
 					
-					param2.clear();
-					param2.put("server_ip", ip);
-					param2.put("service_port", port);
-					param2.put("conn_user_id", user_id);
-					param2.put("conn_user_pwd", user_pw);
-					param2.put("conn_db_name", db_nm);
-					param2.put("conn_name", sys_nm);
-					
-					int uptPgSvrRowCnt = 0;
-					uptPgSvrRowCnt = pgmonService.updatePgSvrInfo(param2);
-					msg = "서버정보가 추가되었습니다.";
-					
+					if (type.equals("POSTGRESQL")){
+						param2.clear();
+						param2.put("server_ip", ip);
+						param2.put("service_port", port);
+						param2.put("conn_user_id", user_id);
+						param2.put("conn_user_pwd", user_pw);
+						param2.put("conn_db_name", db_nm);
+						param2.put("conn_name", sys_nm);
+						
+						int uptPgSvrRowCnt = 0;
+						uptPgSvrRowCnt = pgmonService.updatePgSvrInfo(param2);
+					}
+
 					msg = "서버정보가 수정되었습니다.";
 					//dataHistoryService.add("dbms", mode, (String)session.getAttribute("userId"), request.getRemoteAddr(), systemName, null, new JSONObject(param).toJSONString().getBytes("UTF-8"));
 				}
