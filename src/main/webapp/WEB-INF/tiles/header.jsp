@@ -30,7 +30,7 @@
     <script src="theme/js/jquery-2.1.3.min.js"></script>
 
 	<!-- dataTables -->	
-	<link href="theme/css/jquery-ui.css" rel="stylesheet">
+	//<link href="theme/script/jquery-ui/jquery-ui.css" rel="stylesheet">
     <script src="theme/js/jquery.dataTables.min.js"></script>
     <script src="theme/js/dataTables.select.min.js"></script>
     
