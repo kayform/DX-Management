@@ -94,7 +94,7 @@
     	var titleTxt = '';
     	var successTxt = '';
     	var heightVal = 650;
-      	var widthVal = 700;
+      	var widthVal = 1250;
 
 		url = '/tableList';
 		

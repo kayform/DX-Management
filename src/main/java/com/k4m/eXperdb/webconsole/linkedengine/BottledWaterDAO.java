@@ -43,19 +43,17 @@ public class BottledWaterDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Map<String, Object>> selectTableList(Map<String, String> param) {
+	public Map<String, Object> selectTableList(HashMap<String, Object> param) {
 		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 		List<Map<String, Object>> tableList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> tableInfo = null;
 		
 		String dbname = (String) param.get("databaseName");
-		int pageSize = Integer.parseInt((String) param.get("PAGE_SIZE"));
-		int currentPage = Integer.parseInt((String) param.get("CURRENT_PAGE"));
+		int start  = (int) param.get("start");
+		int end = start + (int) param.get("length");
+		int recordsTotal = 0;
 		
-		int start = (currentPage * pageSize) - (pageSize - 1);
-		int end = (currentPage * pageSize);
-	
-	    
 	    Connection conn = null;
 		Statement st = null;
 		ResultSet rs = null;
@@ -71,8 +69,9 @@ public class BottledWaterDAO {
 		Globals.logger.debug("연계테이블 목록 조회문 = "+tableQuery);
 	
 	    try {
-	
-	    	conn = DBCPPoolManager.getConnection(param.get("systemName"));
+	    	recordsTotal = selectTableListTotalCount(param);
+	    	
+	    	conn = DBCPPoolManager.getConnection((String) param.get("systemName"));
 	    	st = conn.createStatement();
 			rs = st.executeQuery(tableQuery);
 				
@@ -81,8 +80,8 @@ public class BottledWaterDAO {
 			//database 명 조회
 			while (rs.next()) {
 				tableInfo = new HashMap<String, Object>();
-				tableInfo.put("table_schema", rs.getString(1));
-				tableInfo.put("table_name", rs.getString(2));
+				tableInfo.put("table_schema", rs.getString("table_schema"));
+				tableInfo.put("table_name", rs.getString("table_name"));
 				tableList.add(tableInfo);
 			}
 			
@@ -113,7 +112,12 @@ public class BottledWaterDAO {
 				}
 	    }
 		Globals.logger.debug("database 연계 테이블 갯수 = "+tableList.size());
-		return tableList;
+		
+		resultMap.put("draw", param.get("draw"));
+		resultMap.put("recordsTotal", recordsTotal);
+		resultMap.put("recordsFiltered", recordsTotal);
+		resultMap.put("data", tableList);
+		return resultMap;
 	}
 
 	/**
@@ -292,7 +296,7 @@ public class BottledWaterDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public int selectTableListTotalCount(Map<String, String> param){
+	private int selectTableListTotalCount(HashMap<String, Object> param){
 		
 	    Connection conn = null;
 		Statement st = null;
@@ -307,7 +311,7 @@ public class BottledWaterDAO {
 	
 		try {
 	
-	    	conn = DBCPPoolManager.getConnection(param.get("systemName"));
+	    	conn = DBCPPoolManager.getConnection((String) param.get("systemName"));
 	    	st = conn.createStatement();
 			rs = st.executeQuery(tableCountQuery);
 				

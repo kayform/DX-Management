@@ -20,22 +20,23 @@
 $(document).ready(function() {
 	var tableColumns = null;
 	tableColumns =  [
-					{ data: 'table_schema' },
-					{ data: 'table_name'}
+					{ "data": 'table_schema' },
+					{ "data": 'table_name'}
 				];
 	
 	tableListTable = $("#tableListTable").DataTable({
 	    "paging" : true,
+	    "serverSide" : true,
+	    //"stateSave" : true,	    
 	    'ajax': {
 			url : '/tableListData',
 			type : 'post',
 			data : { systemName : "${systemName}",databaseName : "${databaseName}",connectName : "${connectName}"},
 			error : function(jqXHR, textStatus, errorThrown) {
 				console.log('에러 발생 = '+errorThrown); 
-			},
-			dataSrc : ""
+			}
 		},
-	    "columns": tableColumns
+        "columns": tableColumns
 	});
 	
 });    

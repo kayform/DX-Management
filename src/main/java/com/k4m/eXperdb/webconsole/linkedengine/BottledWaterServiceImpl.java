@@ -33,16 +33,8 @@ public class BottledWaterServiceImpl implements BottledWaterService {
 	}
 
 
-
 	@Override
-	public int selectTableListTotalCount(HashMap<String, String> param)  throws Exception{
-		return bottledWaterDAO.selectTableListTotalCount(param);
-	}
-
-
-
-	@Override
-	public List<Map<String, Object>> selectTableList(HashMap<String, String> param) throws Exception {
+	public Map<String, Object> selectTableList(HashMap<String, Object> param) throws Exception {
 		return bottledWaterDAO.selectTableList(param);		
 	}	
 

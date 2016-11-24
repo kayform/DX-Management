@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 
+
 import com.k4m.eXperdb.webconsole.common.Globals;
 
 
@@ -33,11 +34,8 @@ public class BottledWaterController {
 
 	
 	/**
-	 * 
-	 * 연계엔진관리 > BottledWater 서버 목록 조회 페이지에서 데이터 없는 형태의 HTML을 생성하고 데이터는 같은 이름의 메소드에서 json 데이터 형태로 반환함
-	 * 
-	 * 
-	 * @param model 
+	 * 연계엔진관리 > BottledWater 서버 목록 조회 - 페이지 뷰만 반환
+	 * @param model
 	 * @param session
 	 * @param request
 	 * @return
@@ -52,9 +50,7 @@ public class BottledWaterController {
 	
 	/**
 	 * 
-	 * 연계엔진관리 > BottledWater 서버 목록 조회 페이지에서 데이터 없는 형태의 HTML을 생성하고 데이터는 같은 이름의 메소드에서 json 데이터 형태로 반환함
-	 * 
-	 * searchServerType 파라미터는 현재 사용하지 않으나 향후 요구사항 변경을 대비하여 존치시킴 remarked by manimany
+	 * 연계엔진관리 > BottledWater 서버 목록 조회 - JSON 형태 데이터 반환
 	 * 
 	 * @param model 
 	 * @param session
@@ -95,7 +91,7 @@ public class BottledWaterController {
 	
 	
 	/**
-	 * Database 목록 조회 - 데이터 반환
+	 * Database 목록 조회 - JSON 형태 데이터 반환
 	 * @param model
 	 * @param session
 	 * @param request
@@ -142,7 +138,7 @@ public class BottledWaterController {
 	
 	
 	/**
-	 * 연계 테이블 목록 조회 - 데이터 반환
+	 * 연계 테이블 목록 조회 - JSON 형태 데이터 반환
 	 * @param model
 	 * @param session
 	 * @param request
@@ -153,31 +149,31 @@ public class BottledWaterController {
 	 */
 	@RequestMapping(value = "/tableListData")   
 	@ResponseBody
-	public List<Map<String, Object>> tableListData(Model model, HttpSession session, HttpServletRequest request, 
+	public Map<String, Object> tableListData(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "systemName", defaultValue = "") String systemName,
 			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
-			@RequestParam(value = "connectName", defaultValue = "") String connectName,
-			@RequestParam(value = "currentPage", defaultValue = "1") int currentPage) throws Exception {
+			@RequestParam(value = "connectName", defaultValue = "") String connectName, 
+			@RequestParam(value = "draw", defaultValue = "1") int draw,
+			@RequestParam(value = "start", defaultValue = "1") int start,
+			@RequestParam(value = "length", defaultValue = "1") int length) throws Exception {
 		
-		List<Map<String, Object>> tableList = null;		
-		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
 
-		HashMap<String, String> param = new HashMap<String, String>();
+		HashMap<String, Object> param = new HashMap<String, Object>();
 		param.put("systemName", systemName);
 		param.put("databaseName", databaseName);
 		param.put("connectName", connectName);
-		param.put("PAGE_SIZE", Integer.toString(Globals.PAGING_COUNT_PER_LIST));
-		param.put("CURRENT_PAGE", Integer.toString(currentPage));
+		param.put("draw", draw);
+		param.put("start", start);
+		param.put("length", length);
 
 		try{
-
-			int totalCount = bottledWaterService.selectTableListTotalCount(param); // 데이터 전체 건수 조회
-			tableList = bottledWaterService.selectTableList(param);
+			resultMap = bottledWaterService.selectTableList(param);
 			
 		}catch (Exception e){
 			Globals.logger.error(e.getMessage(), e);
 		}
-		return tableList;
+		return resultMap;
 	}
 	
 	/**

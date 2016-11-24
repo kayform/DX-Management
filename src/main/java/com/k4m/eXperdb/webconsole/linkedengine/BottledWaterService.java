@@ -11,9 +11,7 @@ public interface BottledWaterService {
 
 	Map<String, Object> runProcess(Map<String, String> param) throws Exception;;
 
-	int selectTableListTotalCount(HashMap<String, String> param) throws Exception;;
-
-	List<Map<String, Object>> selectTableList(HashMap<String, String> param) throws Exception;;
+	Map<String, Object> selectTableList(HashMap<String, Object> param) throws Exception;;
 
 
 }
