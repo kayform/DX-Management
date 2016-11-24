@@ -11,7 +11,7 @@
                     <h1 class="text-light">BottledWater 관리</h1>  
                     <h5 class="sub-alt-header">* BottledWater을 관리합니다.</h5>
                     <hr class="thin bg-grayLighter">
-                    <table  id="serverListTable" name="serverListTable" class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
+                    <table  id="serverListTable" class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="false">
                         <thead>
                         <tr>
                             <td class="sortable-column sort-asc" style="width: 200px">서버명</td>
@@ -42,24 +42,22 @@ $(document).ready(function() {
 					{ data: 'port' },
 					{ data: 'mng', defaultContent : "<button id=\"viewDatabaseListBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"icon mif-search\"></span></button>"}
 				];
-	//모델앤뷰를 써서 페이지 설정하고 데이터 가져오는 방법은 없는가?
-	//있으면 컨트롤러에서 한번에 할 수 있는데.ㅠ.ㅠ
 	//language 셋팅을 하면..... 껌뻑한다. ㅠ.ㅠ
 	table = $("#serverListTable").DataTable({
         "language": {
 //            "url": "//cdn.datatables.net/plug-ins/1.10.12/i18n/Korean.json"
         },
-	    bDestroy: true,
-	    paging : true,
- 		ajax: {
-			url : '/bottledwaterList',
+	    "destroy": true,
+	    "paging" : false,
+ 		"ajax": {
+			url : '/bottledwaterData',
 			type : 'post',
 			error : function(jqXHR, textStatus, errorThrown) {
 				console.log('에러 발생 = '+errorThrown); 
 			},
 			dataSrc : ""
 		},
-	    columns: columns
+	    "columns": columns
 	});
 	
 	$('#serverListTable tbody').on('click', 'button', function() {
@@ -74,7 +72,7 @@ $(document).ready(function() {
 
 
 	
-    function databaseList(searchSysNm) {
+    function databaseList(searchSystemName) {
 
     	zephyros.loading.show();
     	
@@ -86,8 +84,7 @@ $(document).ready(function() {
     	var heightVal = 650;
       	var widthVal = 1250;
 
-		url = '/databaseList?searchSysNm='+searchSysNm;
-		
+		url = '/databaseList?searchSystemName='+searchSystemName;
    		titleTxt = 'DB 리스트';
    		dialog_databaseList = $("#dialog_databaseList").dialog({
           	title: titleTxt,
@@ -102,6 +99,7 @@ $(document).ready(function() {
    	    	},
    			close: function() {
 				zephyros.loading.hide();
+				dialog_databaseList.dialog("close");
    				$("#dialog_databaseList").empty();
    	    	}
            });   
@@ -111,7 +109,6 @@ $(document).ready(function() {
     		type : 'post',
     		data : null,
     		success : function(data, status, xhr) {
-    			zephyros.loading.show();
     			zephyros.showDialog(dialog_databaseList, data);
     		}
     	});

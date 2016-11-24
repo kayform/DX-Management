@@ -127,7 +127,9 @@ public class BottledWaterDAO {
 		List<Map<String, Object>> databaseList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> databaseInfo = null;
 	
-	    //전체 database 명 조회 쿼리
+		Globals.logger.debug(" searchSysNm명  "+searchSysNm+" 에 대한 연계정보 조회" );
+
+		//전체 database 명 조회 쿼리
 	    String databaseListQuery = "\n SELECT datname FROM pg_database where datistemplate not in ('t') order by datname";
 	    
 	    Connection conn = null;

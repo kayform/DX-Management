@@ -4,7 +4,7 @@
 
 <div class="cell auto-size padding20 bg-white" id="cell-content">
     <p>* DB 리스트
-    <table class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
+    <table id="databaseListTable" class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
         <thead>
         <tr>
             <td class="sortable-column sort-asc" style="width: 150px">Database 명</td>
@@ -14,40 +14,6 @@
             <td style="width: 80px">연계동작</td>
         </tr>
         </thead>
-        <tbody>
-			<c:choose>
-				<c:when test="${databaseList.size() < 1}">
-					<tr>
-						<td colspan="5" style="text-align: center;">No Data.</td>
-					</tr>
-				</c:when>
-				<c:otherwise>
-					<c:forEach items="${databaseList}" var="item">
-						<tr>
-							<td>${item.database_name}</td>
-							<td>${item.pg_get_status_ingest}</td>
-							<td>${item.connect_name}</td>
-							<td>
-								<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:tableList('${searchSysNm}','${item.database_name}','${item.connect_name}');"><span class="icon mif-search"></span></button>
-							</td>
-							<td>
-								<c:choose>
-									<c:when test="${item.pg_get_status_ingest == 'Process stopped(0)'}">
-										<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','RUN');"><span class="icon mif-play"></span></button>
-									</c:when>
-									<c:when test="${item.pg_get_status_ingest == 'Process is running(0)'}">
-										<button style="margin:0;height:20px;width:50px;" class="button" onclick="javascript:runProcessToggle('${searchSysNm}','${item.database_name}','STOP');"><span class="icon mif-stop"></span></button>
-									</c:when>
-									<c:otherwise>
-										프로세스상태 오류
-									</c:otherwise>
-								</c:choose>							
-							</td>
-						</tr>
-					</c:forEach>
-				</c:otherwise>
-			</c:choose>
-        </tbody>
     </table>
 </div> 
 
@@ -57,6 +23,68 @@
 </div> 
 
 <script>    
+
+	$(document).ready(function() {
+		
+		//TODO 아래 임시방편 수정해야함
+		//호출페이지에서 다이얼로그 오픈하면서 초기화하고, 문서가 로드 되면서 초기화 또다시 되어 에러 메시지 발생.
+		//defalut 값인 alert로하면 얼럿창 뜬다.
+		$.fn.dataTable.ext.errMode = 'throw';
+		var databaseColumns = null;
+		databaseColumns =  [
+						{ data: 'database_name' },
+						{ data: 'pg_get_status_ingest'},
+						{ data: 'connect_name' },
+						{ data: 'setting', defaultContent : "<button id=\"viewTableListBtn\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"icon mif-search\"></span></button>"},
+						{ data: 'action', defaultContent : "<button id=\"\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"icon mif-play\"></span></button>"}
+					];
+		
+		databaseTable = $("#databaseListTable").DataTable({
+		    "paging" : false,
+		    "destroy": true,
+		    'ajax': {
+				url : '/databaseListData',
+				type : 'post',
+				data : { searchSystemName : "${searchSystemName}"},
+				error : function(jqXHR, textStatus, errorThrown) {
+					console.log('에러 발생 = '+errorThrown); 
+				},
+				dataSrc : ""
+			},
+		    "columns": databaseColumns,
+		    "createdRow": function( row, data, dataIndex ) {
+			       
+		    	   if(data.pg_get_status_ingest == "Process stopped(0)") {
+		    		   $(row)["0"].cells[4].childNodes["0"].id = 'runProcessBtn' 
+		    		   $(row)["0"].cells[4].childNodes["0"].childNodes["0"].className = "icon mif-play";
+		    	   }
+		    	   else if(data.pg_get_status_ingest == "Process is running(0)"){
+		    		   $(row)["0"].cells[4].childNodes["0"].id = 'stopProcessBtn' 
+		    		   $(row)["0"].cells[4].childNodes["0"].childNodes["0"].className = "icon mif-stop";
+		    	   }
+		    	   else{
+		    		   alert('pg_get_status_ingest 값에 오류가 있습니다. 값='+data.pg_get_status_ingest);
+		    		}
+		      }
+		});
+	
+		
+		$('#databaseListTable tbody').on('click', 'button', function() {
+			var data = databaseTable.row( $(this).parents('tr') ).data();
+			if ($(this)[0].id == "viewTableListBtn"){
+				tableList("${searchSystemName}", data.database_name, data.connect_name);
+			}else if ($(this)[0].id == "runProcessBtn"){
+				runProcessToggle("${searchSystemName}", data.database_name, 'RUN');
+			}else if ($(this)[0].id == "stopProcessBtn"){
+				runProcessToggle("${searchSystemName}", data.database_name, 'STOP');
+			}else {
+				alert('error');
+			}		
+		});
+		
+	});
+
+	
 	function tableList(systemName, databaseName, connectName) {
     	zephyros.loading.show();
     	
@@ -68,7 +96,7 @@
     	var heightVal = 650;
       	var widthVal = 700;
 
-		url = '/tableList?systemName='+systemName+'&databaseName=' + databaseName+'&connectName=' + connectName;
+		url = '/tableList';
 		
    		titleTxt = '연계 Table 리스트';
    		dialog_tableList = $("#dialog_tableList").dialog({
@@ -77,50 +105,50 @@
             width: widthVal,
    	    	buttons: {
    	    	  	"닫기": function() {
- 						zephyros.loading.hide();
- 						dialog_tableList.dialog("close");
-   	    	  	    $("#dialog_tableList").empty();
+					zephyros.loading.hide();
+					dialog_tableList.dialog("close");
+					$("#dialog_tableList").empty();
    	    	  	}
    	    	},
    			close: function() {
 				zephyros.loading.hide();
-   				$("#dialog_tableList").empty();
+				dialog_tableList.dialog("close");
+				$("#dialog_tableList").empty();
    	    	}
            });   
    		
      	zephyros.callAjax({
     		url : url,
     		type : 'post',
-    		data : null,
+    		data : 'systemName='+systemName+'&databaseName=' + databaseName+'&connectName=' + connectName,
     		success : function(data, status, xhr) {
     			zephyros.loading.show();
     			zephyros.showDialog(dialog_tableList, data);
+    			zephyros.loading.hide();
     		}
     	});		
 	}
 
 
     function runProcessToggle(systemName, databaseName, command) {
+		zephyros.loading.show();
     	var url = '';
     	var success = null;
     	var error = null;
 
-    	var titleTxt = '';
-    	var heightVal = 570;
-      	var widthVal = 1250;
+		url = '/runProcess';
 
-		url = '/runProcess?systemName='+systemName+'&databaseName=' + databaseName+'&command=' + command;
-
-    	//...
 		if (command == 'RUN' || command == 'STOP') {
 	     	zephyros.callAjax({
 	    		url : url,
 	    		type : 'post',
-	    		data : null,
+	    		data : 'systemName='+systemName+'&databaseName=' + databaseName+'&command=' + command,
 	    		success : function(data, status, xhr) {
-	    			zephyros.loading.show();
-//	    			zephyros.checkAjaxDialogResult(dialog_databaseList,  data);
-	    			reload(systemName);
+	    			databaseTable.ajax.reload();
+	    			zephyros.loading.hide();
+	    		},
+	    		error : function(){
+	    			alert('error issued');
 	    			zephyros.loading.hide();
 	    		}
 	    	});
@@ -129,38 +157,6 @@
     		alert("잘못된 값이 입력되었습니다. 모드는 RUN, STOP중에 하나여야합니다.");
     	}
     }
-    
-    function reload(systemName){
-		var url = '/databaseList?searchSysNm='+systemName;
-		
-   		titleTxt = 'DB 리스트';
-   		dialog_databaseList = $("#dialog_databaseList").dialog({
-          	title: titleTxt,
-           	height: 650,
-            width: 1200,
-   	    	buttons: {
-   	    	  	"닫기": function() {
- 						zephyros.loading.hide();
- 						dialog_databaseList.dialog("close");
-   	    	  	    $("#dialog_databaseList").empty();
-   	    	  	}
-   	    	},
-   			close: function() {
-				zephyros.loading.hide();
-   				$("#dialog_databaseList").empty();
-   	    	}
-           });   
-   		
-     	zephyros.callAjax({
-    		url : url,
-    		type : 'post',
-    		data : null,
-    		success : function(data, status, xhr) {
-    			zephyros.loading.show();
-    			zephyros.showDialog(dialog_databaseList, data);
-    		}
-    	});
-    }
-    
+
 
 </script>

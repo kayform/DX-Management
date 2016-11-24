@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 
+
 import com.k4m.eXperdb.webconsole.common.Globals;
 
 
@@ -61,7 +62,7 @@ public class BottledWaterController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/bottledwaterList")  
+	@RequestMapping(value = "/bottledwaterData")  
 	@ResponseBody
 	public List<Map<String, Object>> serverList(Model model, HttpSession session, HttpServletRequest request) throws Exception {
 		List<Map<String, Object>> serverList = null;		
@@ -75,7 +76,7 @@ public class BottledWaterController {
 	}
 	
 	/**
-	 * Database 목록 조회
+	 * Database 목록 조회 - 페이지 뷰만 반환
 	 * @param model
 	 * @param session
 	 * @param request
@@ -84,26 +85,40 @@ public class BottledWaterController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/databaseList")   
-	public ModelAndView databaseList(Model model, HttpSession session, HttpServletRequest request, 
-			@RequestParam(value = "searchSysNm", defaultValue = "") String searchSysNm) throws Exception {
-		
-		List<Map<String, Object>> databaseList = null;		
-		HashMap<String, String> param = new HashMap<String, String>();
-	
-		try{
-			databaseList = bottledWaterService.selectDatabaseList(searchSysNm);
-		}catch (Exception e){
-			Globals.logger.error(e.getMessage(), e);
-		}
+	public ModelAndView databaseList(Model model, HttpSession session, HttpServletRequest request,
+			@RequestParam(value = "searchSystemName", defaultValue = "") String searchSystemName) throws Exception {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("databaseList", databaseList);
-		mav.addObject("searchSysNm", searchSysNm);
+		mav.addObject("searchSystemName", searchSystemName);
 		mav.setViewName("databaseList");
 		return mav;
 	}
 	
+	
 	/**
-	 * 연계 테이블 목록 조회
+	 * Database 목록 조회 - 데이터 반환
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param searchSysNm
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/databaseListData")   
+	@ResponseBody
+	public List<Map<String, Object>> databaseListData(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "searchSystemName", defaultValue = "") String searchSystemName) throws Exception {
+		
+		List<Map<String, Object>> databaseList = null;		
+		try{
+			databaseList = bottledWaterService.selectDatabaseList(searchSystemName);
+		}catch (Exception e){
+			Globals.logger.error(e.getMessage(), e);
+		}
+		return databaseList;
+	}
+	
+	/**
+	 * 연계 테이블 목록 조회 - 페이지 뷰만 반환
 	 * @param model
 	 * @param session
 	 * @param request
@@ -114,6 +129,31 @@ public class BottledWaterController {
 	 */
 	@RequestMapping(value = "/tableList")   
 	public ModelAndView tableList(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "systemName", defaultValue = "") String systemName,
+			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
+			@RequestParam(value = "connectName", defaultValue = "") String connectName) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("systemName", systemName);
+		mav.addObject("databaseName", databaseName);
+		mav.addObject("connectName", connectName);
+		mav.setViewName("tableList");
+		return mav;
+	}
+	
+	
+	/**
+	 * 연계 테이블 목록 조회 - 데이터 반환
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param systemName
+	 * @param databaseName
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/tableListData")   
+	@ResponseBody
+	public List<Map<String, Object>> tableListData(Model model, HttpSession session, HttpServletRequest request, 
 			@RequestParam(value = "systemName", defaultValue = "") String systemName,
 			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
 			@RequestParam(value = "connectName", defaultValue = "") String connectName,
@@ -137,11 +177,7 @@ public class BottledWaterController {
 		}catch (Exception e){
 			Globals.logger.error(e.getMessage(), e);
 		}
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("tableList", tableList);
-		mav.addObject("connectName", connectName);
-		mav.setViewName("tableList");
-		return mav;
+		return tableList;
 	}
 	
 	/**
