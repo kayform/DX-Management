@@ -31,6 +31,11 @@
   </form>
 </div> 
 
+<div id="dialog_tableList">
+  <form>
+  </form>
+</div> 
+
 
 <script>    
 

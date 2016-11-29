@@ -17,10 +17,7 @@
     </table>
 </div> 
 
-<div id="dialog_tableList">
-  <form>
-  </form>
-</div> 
+
 
 <script>    
 
@@ -34,10 +31,10 @@
 						{ data: 'action', defaultContent : "<button id=\"\" style=\"margin:0;height:20px;width:50px;\" class=\"button\" \"><span class=\"icon mif-play\"></span></button>"}
 					];
 		
-		//TODO 아래 임시방편 수정해야함
 		//호출페이지에서 다이얼로그 오픈하면서 초기화하고, 문서가 로드 되면서 초기화 또다시 되어 에러 메시지 발생.
 		//defalut 값인 alert로하면 얼럿창 뜬다.
 		//https://datatables.net/manual/tech-notes/3 참조
+		//테크문서 참조하여 수정해도 오류남.
 		$.fn.dataTable.ext.errMode = 'throw';
 		
 		//초기화 여부 체크 안됨 ㅠ.ㅠ
