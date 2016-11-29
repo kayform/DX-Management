@@ -149,8 +149,9 @@ public class BottledWaterDAO {
 		Map<String, Object> tableInfo = null;
 		
 		String dbname = (String) param.get("databaseName");
-		int start  = (int) param.get("start");
-		int end = start + (int) param.get("length");
+		//datatable에서 start는 0부터 시작하고 row_no은 1부터 시작함. 따라서 1을 더해 줌. 
+		int start  = (int) param.get("start")+1;
+		int end = start + (int) param.get("length")-1;
 		int recordsTotal = 0;
 		
 	    Connection conn = null;
@@ -309,8 +310,10 @@ public class BottledWaterDAO {
 		
 		String systemName = (String) param.get("systemName");
 		String databaseName = (String) param.get("databaseName");
-		int start  = (int) param.get("start");
-		int end = start + (int) param.get("length");
+		
+		//datatable에서 start는 0부터 시작하고 row_no은 1부터 시작함. 따라서 1을 더해 줌. 
+		int start  = (int) param.get("start")+ 1; 
+		int end = start + (int) param.get("length")-1;
 		int recordsTotal = 0;
 		
 	    Connection conn = null;
