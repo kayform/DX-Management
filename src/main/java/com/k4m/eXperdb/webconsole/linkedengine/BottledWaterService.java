@@ -9,9 +9,14 @@ public interface BottledWaterService {
 
 	List<Map<String, Object>> selectDatabaseList(String searchSysNm) throws Exception;
 
-	Map<String, Object> runProcess(Map<String, String> param) throws Exception;;
+	Map<String, Object> runProcess(Map<String, String> param) throws Exception;
 
-	Map<String, Object> selectTableList(HashMap<String, Object> param) throws Exception;;
+	Map<String, Object> selectTableList(HashMap<String, Object> param) throws Exception;
+
+	Map<String, Object> selectTableRegistrationListData(HashMap<String, Object> param) throws Exception;;
+	
+	int updateLinkedTableList(List<HashMap<String, String>> paramList) throws Exception;
+
 
 
 }

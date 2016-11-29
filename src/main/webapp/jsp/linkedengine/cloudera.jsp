@@ -78,6 +78,12 @@
 
 <script>    
 
+$(document).ready(function() {
+	
+});
+
+
+
 	function searchServerList() {
 		var searchSystemName ='';
 		searchSystemName = document.getElementById('searchSystemNameText').value;

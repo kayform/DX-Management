@@ -9,7 +9,7 @@
         <thead>
         <tr>
             <td class="sortable-column sort-asc" style="width: 150px">스키마 명</td>
-            <td class="sortable-column">테이블 명'${table_schema}'</td>
+            <td class="sortable-column">테이블 명</td>
             <td class="sortable-column">선택</td>
         </tr>
         </thead>
@@ -23,7 +23,19 @@ $(document).ready(function() {
 	tableColumns =  [
 					{ "data": 'table_schema' },
 					{ "data": 'table_name'},
-					{ "data": 'checked', defaultContent : "<label class=\"checkbox\"><input type=\"checkbox\" class=\"checkbox\" value=\"10\" id=\'data.table_schema\' name=\"\" onchange=\"setCheckBox(this)\"></label>"}
+					{ "data": 'is_checked',
+					  "render": function ( data, type, full, meta ) {
+							if(data == 0) {
+								return "<label class=\"checkbox\"><input type=\"checkbox\" class=\"checkbox\" id="+full.table_schema+" tableName="+full.table_name+"  value=\"original\"  onchange=\"setModified(this)\"></label>";
+							}
+							else if(data == 1) {
+								return "<label class=\"checkbox\"><input type=\"checkbox\" class=\"checkbox\" id="+full.table_schema+" tableName="+full.table_name+"  value=\"original\" onchange=\"setModified(this)\" checked=\"checked\" ></label>";
+							}
+							else {
+								console.log("is_checked 값에 오류가 있습니다. is_checked값 = "+data);
+							}
+						}
+					}
 				];
 	
 	tableRegistrationList = $("#tableRegistrationList").DataTable({
@@ -38,30 +50,45 @@ $(document).ready(function() {
 				console.log('에러 발생 = '+errorThrown); 
 			}
 		},
-        "columns": tableColumns,
-	    "createdRow": function( row, data, dataIndex ) {
-	    	   if(data.is_checked == "0") {
-	    		   $(row)["0"].cells[2].childNodes["0"].childNodes["0"].checked = false;
-	    	   }
-	    	   else if(data.is_checked == "1"){
-	    		   $(row)["0"].cells[2].childNodes["0"].childNodes["0"].checked = true;
-	    	   }
-	    	   else{
-	    		   alert('is_checked  값에 오류가 있습니다. 값='+data.is_checked );
-	    		}
-	      }
+        "columns": tableColumns
         
 	});
 	
-	function setCheckBox(o) { 
-		alert("setCheckBox fun");
-		
-	}
-	
 
+	 
+	$('#tableRegistrationList').on( 'page.dt', function () {
+	    var info = tableRegistrationList.page.info();
+	    //alert(info.page);
+	    
+	    var root = $('#tableRegistrationList tbody tr td input');
+	    console.log(root.length);
+		for (var i = 0; i < root.length; i++) {
+			if(root[i].value == "modified"){
+				console.log(i);
+				console.log('변경 ='+root[i].value);
+				break;
+			}
+			else {
+				console.log(i);
+				console.log('변경안됨 ='+root[i].value);
+			}
+		}
+		
+	    
+	    
+	} );	
 	
 	
-});    
-    
+});   
+
+//체크박스에 변경이 생기면.. 해당 로우가 변경되었는지 값을 셋팅한다.
+function setModified(obj){
+	console.log(obj.value);
+	if(obj.value == 'original') obj.value = 'modified';
+	else if (obj.value == 'modified') obj.value = 'original';
+	else alert('error');
+}
+
+
 
 </script>

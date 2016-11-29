@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.k4m.eXperdb.webconsole.common.Globals;
+
 
 @Service
 public class BottledWaterServiceImpl implements BottledWaterService {
@@ -38,4 +40,13 @@ public class BottledWaterServiceImpl implements BottledWaterService {
 		return bottledWaterDAO.selectTableList(param);		
 	}	
 
+	@Override
+	public Map<String, Object> selectTableRegistrationListData(HashMap<String, Object> param) throws Exception {
+		return bottledWaterDAO.selectTableRegistrationListData(param);		
+	}	
+
+	@Override
+	public int updateLinkedTableList(List<HashMap<String, String>> paramList) throws Exception {
+		return bottledWaterDAO.updateLinkedTableList(paramList);
+	}
 }

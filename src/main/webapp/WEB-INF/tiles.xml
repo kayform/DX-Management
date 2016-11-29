@@ -172,6 +172,8 @@
 	</definition>
 	<definition name="tableList" template="/jsp/linkedengine/tableList.jsp">
 	</definition>
+	<definition name="tableRegistrationList" template="/jsp/linkedengine/tableRegistrationList.jsp">
+	</definition>
 	
 	
 	<!-- kafka 관리 -->

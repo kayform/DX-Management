@@ -37,88 +37,6 @@ public class BottledWaterDAO {
 		return list;
 	}
 
-	/**
-	 * 데이터베이스 연계 테이블 목록 조회
-	 * @param param
-	 * @return
-	 * @throws Exception
-	 */
-	public Map<String, Object> selectTableList(HashMap<String, Object> param) {
-		
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		List<Map<String, Object>> tableList = new ArrayList<Map<String, Object>>();
-		Map<String, Object> tableInfo = null;
-		
-		String dbname = (String) param.get("databaseName");
-		int start  = (int) param.get("start");
-		int end = start + (int) param.get("length");
-		int recordsTotal = 0;
-		
-	    Connection conn = null;
-		Statement st = null;
-		ResultSet rs = null;
-	
-		String tableQuery = "\n select row_no, table_schema, table_name"
-				+ " \n    		from ("
-				+ " \n \t 			select  row_no, table_schema, table_name"
-				+ " \n \t 			from dblink('dbname="+ dbname +"', 'select row_number() over (order by table_name) as row_no, table_schema, table_name"
-				+ " \n \t\t 																from tbl_mapps') as t1(row_no bigint, table_schema varchar(100), table_name varchar(100))"
-				+ " \n \t 		) t2"
-				+ " \n 			where t2.row_no between "+ start +" and "+ end ;
-		
-		Globals.logger.debug("연계테이블 목록 조회문 = "+tableQuery);
-	
-	    try {
-	    	recordsTotal = selectTableListTotalCount(param);
-	    	
-	    	conn = DBCPPoolManager.getConnection((String) param.get("systemName"));
-	    	st = conn.createStatement();
-			rs = st.executeQuery(tableQuery);
-				
-			tableInfo = new HashMap<String, Object>();
-	
-			//database 명 조회
-			while (rs.next()) {
-				tableInfo = new HashMap<String, Object>();
-				tableInfo.put("table_schema", rs.getString("table_schema"));
-				tableInfo.put("table_name", rs.getString("table_name"));
-				tableList.add(tableInfo);
-			}
-			
-			
-		} catch(SQLException e){
-			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
-			Globals.logger.error(e.getMessage(), e);
-	    } catch (Exception e) {
-	    	Globals.logger.error(e.getMessage(), e);
-	    } finally{
-	    	if(rs !=  null)
-				try {
-					rs.close();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-	    	if(st !=  null)
-				try {
-					st.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-	    	if(conn !=  null)
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-	    }
-		Globals.logger.debug("database 연계 테이블 갯수 = "+tableList.size());
-		
-		resultMap.put("draw", param.get("draw"));
-		resultMap.put("recordsTotal", recordsTotal);
-		resultMap.put("recordsFiltered", recordsTotal);
-		resultMap.put("data", tableList);
-		return resultMap;
-	}
 
 	/**
 	 * 데이터베이스 연계 정보 조회
@@ -217,6 +135,91 @@ public class BottledWaterDAO {
 	}
 
 	/**
+	 * 데이터베이스 연계 테이블 목록 조회
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public Map<String, Object> selectTableList(HashMap<String, Object> param) {
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		List<Map<String, Object>> tableList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> tableInfo = null;
+		
+		String dbname = (String) param.get("databaseName");
+		int start  = (int) param.get("start");
+		int end = start + (int) param.get("length");
+		int recordsTotal = 0;
+		
+	    Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+	
+		String tableQuery = "\n select row_no, table_schema, table_name"
+				+ " \n    		from ("
+				+ " \n \t 			select  row_no, table_schema, table_name"
+				+ " \n \t 			from dblink('dbname="+ dbname +"', 'select row_number() over (order by table_name) as row_no, table_schema, table_name"
+				+ " \n \t\t 																from tbl_mapps') as t1(row_no bigint, table_schema varchar(100), table_name varchar(100))"
+				+ " \n \t 		) t2"
+				+ " \n 			where t2.row_no between "+ start +" and "+ end ;
+		
+		Globals.logger.debug("연계테이블 목록 조회문 = "+tableQuery);
+	
+	    try {
+	    	recordsTotal = selectTableListTotalCount(param);
+	    	
+	    	conn = DBCPPoolManager.getConnection((String) param.get("systemName"));
+	    	st = conn.createStatement();
+			rs = st.executeQuery(tableQuery);
+				
+			tableInfo = new HashMap<String, Object>();
+	
+			//database 명 조회
+			while (rs.next()) {
+				tableInfo = new HashMap<String, Object>();
+				tableInfo.put("table_schema", rs.getString("table_schema"));
+				tableInfo.put("table_name", rs.getString("table_name"));
+				tableList.add(tableInfo);
+			}
+			
+			
+		} catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
+	    } catch (Exception e) {
+	    	Globals.logger.error(e.getMessage(), e);
+	    } finally{
+	    	if(rs !=  null)
+				try {
+					rs.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+	    	if(st !=  null)
+				try {
+					st.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    	if(conn !=  null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		Globals.logger.debug("database 연계 테이블 갯수 = "+tableList.size());
+		
+		resultMap.put("draw", param.get("draw"));
+		resultMap.put("recordsTotal", recordsTotal);
+		resultMap.put("recordsFiltered", recordsTotal);
+		resultMap.put("data", tableList);
+		return resultMap;
+	}
+	
+	
+	
+	/**
 	 * 파라미터 조회조건에 해당하는 연계엔진의 재기동 또는 중지
 	 * @param param
 	 * @return
@@ -279,7 +282,6 @@ public class BottledWaterDAO {
 				if(st !=  null) st.close();
 				if(conn !=  null) conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    }
@@ -290,8 +292,104 @@ public class BottledWaterDAO {
 		return resMap;
 	}
 
+
 	/**
-	 * 데이터베이스 연계 테이블 목록 조회
+	 * 연계 테이블 등록을 위한 목록 조회 - JSON 형태 데이터 반환
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	public Map<String, Object> selectTableRegistrationListData(HashMap<String, Object> param) {
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		List<Map<String, Object>> tableList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> tableInfo = null; 
+		
+		String systemName = (String) param.get("systemName");
+		String databaseName = (String) param.get("databaseName");
+		int start  = (int) param.get("start");
+		int end = start + (int) param.get("length");
+		int recordsTotal = 0;
+		
+	    Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+	
+		String tableQuery =   "\n select row_no, database_name, table_schema, table_name, is_checked "
+							+ "\n from dblink('dbname="+ databaseName +"',"
+							+ "\n           '( "
+							+ "\n             select row_number() over (order by a.table_schema, a.table_name) as row_no, a.table_catalog as database_name, a.table_schema, a.table_name,"
+							+ "\n 		             (select count(*) "
+							+ "\n		              from tbl_mapps b "
+							+ "\n		              where b.database_name = a.table_catalog "
+							+ "\n		              and b.table_schema = a.table_schema  "
+							+ "\n		              and b.table_name = a.table_name "
+							+ "\n		             ) as is_checked "
+							+ "\n	          from information_schema.tables a "
+							+ "\n	          where table_type =  ''BASE TABLE'' "
+							+ "\n	          and table_schema not in (''pg_catalog'', ''information_schema'') "
+							+ "\n	          and table_name not in (''tbl_mapps'',''tbl_mapps_hist'', ''kafka_con_config'') "
+							+ "\n	          order by a.table_schema, a.table_name, is_checked "
+							+ "\n	         )' "
+							+ "\n	         ) "
+							+ "\n as t1(row_no bigint, database_name varchar(100), table_schema varchar(100), table_name varchar(100),is_checked bigint) "
+							+ "\n where t1.row_no between "+ start +" and "+ end +" "; 
+		
+		Globals.logger.debug("연계 테이블 등록을 위한 목록 조회문 = "+tableQuery);
+	
+	    try {
+	    	recordsTotal = selectTableRegistrationListTotalCount(param);
+	    	
+	    	conn = DBCPPoolManager.getConnection(systemName);
+	    	st = conn.createStatement();
+			rs = st.executeQuery(tableQuery);
+				
+			tableInfo = new HashMap<String, Object>();
+	
+			//database 명 조회
+			while (rs.next()) {
+				tableInfo = new HashMap<String, Object>();
+				tableInfo.put("table_schema", rs.getString("table_schema"));
+				tableInfo.put("table_name", rs.getString("table_name"));
+				tableInfo.put("is_checked", rs.getString("is_checked"));
+				tableList.add(tableInfo);
+			}
+		} catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
+	    } catch (Exception e) {
+	    	Globals.logger.error(e.getMessage(), e);
+	    } finally{
+	    	if(rs !=  null)
+				try {
+					rs.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+	    	if(st !=  null)
+				try {
+					st.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    	if(conn !=  null)
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+	    }
+		Globals.logger.debug("연계 테이블 등록을 위한 목록 조회 테이블 갯수 = "+tableList.size());
+		
+		resultMap.put("draw", param.get("draw"));
+		resultMap.put("recordsTotal", recordsTotal);
+		resultMap.put("recordsFiltered", recordsTotal);
+		resultMap.put("data", tableList);
+		return resultMap;
+	}
+
+	/**
+	 * 데이터베이스 연계 테이블 목록 조회 총 건수
 	 * @param param
 	 * @return
 	 * @throws Exception
@@ -303,9 +401,9 @@ public class BottledWaterDAO {
 		ResultSet rs = null;
 		int totalCount = 0;
 	
-		String tableCountQuery = "select count(*) as TOTAL_COUNT "
-							+"\n from dblink('dbname="+ param.get("databaseName") +"', 'select table_schema, table_name "
-							+"\n\t from tbl_mapps') as t1(table_schema varchar(100), table_name varchar(100))";
+		String tableCountQuery = "\n select count(*) as TOTAL_COUNT "
+								+"\n from dblink('dbname="+ param.get("databaseName") +"', 'select table_schema, table_name "
+								+"\n\t from tbl_mapps') as t1(table_schema varchar(100), table_name varchar(100))";
 	
 		Globals.logger.debug("연계테이블 총 건수 조회문 = "+tableCountQuery);
 	
@@ -334,11 +432,183 @@ public class BottledWaterDAO {
 				if(st !=  null) st.close();
 				if(conn !=  null) conn.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    }
 		return totalCount;
+	}
+
+
+	/**
+	 * 연계 테이블 등록을 위한 목록 조회 - 총 건수 반환
+	 * @param param
+	 * @return
+	 * @throws Exception
+	 */
+	private int selectTableRegistrationListTotalCount(HashMap<String, Object> param){
+		
+	    Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+		int totalCount = 0;
+		String tableCountQuery =  "\n select TOTAL_COUNT "
+								+ "\n from dblink('dbname="+ param.get("databaseName") +"', " 
+								+ "\n            '( "
+								+ "\n              select count(a.*) as TOTAL_COUNT "
+								+ "\n              from information_schema.tables a "
+								+ "\n              where table_type =  ''BASE TABLE'' "
+								+ "\n              and table_schema not in (''pg_catalog'', ''information_schema'') "
+								+ "\n              and table_name not in (''tbl_mapps'',''tbl_mapps_hist'', ''kafka_con_config'') "
+								+ "\n            )' "
+								+ "\n           ) "
+								+ "\n as t1(TOTAL_COUNT bigint)";
+		
+		Globals.logger.debug("연계 테이블 등록을 위한 목록 총 건수 조회문 = "+tableCountQuery);
+	
+		try {
+	
+	    	conn = DBCPPoolManager.getConnection((String) param.get("systemName"));
+	    	st = conn.createStatement();
+			rs = st.executeQuery(tableCountQuery);
+				
+			//database 명 조회
+			while (rs.next()) {
+				totalCount = rs.getInt("TOTAL_COUNT");
+				Globals.logger.debug("연계 테이블 등록을 위한 목록 총 건수 = "+totalCount);
+			}
+			
+		} catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
+	    } catch (Exception e) {
+	    	Globals.logger.error(e.getMessage(), e);
+	    } finally{
+	    	try {
+				if(rs !=  null) rs.close();
+				if(st !=  null) st.close();
+				if(conn !=  null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    }
+		return totalCount;
+	}
+
+
+	public int updateLinkedTableList(List<HashMap<String, String>> paramList) {
+		int count = 0;
+		for(HashMap<String,String> param : paramList) {
+			if(Globals.MODE_DATA_INSERT.equals(param.get("mode"))) {
+				//삭제는 제외해도 되지 않나?
+				//deleteLinkedTable(param);
+				count += insertLinkedTable(param);
+			} else if(Globals.MODE_DATA_DELETE.equals(param.get("mode"))) {
+				count += deleteLinkedTable(param);
+			}
+		}
+		return count;
+	}
+
+
+	private int insertLinkedTable(HashMap<String, String> param) {
+		String systemName = param.get("systemName");
+		String databaseName = param.get("databaseName");
+		String schemaName = param.get("schemaName");
+		String tableName = param.get("tableName");
+		
+	    Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+		int count = 0;
+		String query =  "\n select result from dblink('dbname="+ databaseName +"', 'select pg_add_ingest_table(''"+ schemaName +"'', ''"+ tableName +"'', 1, 1, '''')') as t1(result varchar(100)) ";
+		
+		Globals.logger.debug("연계 테이블 등록문 = "+query);
+	
+		try {
+	
+	    	conn = DBCPPoolManager.getConnection(systemName);
+	    	st = conn.createStatement();
+			rs = st.executeQuery(query);
+				
+			//결과값이 "Success..."로 시작하면 1을 리턴, 이외에는 0을 리턴한다.
+			String result = null;
+			while (rs.next()) {
+				result = rs.getString("result");
+				Globals.logger.debug("연계 테이블 등록 결과 값 = "+result);
+				if(result.startsWith("Success")){
+					count = 1;
+				}
+				else{
+					count = 0;
+				}
+			}
+			
+		} catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
+	    } catch (Exception e) {
+	    	Globals.logger.error(e.getMessage(), e);
+	    } finally{
+	    	try {
+				if(rs !=  null) rs.close();
+				if(st !=  null) st.close();
+				if(conn !=  null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    }
+		return count;
+	}
+
+
+	private int deleteLinkedTable(HashMap<String, String> param) {
+		String systemName = param.get("systemName");
+		String databaseName = param.get("databaseName");
+		String schemaName = param.get("schemaName");
+		String tableName = param.get("tableName");
+		
+	    Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
+		int count = 0;
+		String query =  "\n select result from dblink('dbname="+ databaseName +"', 'select pg_del_ingest_table(''"+ schemaName +"'', ''"+ tableName +"'')') as t1(result varchar(100)) ";
+		
+		Globals.logger.debug("연계 테이블 삭제문 = "+query);
+	
+		try {
+	
+	    	conn = DBCPPoolManager.getConnection(systemName);
+	    	st = conn.createStatement();
+			rs = st.executeQuery(query);
+				
+			//결과값이 "Success..."로 시작하면 1을 리턴, 이외에는 0을 리턴한다.
+			String result = null;
+			while (rs.next()) {
+				result = rs.getString("result");
+				Globals.logger.debug("연계 테이블 삭제 결과 값 = "+result);
+				if(result.startsWith("Success")){
+					count = 1;
+				}
+				else{
+					count = 0;
+				}
+			}
+			
+		} catch(SQLException e){
+			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
+			Globals.logger.error(e.getMessage(), e);
+	    } catch (Exception e) {
+	    	Globals.logger.error(e.getMessage(), e);
+	    } finally{
+	    	try {
+				if(rs !=  null) rs.close();
+				if(st !=  null) st.close();
+				if(conn !=  null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    }
+		return count;
 	}
 
 }
