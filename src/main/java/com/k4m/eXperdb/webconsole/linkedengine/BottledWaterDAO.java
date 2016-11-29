@@ -44,7 +44,7 @@ public class BottledWaterDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Map<String, Object>> selectDatabaseList(String searchSysNm) {
+	public List<Map<String, Object>> selectDatabaseList(String searchSysNm) throws Exception {
 		
 		List<Map<String, Object>> databaseList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> databaseInfo = null;
@@ -115,8 +115,10 @@ public class BottledWaterDAO {
 		} catch(SQLException e){
 			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
 			Globals.logger.error(e.getMessage(), e);
+			throw e;
 	    } catch (Exception e) {
 	    	Globals.logger.error(e.getMessage(), e);
+	    	throw e;
 	    } finally{
 	    	try {
 				if(extensionCheckRS !=  null) extensionCheckRS.close();
@@ -495,12 +497,10 @@ public class BottledWaterDAO {
 	}
 
 
-	public int updateLinkedTableList(List<HashMap<String, String>> paramList) {
+	public int updateLinkedTableList(List<HashMap<String, String>> paramList) throws Exception {
 		int count = 0;
 		for(HashMap<String,String> param : paramList) {
 			if(Globals.MODE_DATA_INSERT.equals(param.get("mode"))) {
-				//삭제는 제외해도 되지 않나?
-				//deleteLinkedTable(param);
 				count += insertLinkedTable(param);
 			} else if(Globals.MODE_DATA_DELETE.equals(param.get("mode"))) {
 				count += deleteLinkedTable(param);
@@ -510,7 +510,7 @@ public class BottledWaterDAO {
 	}
 
 
-	private int insertLinkedTable(HashMap<String, String> param) {
+	private int insertLinkedTable(HashMap<String, String> param) throws Exception {
 		String systemName = param.get("systemName");
 		String databaseName = param.get("databaseName");
 		String schemaName = param.get("schemaName");
@@ -546,8 +546,10 @@ public class BottledWaterDAO {
 		} catch(SQLException e){
 			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
 			Globals.logger.error(e.getMessage(), e);
+	    	throw e;
 	    } catch (Exception e) {
 	    	Globals.logger.error(e.getMessage(), e);
+	    	throw e;
 	    } finally{
 	    	try {
 				if(rs !=  null) rs.close();
@@ -561,7 +563,7 @@ public class BottledWaterDAO {
 	}
 
 
-	private int deleteLinkedTable(HashMap<String, String> param) {
+	private int deleteLinkedTable(HashMap<String, String> param) throws Exception {
 		String systemName = param.get("systemName");
 		String databaseName = param.get("databaseName");
 		String schemaName = param.get("schemaName");
@@ -597,8 +599,10 @@ public class BottledWaterDAO {
 		} catch(SQLException e){
 			Globals.logger.error("SQL 에러코드 ("+e.getSQLState()+") 에러가 발생했습니다.");
 			Globals.logger.error(e.getMessage(), e);
+			throw e;
 	    } catch (Exception e) {
 	    	Globals.logger.error(e.getMessage(), e);
+	    	throw e;
 	    } finally{
 	    	try {
 				if(rs !=  null) rs.close();

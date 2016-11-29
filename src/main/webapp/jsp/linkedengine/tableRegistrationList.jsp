@@ -26,10 +26,10 @@ $(document).ready(function() {
 					{ "data": 'is_checked',
 					  "render": function ( data, type, full, meta ) {
 							if(data == 0) {
-								return "<label class=\"checkbox\"><input type=\"checkbox\" class=\"checkbox\" id="+full.table_schema+" tableName="+full.table_name+"  value=\"original\"  onchange=\"setModified(this)\"></label>";
+								return "<label class=\"checkbox\"><input type=\"checkbox\" class=\"checkbox\" id="+full.table_schema+" name="+full.table_name+"  value=\"original\"  onchange=\"setModified(this)\"></label>";
 							}
 							else if(data == 1) {
-								return "<label class=\"checkbox\"><input type=\"checkbox\" class=\"checkbox\" id="+full.table_schema+" tableName="+full.table_name+"  value=\"original\" onchange=\"setModified(this)\" checked=\"checked\" ></label>";
+								return "<label class=\"checkbox\"><input type=\"checkbox\" class=\"checkbox\" id="+full.table_schema+" name="+full.table_name+"  value=\"original\" onchange=\"setModified(this)\" checked=\"checked\" ></label>";
 							}
 							else {
 								console.log("is_checked 값에 오류가 있습니다. is_checked값 = "+data);
@@ -66,7 +66,7 @@ $(document).ready(function() {
 			if(root[i].value == "modified"){
 				console.log(i);
 				console.log('변경 ='+root[i].value);
-				break;
+
 			}
 			else {
 				console.log(i);

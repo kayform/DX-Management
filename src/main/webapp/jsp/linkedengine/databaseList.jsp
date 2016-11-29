@@ -168,12 +168,14 @@
 	    			
 	    			for (var i = 0; i < rowCount; i++) {
 						if(root[i].value == "modified"){
-		    				if(i!=0) reqData += "&";
+			    			console.log(root[i]);
+
+							if(i!=0) reqData += "&";
 		    				reqData += "mode=" + (root[i].checked ? "I" : "D");
 		    				reqData += "&systemName=" + systemName;
 		    				reqData += "&databaseName=" + databaseName;
-		    				reqData += "&schemaName=" + root[i].attributes[2].nodeValue;
-		    				reqData += "&tableName=" + root[i].attributes[3].nodeValue;
+		    				reqData += "&schemaName=" + root[i].id;
+		    				reqData += "&tableName=" + root[i].name;
 						}
 	    			}
 					console.log(reqData);
