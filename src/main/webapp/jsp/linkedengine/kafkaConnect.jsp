@@ -73,7 +73,10 @@
   <form>
   </form>
 </div> 
-
+<div id="dialog_connectConfig">
+  <form>
+  </form>
+</div> 
 
 <script>    
 

@@ -37,10 +37,7 @@
     </table>
 </div> 
 
-<div id="dialog_connectConfig">
-  <form>
-  </form>
-</div> 
+
 
 <script>    
 $(document).ready(function() {
