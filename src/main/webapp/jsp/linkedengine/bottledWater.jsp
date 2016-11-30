@@ -37,6 +37,12 @@
 </div> 
 
 
+<div id="dialog_tableRegisterInfo">
+  <form>
+  </form>
+</div> 
+
+
 <script>    
 
 $(document).ready(function() {
@@ -93,6 +99,7 @@ $(document).ready(function() {
    		titleTxt = 'DB 리스트';
    		dialog_databaseList = $("#dialog_databaseList").dialog({
           	title: titleTxt,
+			modal: true,
            	height: heightVal,
             width: widthVal,
    	    	buttons: {

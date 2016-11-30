@@ -110,6 +110,7 @@
    		dialog_tableList = $("#dialog_tableList").dialog({
           	title: titleTxt,
            	height: heightVal,
+			modal: true,
             width: widthVal,
    	    	buttons: {
    	    	  	"닫기": function() {
@@ -145,7 +146,7 @@
     	var error = null;
     	var titleTxt = '';
     	var successTxt = '';
-    	var heightVal = 650;
+    	var heightVal = 900;
       	var widthVal = 1000;
 
 		url = '/tableRegistrationList';
@@ -154,6 +155,7 @@
    		dialog_tableList = $("#dialog_tableList").dialog({
           	title: titleTxt,
            	height: heightVal,
+			modal: true,
             width: widthVal,
    	    	buttons: {
 	    		"저장": function() {
@@ -165,7 +167,7 @@
 	    			
 	    			for (var i = 0; i < rowCount; i++) {
 						if(root[i].value == "modified"){
-			    			console.log(root[i]);
+			    			//console.log(root[i]);
 
 							if(i!=0) reqData += "&";
 		    				reqData += "mode=" + (root[i].checked ? "I" : "D");
@@ -175,7 +177,7 @@
 		    				reqData += "&tableName=" + root[i].name;
 						}
 	    			}
-					console.log(reqData);
+					//console.log(reqData);
  
 					zephyros.callAjax({
 						url : '/addTableProcess',
