@@ -3,7 +3,19 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <div class="cell auto-size padding20 bg-white" id="cell-content">
-    <p>Kafka Connection : <input type="text" id="connectName" name="connectName" readonly="readonly" value="${connectName}" style="width:30%;">
+    <div id="kafka-connect">
+    	<p>Kafka Connection : 
+    	<input type="text" id="connectName" name="connectName" value="${connectName.equals('null')?'' : connectName}" style="width:30%;">
+		<c:choose>
+			<c:when test="${!connectName.equals('null')  && connectName.length() > '0'}">
+	    		<button class="button primary place-right no-margin-left margin5" id="updateKafkaConnectBtn" name="updateKafkaConnectBtn" onclick="javascript:updateKafkaConnectName('${systemName}','${databaseName}');" ><span class="mif-pencil"></span>수정</button>
+			</c:when>
+			<c:otherwise>
+		    	<button class="button primary place-right no-margin-left margin5" id="createKafkaConnectBtn" name="createKafkaConnectBtn" onclick="javascript:createKafkaConnectName('${systemName}','${databaseName}');" ><span class="mif-plus"></span>생성</button>
+	    	</c:otherwise>
+		</c:choose>										
+    	<hr class="hr.thin">
+    </div>
     <p>* 연계 테이블 등록 리스트
     <table id="tableRegistrationList" class="dataTable border bordered" data-role="datatable" data-searching="false" data-auto-width="t">
         <thead>
@@ -51,7 +63,6 @@ $(document).ready(function() {
 			}
 		},
         "columns": tableColumns
-        
 	});
 	
 
@@ -92,10 +103,71 @@ $(document).ready(function() {
 	    }
 
 	} );
+
 	
 });   
 
-	 
+
+//카프카 커넥션 수정
+function updateKafkaConnectName(systemName, databaseName, connectName){
+	var connectName = $('#connectName')["0"].value
+	var url = 'updateKafkaConnectProcess';
+	 manageKafkaConnectName(systemName, databaseName, connectName, url)
+}	
+	
+	
+
+//카프카 커넥션 생성
+function createKafkaConnectName(systemName, databaseName){
+	var connectName = $('#connectName')["0"].value
+	var url = 'createKafkaConnectProcess';
+	 manageKafkaConnectName(systemName, databaseName, connectName, url)
+}	
+
+//카프카 생성, 수정
+function manageKafkaConnectName(systemName, databaseName, connectName, url){
+	zephyros.loading.show();
+	
+	var reqData = 'systemName='+systemName+'&databaseName='+databaseName+'&connectName='+connectName;
+	
+	//console.log(reqData);
+	
+	dialog_tableRegisterInfo = $("#dialog_tableRegisterInfo").dialog({
+		title: 'KAFKA CONNECT 생성/수정',
+		height: 200,
+		width: 400,
+    	buttons: {
+    		"저장": function() {
+		    	zephyros.loading.show();
+		    	
+				zephyros.callAjax({
+    				url : url,
+    				type : 'post',
+    				data : reqData,
+    				success : function(data, status, xhr) {
+    					zephyros.loading.hide();
+  						zephyros.checkAjaxDialogResult(dialog_tableRegisterInfo,  data);
+    				}
+    			});
+    	  	},
+    	  	"취소": function() {
+				zephyros.loading.hide();
+				dialog_tableRegisterInfo.dialog("close");
+    	  	    $("#dialog_tableRegisterInfo").empty();
+    	  	}
+    	},
+		close: function() {
+			zephyros.loading.hide();
+			$("#dialog_tableRegisterInfo").empty();
+    	}
+	});   
+   	
+	zephyros.showDialog(dialog_tableRegisterInfo, "입력된 KAFKA CONNECT를 생성 또는 수정하시겠습니까?");
+	
+}
+	
+	
+	
 //인포창 띄워서 저장할지 안할지 물어 보고 확인을 클릭하면 저장한다. !!
 function registerTableList(reqData){
 	zephyros.loading.show();

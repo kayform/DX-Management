@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,9 +32,6 @@ public class KafkaConnectController {
 	@Autowired
 	private KafkaConnectService kafkaConnectService;
 
-	
-	
-	
 	/**
 	 * 연계엔진관리 > kafka connect 서버 목록 조회
 	 * @param model
@@ -179,6 +177,128 @@ public class KafkaConnectController {
 		return mav;
 	}
 
+	/**
+	 * kafka connect 생성
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param systemName
+	 * @param databaseName
+	 * @param kafkaConnectName
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/createKafkaConnectProcess")
+	@ResponseBody
+	public HashMap<String, Object> createKafkaConnectProcess(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "systemName", defaultValue = "") String systemName,
+			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
+			@RequestParam(value = "connectName", defaultValue = "") String connectName) throws Exception {	
+		HashMap<String, Object> responseMap = new HashMap<String, Object>();
+
+		HashMap<String, String> param = new HashMap<String, String>();
+		param.put("systemName", systemName);
+		param.put("databaseName", databaseName);
+		param.put("connectName", connectName);
+		String result = null;
+		try {
+			
+			result = kafkaConnectService.createKafkaConnect(param);
+			if(result.startsWith("Success")){
+				responseMap.put("result", "SUCCESS");
+				responseMap.put("msg", "KAFKA CONNECT 생성되었습니다.");
+			} else {
+				throw new Exception("잘못된 요청입니다.");
+			}
+		} catch (Exception e) {
+				Globals.logger.error(e.getMessage(), e);
+				responseMap.put("result", "ERROR");
+				responseMap.put("msg", e.getMessage());
+		}
+		return responseMap;
+	}	
+
+	/**
+	 * kafka connect 삭제
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param systemName
+	 * @param databaseName
+	 * @param kafkaConnectName
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/deleteKafkaConnectProcess")
+	@ResponseBody
+	public HashMap<String, Object> deleteKafkaConnectProcess(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "systemName", defaultValue = "") String systemName,
+			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
+			@RequestParam(value = "connectName", defaultValue = "") String connectName) throws Exception {	
+		HashMap<String, Object> responseMap = new HashMap<String, Object>();
+
+		HashMap<String, String> param = new HashMap<String, String>();
+		param.put("systemName", systemName);
+		param.put("databaseName", databaseName);
+		param.put("connectName", connectName);
+		String result = null;
+		try {
+			
+			result = kafkaConnectService.deleteKafkaConnect(param);
+			if(result.startsWith("Success")){
+				responseMap.put("result", "SUCCESS");
+				responseMap.put("msg", "KAFKA CONNECT가 삭제되었습니다.");
+			} else {
+				throw new Exception("잘못된 요청입니다.");
+			}
+		} catch (Exception e) {
+				Globals.logger.error(e.getMessage(), e);
+				responseMap.put("result", "ERROR");
+				responseMap.put("msg", e.getMessage());
+		}
+		return responseMap;
+	}	
+
+	/**
+	 * kafka connect 수정
+	 * @param model
+	 * @param session
+	 * @param request
+	 * @param systemName
+	 * @param databaseName
+	 * @param kafkaConnectName
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/updateKafkaConnectProcess")
+	@ResponseBody
+	public HashMap<String, Object> updateKafkaConnectProcess(Model model, HttpSession session, HttpServletRequest request, 
+			@RequestParam(value = "systemName", defaultValue = "") String systemName,
+			@RequestParam(value = "databaseName", defaultValue = "") String databaseName,
+			@RequestParam(value = "connectName", defaultValue = "") String connectName) throws Exception {	
+		HashMap<String, Object> responseMap = new HashMap<String, Object>();
+
+		HashMap<String, String> param = new HashMap<String, String>();
+		param.put("systemName", systemName);
+		param.put("databaseName", databaseName);
+		param.put("connectName", connectName);
+		String result = null;
+		try {
+			
+			result = kafkaConnectService.updateKafkaConnect(param);
+			if(result.startsWith("Success")){
+				responseMap.put("result", "SUCCESS");
+				responseMap.put("msg", "KAFKA CONNECT가 수정되었습니다.");
+			} else {
+				throw new Exception("잘못된 요청입니다.");
+			}
+		} catch (Exception e) {
+				Globals.logger.error(e.getMessage(), e);
+				responseMap.put("result", "ERROR");
+				responseMap.put("msg", e.getMessage());
+		}
+		return responseMap;
+	}	
 
 	/**
 	 * 입력받은 아이피, 포트, 커넥터명, 잡에 대한 REST 응답을 맵(JSONObject 타입)으로 반환

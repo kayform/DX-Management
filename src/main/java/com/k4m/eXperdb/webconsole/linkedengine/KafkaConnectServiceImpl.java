@@ -24,4 +24,30 @@ public class KafkaConnectServiceImpl implements KafkaConnectService {
 
 
 
+	@Override
+	public String createKafkaConnect(HashMap<String, String> param)
+			throws Exception {
+		return kafkaConnectDAO.createKafkaConnect(param);
+	}
+
+
+
+	@Override
+	public String deleteKafkaConnect(HashMap<String, String> param)
+			throws Exception {
+		return kafkaConnectDAO.deleteKafkaConnect(param);
+	}
+
+
+
+	@Override
+	public String updateKafkaConnect(HashMap<String, String> param)
+			throws Exception {
+		String result = null;
+		if((kafkaConnectDAO.deleteKafkaConnect(param)).startsWith("Success")) {
+			result =  kafkaConnectDAO.createKafkaConnect(param);
+		}
+		return result;
+	}
+
 }

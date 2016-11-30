@@ -158,7 +158,7 @@
 			modal: true,
             width: widthVal,
    	    	buttons: {
-	    		"저장": function() {
+	    		"연계테이블 저장": function() {
 			    	zephyros.loading.show();
 	    			var rowCount = $('#tableRegistrationList tbody tr').length;
 	    			var root = $('#tableRegistrationList tbody tr td input');
