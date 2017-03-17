@@ -72,6 +72,31 @@ public class PgmanController {
 	 * @return
 	 * @throws Exception
 	 */
+/*
+	@RequestMapping(value = "/aclSeverList")
+	@ResponseBody
+	public Map<String, Object>  acl(Model model, HttpSession session, HttpServletRequest request,
+			@RequestParam(value = "draw", defaultValue = "1") int draw,
+			@RequestParam(value = "start", defaultValue = "1") int start,
+			@RequestParam(value = "length", defaultValue = "1") int length) throws Exception {
+		List<Map<String, Object>> serverList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		HashMap<String, String> param = new HashMap<String, String>();
+		try{
+			serverList = pgmanService.selectServerList(param);		
+		}catch (Exception e){
+			Globals.logger.error(e.getMessage(), e);
+		}
+		
+		resultMap.put("draw", draw);
+		resultMap.put("iTotalRecords", serverList.size());
+		resultMap.put("iTotalDisplayRecords", serverList.size());
+		resultMap.put("aaData", serverList);
+		resultMap.put("iDisplayLength", length);
+
+		return resultMap;
+	}	
+*/	
 	@RequestMapping(value = "/acl")
 	public ModelAndView acl(Model model, HttpSession session, HttpServletRequest request) throws Exception {
 		List<Map<String, Object>> serverList = null;		
