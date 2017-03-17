@@ -161,6 +161,7 @@ public class PgmanController {
 	  String [] testArray = null ;
 	    
 	    List<Map> array = new ArrayList<Map>();
+		if(serverId == "") return array;
 	    
 	    Class.forName("org.postgresql.Driver");
 	    
@@ -284,9 +285,8 @@ public class PgmanController {
 	        }
 	        buffer = buffer.replaceAll("'", "''");
 			//String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
-		  //String usr = "postgres";  
-		  //String pwd = "robin";
-		  
+		  //  String usr = "postgres";  
+		  //  String pwd = "robin";
 		    String query1 = "SELECT pg_file_unlink('pg_hba.conf.bak');";
 		    String query2 = "SELECT pg_file_write('pg_hba.conf.tmp', '" + buffer + "', false);";
 		    String query3 = "SELECT pg_file_rename('pg_hba.conf.tmp', 'pg_hba.conf', 'pg_hba.conf.bak');";
