@@ -155,10 +155,10 @@ public class PgmanController {
 
 		//		param.put("user_id", serverId);
 				
-		String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
-	    String usr = "postgres";  
-	    String pwd = "robin";
-	    String [] testArray = null ;
+	  String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
+	  String usr = "postgres";  
+	  String pwd = "robin";
+	  String [] testArray = null ;
 	    
 	    List<Map> array = new ArrayList<Map>();
 	    
@@ -283,9 +283,10 @@ public class PgmanController {
 					buffer += config.getText() + "\n";
 	        }
 	        buffer = buffer.replaceAll("'", "''");
-			String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
-		    String usr = "postgres";  
-		    String pwd = "robin";
+			//String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
+		  //String usr = "postgres";  
+		  //String pwd = "robin";
+		  
 		    String query1 = "SELECT pg_file_unlink('pg_hba.conf.bak');";
 		    String query2 = "SELECT pg_file_write('pg_hba.conf.tmp', '" + buffer + "', false);";
 		    String query3 = "SELECT pg_file_rename('pg_hba.conf.tmp', 'pg_hba.conf', 'pg_hba.conf.bak');";
