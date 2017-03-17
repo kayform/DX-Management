@@ -155,9 +155,9 @@ public class PgmanController {
 
 		//		param.put("user_id", serverId);
 				
-	  String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
-	  String usr = "postgres";  
-	  String pwd = "robin";
+		//String url = "jdbc:postgresql://192.168.10.70:5432/postgres";
+	  //  String usr = "postgres";  
+	  //  String pwd = "robin";
 	  String [] testArray = null ;
 	    
 	    List<Map> array = new ArrayList<Map>();
