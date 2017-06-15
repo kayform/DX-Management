@@ -59,6 +59,7 @@ public class SettingsController {
 	private PlatformTransactionManager platTransactionManager; 
 
 	/**
+	 * 
 	 * 사용자 ID와 Mode(CRU)를 입력받아 입력받은 사용자에 대한 정보를 리턴
 	 * 페이지에서 해당 Mode에 따라 각각에 맞는 화면을 출력
 	 * @param model
